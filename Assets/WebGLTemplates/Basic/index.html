@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>%UNITY_WEB_NAME%</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <script src="TemplateData/UnityProgress.js"></script>  
+    <script src="%UNITY_WEBGL_LOADER_URL%"></script>
+    <script>
+      var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%", {onProgress: UnityProgress,Module: {backgroundColor: "#000000 "}});
+    </script>
+    <style media="screen">
+    html {
+      background-color: black;
+    }
+    </style>
+  </head>
+  <body>
+   <div class="webgl-content">
+      <div id="gameContainer" style="width: 960px; height: 600px"></div>
+      <div class="footer">
+        <div class="webgl-logo"></div>
+        <div class="fullscreen" onclick="gameInstance.SetFullscreen(1)"></div>
+        <div class="title">%UNITY_WEB_NAME%</div>
+  </body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+<script>
+let html = '<div class="webgl-content">\
+    <div id="gameContainer"></div>';
+    $('body').html(html);
+    $('canvas').attr('style', 'position: absolute');
+    $('canvas, .webgl-content, #gameContainer').attr('style', 'width: 100%; height: 100%;')
+
+function reCalculateCanvas(){
+  $('canvas, .webgl-content, #gameContainer').attr('style', 'width: 100%; height: 100%;')
+  setTimeout(function(){
+  
+    if(window.innerHeight > window.innerWidth){
+
+      alert("Please rotate your phone in landscape mode.")
+      $('canvas').attr('style', '-webkit-transform: translate(-50%, -50%) rotate(90deg); position: absolute; width:100vh; height:100vw; transform: translate(-50%, -50%) rotate(90deg) ;  top:50%; left:50%;');
+    }
+  },100)
+  
+}
+
+$(document).ready(function(){
+      if(window.innerHeight > window.innerWidth){
+        alert("Please rotate your phone in landscape mode.")
+        // $('canvas').attr('style', '-webkit-transform: translate(-50%, -50%) rotate(90deg); position: absolute; width:100vw; height:100vh; transform: translate(-50%, -50%) rotate(90deg) ;  top:50%; left:50%;');
+      }
+      window.onbeforeunload = function (e) {
+        var e = e || window.event;
+        console.log("e", e);
+        var msg = "Do you really want to leave this page?"
+        console.log("msg", msg);
+
+        // For IE and Firefox
+        if (e) {
+          console.log("e.returnValue", e.returnValue);
+            // e.returnValue = msg;
+        }
+        console.log("window.event", window.event);
+        // For Safari / chrome
+        e.preventDefault();
+        return true;
+     };
+
+    let Width = window.innerWidth;
+    let Height = window.innerHeight;
+
+    if(Width < Height)
+    {
+      let newWidth = Height;
+      Height = Width;
+      Width = newWidth;
+    }
+
+    $("#gameContainer").css({"width":Width+"px","height":Height+"px"});
+    
+    });
+
+
+    function requestGameData() {
+    console.log("requestGameData External Function Called");
+    var searchParams = new URLSearchParams(window.location.search);
+    var token = searchParams.get('token');
+    var uid = searchParams.get('u');
+    console.log("get token : ", token);
+    if((token == null || token == "") && (uid == null || uid == "")){
+      var dataForWebGL = {
+        message: "fail",
+        token: null,
+        playerId: null
+      };  
+    }else{
+      var dataForWebGL = {
+        message: "success",
+        token: token,
+        playerId: uid
+      };
+    }
+
+    dataForWebGL = JSON.stringify(dataForWebGL);
+    console.log("SendMessage :", dataForWebGL);
+    gameInstance.SendMessage("UIManager", "ReceiveGameData", dataForWebGL);
+    window.history.replaceState(null, null, "/webgl/");
+  }
+
+  function requestExitGame(){
+    window.location.href = window.location.origin + '/webgl/logout.html';
+  }
+
+</script>

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1063695950068",
+    "project_id": "pokerbet-d9b83",
+    "storage_bucket": "pokerbet-d9b83.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1063695950068:android:4a711f6b407dd190bdfea1",
+        "android_client_info": {
+          "package_name": "com.ais.pokerbet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1063695950068-lufa80e37c6dvih1brc57qpoapnprpik.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXTGsH-5voRnxavC-4mJi2kzLxsFuitfQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1063695950068-lufa80e37c6dvih1brc57qpoapnprpik.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1063695950068-9oosg1qmbsqephjsa0h99u3tuir992nf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ais.pokerbet"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
