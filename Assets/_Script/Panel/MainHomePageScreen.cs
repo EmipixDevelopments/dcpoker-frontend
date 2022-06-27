@@ -228,23 +228,23 @@ public class MainHomePageScreen : MonoBehaviour
     // PanelMenu
     public void OnClickTournamentsButton()
     {
-        Debug.Log("OnClickTournamentsButton");
+        OnClickloginButton();
     }
     public void OnClickSitNGoButton()
     {
-        Debug.Log("OnClickSitNGoButton");
+        OnClickloginButton();
     }
     public void OnClickTexasHoldemButton()
     {
-        Debug.Log("OnClickTexasHoldemButton");
+        OnClickloginButton();
     }
     public void OnClickOmahaButton()
     {
-        Debug.Log("OnClickOmahaButton");
+        OnClickloginButton();
     }
     public void OnClickPLO5Button()
     {
-        Debug.Log("OnClickPLO5Button");
+        OnClickloginButton();
     }
     public void OnClickCreateAccountButton()
     {
@@ -277,10 +277,25 @@ public class MainHomePageScreen : MonoBehaviour
     {
         Debug.Log("OnClickTournamentToggleFreeroll");
     }
+    public void OnClickTermsOfServiceButton()
+    {
+        Debug.Log("OnClickTermsOfServiceButton");
+    }
+    public void OnClickPrivacyPolicyButton()
+    {
+        Debug.Log("OnClickPrivacyPolicyButton");
+    }
+    public void OnClickResponsibleGaming()
+    {
+        Debug.Log("OnClickResponsibleGaming");
+    }
     #endregion
 
 
-
+    void OnDisable()
+    {
+        SelectedGames = 0;
+    }
 
 
 
@@ -337,10 +352,7 @@ public class MainHomePageScreen : MonoBehaviour
     #region UNITY_CALLBACKS
     // Use this for initialization
 
-    void OnDisable()
-    {
-        SelectedGames = 0;
-    }
+
     // Update is called once per frame
     /*void Update()
     {
