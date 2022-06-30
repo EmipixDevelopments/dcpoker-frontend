@@ -1,101 +1,55 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+﻿using BestHTTP;
 using System;
-using System.Text.RegularExpressions;
-using System.Linq;
-using BestHTTP;
+using System.Collections;
+using TMPro;
+using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class LoginPanel : MonoBehaviour
 {
     [SerializeField] private FlagsOfCountries _flags;
     [SerializeField] private TMP_Dropdown _phoneCodeDropdown;
+    [SerializeField] private TMP_InputField _phoneNumber;
+    [SerializeField] private TMP_InputField _password;
+    [SerializeField] private Toggle _showPasswordToggle;
+    [SerializeField] private Toggle _rememberMeToggle;
+    [SerializeField] private TMP_Text _messageText;
+
+
+    [Header("Note. Remove old UI logic after finish")]
+    [SerializeField] bool _useNewUI;
 
     private PhoneCodeAndFlagListData _phoneAndCodeList = new PhoneCodeAndFlagListData();
 
     void OnEnable()
     {
-        ResetData(); // old logic
+        if (_useNewUI)
+        {
+            _phoneAndCodeList.InitializeUsingSettings();
+            // or download JSON online
+            //string url = "https://drive.google.com/uc?export=download&id=1Qs9VTpx-n8IT2FpXI_jhIJwomLbsuo_P";
+            //StartCoroutine(GetData(url));
 
-        #region Filling dropdown phone element
-        // in code
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+93", FlagName = "afghanistan" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+358", FlagName = "finland" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+355", FlagName = "albania" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+21", FlagName = "algeria" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+376", FlagName = "andorra" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+244", FlagName = "angola" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+1-268", FlagName = "antigua-barbuda" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+54", FlagName = "argentina" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+374", FlagName = "armenia" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+31", FlagName = "aruba" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+61", FlagName = "australia" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+994", FlagName = "azerbaijan" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+1-242", FlagName = "bahamas" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+973", FlagName = "bahrain" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+880", FlagName = "bangladesh" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+1-246", FlagName = "barbados" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+375", FlagName = "belarus" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+501", FlagName = "belize" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+229", FlagName = "benin" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+975", FlagName = "bhutan" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+591", FlagName = "bolivia" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+387", FlagName = "bosnia-herzegovina" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+267", FlagName = "botswana" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+55", FlagName = "brazil" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+226", FlagName = "burkina-faso" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+95", FlagName = "myanmar-burma" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+257", FlagName = "burundi" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+237", FlagName = "cameroon" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+235", FlagName = "chad" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+61", FlagName = "cocos-keeling-islands" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+269", FlagName = "comoros" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+253", FlagName = "djibouti" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+20", FlagName = "egypt" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+220", FlagName = "gambia" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+224", FlagName = "guinea" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+62", FlagName = "indonesia" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+98", FlagName = "iran" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+964", FlagName = "iraq" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+962", FlagName = "jordan" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+7", FlagName = "kazakhstan" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+383", FlagName = "kosovo" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+965", FlagName = "kuwait" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+961", FlagName = "lebanon" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+218", FlagName = "libya" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+60", FlagName = "malaysia" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+960", FlagName = "maldives" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+223", FlagName = "mali" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+222", FlagName = "mauritania" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+262", FlagName = "mayotte" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+212", FlagName = "morocco" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+227", FlagName = "niger" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+92", FlagName = "pakistan" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+966", FlagName = "saudi-arabia" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+221", FlagName = "senegal" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+252", FlagName = "somalia" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+249", FlagName = "sudan" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+963", FlagName = "syria" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+992", FlagName = "tajikistan" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+216", FlagName = "tunisia" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+993", FlagName = "turkmenistan" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+971", FlagName = "united-arab-emirates" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+998", FlagName = "uzbekistan" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+212", FlagName = "western-sahara" });
-        _phoneAndCodeList.List.Add(new CodeAndFlag() { PhoneCode = "+967", FlagName = "yemen" });
-
-        // or download JSON online
-        //string url = "https://drive.google.com/uc?export=download&id=1Qs9VTpx-n8IT2FpXI_jhIJwomLbsuo_P";
-        //StartCoroutine(GetData(url));
-        #endregion
-        AddOptionToDropdown(_phoneAndCodeList);
+            AddOptionToDropdown(_phoneAndCodeList);
+            LoadFieldsState();
+        }
+        else
+        {
+            ResetData(); // old logic
+        }
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && !UIManager.Instance.loader.gameObject.activeSelf)
+        {
+            StopCoroutine("PreviousScreen");
+            StartCoroutine(PreviousScreen(0f));
+        }
+    }
 
-    IEnumerator GetData(string url) 
+    IEnumerator GetData(string url)
     {
         UnityWebRequest request = UnityWebRequest.Get(url);
         yield return request.Send();
@@ -124,6 +78,249 @@ public class LoginPanel : MonoBehaviour
         }
         _phoneCodeDropdown.options.Add(new TMP_Dropdown.OptionData());
     }
+    private void LoadFieldsState()
+    {
+        if (_messageText != null)
+        {
+            _messageText.text = "";
+        }
+
+        if (UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe)
+        {
+            string phoneCode = UIManager.Instance.assetOfGame.SavedLoginData.phoneCode;
+            int index = 0;
+            for (int i = 0; i < _phoneCodeDropdown.options.Count; i++)
+            {
+                if (_phoneCodeDropdown.options[i].text == phoneCode)
+                {
+                    index = i;
+                }
+            }
+            _phoneCodeDropdown.value = index;
+
+            _rememberMeToggle.isOn = UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe;
+            _phoneNumber.text = UIManager.Instance.assetOfGame.SavedLoginData.Username;
+            _password.text = UIManager.Instance.assetOfGame.SavedLoginData.password;
+        }
+        else
+        {
+            _rememberMeToggle.isOn = UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe;
+            _phoneNumber.text = "";
+            _password.text = "";
+            _phoneCodeDropdown.value = 0;
+        }
+        UIManager.Instance.HideLoader();
+    }
+
+    public void OnClickLoginButton(bool forceLoin = false)
+    {
+        if (CheckDataBeforeLogin())
+        {
+            UIManager.Instance.SoundManager.OnButtonClick();
+            if (UIManager.Instance.SocketGameManager.HasInternetConnection())
+            {
+                string username = _phoneCodeDropdown.options[_phoneCodeDropdown.value].text + _phoneNumber.text;
+                username = username.ToLower();
+                string password = _password.text;
+                string AuthTokenverify = tokenHack(username, password);
+                UIManager.Instance.DisplayLoader("");
+                HTTPRequest httpRequest = new HTTPRequest(new Uri("http://ip-api.com/json"), (request, response) =>
+                {
+                    JSON_Object data = new JSON_Object(response.DataAsText);
+
+                    string ipAddress = "NA";
+                    if (data.has("ip"))
+                    {
+                        ipAddress = data.getString("ip");
+                    }
+                    else if (data.has("query"))
+                    {
+                        ipAddress = data.getString("query");
+                    }
+                    UIManager.Instance.SocketGameManager.Login(username, password, AuthTokenverify, ipAddress, forceLoin, (socket, packet, args) =>
+                    {
+                        Debug.Log("login = " + packet.ToString());
+                        UIManager.Instance.HideLoader();
+                        JSONArray arr = new JSONArray(packet.ToString());
+                        string Source;
+                        Source = arr.getString(arr.length() - 1);
+                        var resp = Source;
+
+                        PokerEventResponse<PlayerLoginResponse> loginResponse = JsonUtility.FromJson<PokerEventResponse<PlayerLoginResponse>>(resp);
+                        if (loginResponse.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+                        {
+                            UIManager.Instance.webglToken = loginResponse.result.deviceId;
+                            UIManager.Instance.IsMultipleTableAllowed = loginResponse.result.isMultipleTableAllowed;
+                            UIManager.Instance.isChipsTransferAllowed = loginResponse.result.isChipsTransferAllowed;
+                            UIManager.Instance.assetOfGame.SavedLoginData.chips = loginResponse.result.chips;
+                            UIManager.Instance.assetOfGame.SavedLoginData.PlayerId = loginResponse.result.id;
+                            UIManager.Instance.assetOfGame.SavedLoginData.PlayerId = loginResponse.result.playerId;
+                            UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar = loginResponse.result.profilePic;
+                            UIManager.Instance.assetOfGame.SavedLoginData.isCash = loginResponse.result.isCash;
+                            UIManager.Instance.assetOfGame.SavedLoginData.isSuperPlayer = loginResponse.result.isSuperPlayer;
+                            UIManager.Instance.MySuperPlayer = loginResponse.result.isSuperPlayer;
+
+                            UIManager.Instance.assetOfGame.SavedLoginData.isInAppPurchaseAllowed = loginResponse.result.isInAppPurchaseAllowed;
+                            UIManager.Instance.ProfilePic = UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar;
+                            UIManager.Instance.assetOfGame.SavedLoginData.Username = loginResponse.result.username;//LoginUsername.text;
+                            UIManager.Instance.assetOfGame.SavedLoginData.password = _password.text;
+                            UIManager.Instance.assetOfGame.SavedLoginData.userUuid = loginResponse.result.userUuid;
+                            UIManager.Instance.assetOfGame.SavedLoginData.accountNumber = loginResponse.result.accountNumber;
+                            UIManager.Instance.assetOfGame.SavedLoginData.mobile = loginResponse.result.mobile;
+                            if (_rememberMeToggle.isOn)
+                            {
+                                UIManager.Instance.SetPlayerLoginType(1);
+                            }
+                            UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe = _rememberMeToggle.isOn;
+                            //LocalSaveData.current.Username = LoginUsername.text;//UIManager.Instance.assetOfGame.SavedLoginData.Username;
+                            LocalSaveData.current.password = UIManager.Instance.assetOfGame.SavedLoginData.password;
+                            LocalSaveData.current.isRememberMe = UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe;
+                            SaveLoad.SaveGame();
+
+                            //						UIManager.Instance.assetOfGame.SavedLoginData.isCash= false;
+                            if (UIManager.Instance.assetOfGame.SavedLoginData.isCash)
+                            {
+                                UIManager.Instance.currencyType = UIManager.CurrencyType.cash;
+                            }
+                            else
+                            {
+                                UIManager.Instance.currencyType = UIManager.CurrencyType.coin;
+                            }
+                            UIManager.Instance.SetCurrencyImages();
+                            UIManager.Instance.ipLocationService.SendIPAddress("login");
+                            StartCoroutine(NextScreen(0f));
+                        }
+                        else
+                        {
+                            if (loginResponse.message == "updateApp")
+                            {
+                                UIManager.Instance.DisplayConfirmationPanel("Please update the game By click on Update", "Update", "Exit Game",
+                                    () =>
+                                    {
+                                        Application.OpenURL(loginResponse.result.storeUrl);
+                                    },
+                                    () =>
+                                    {
+                                        Application.Quit();
+                                    });
+                            }
+                            else if (loginResponse.message == "alreadyLogin")
+                            {
+                                UIManager.Instance.DisplayConfirmationPanel("Same player is already logged in from another device, are you sure you want to login?", "Login", "Cancel",
+                                        () =>
+                                        {
+                                            UIManager.Instance.messagePanel.Close();
+                                            LoginButtonTap(true);
+                                        }, () =>
+                                        {
+                                            UIManager.Instance.messagePanel.Close();
+                                        });
+                            }
+                            else if (loginResponse.status == "forceLogout")
+                            {
+
+                            }
+                            else
+                            {
+                                UIManager.Instance.DisplayMessagePanel(loginResponse.message, null);
+                            }
+                        }
+                    });
+                });
+                httpRequest.Send();
+            }
+        }
+    }
+
+    public void OnClickShowPasswordToggle()
+    {
+        if (_showPasswordToggle.isOn)
+        {
+            _password.contentType = TMP_InputField.ContentType.Standard;
+        }
+        else
+        {
+            _password.contentType = TMP_InputField.ContentType.Password;
+        }
+        _password.ForceLabelUpdate();
+    }
+
+    public void closeButtonTap()
+    {
+        UIManager.Instance.SoundManager.OnButtonClick();
+        this.Close();
+    }
+
+    public void OnRegisterButtonTap()
+    {
+        UIManager.Instance.SoundManager.OnButtonClick();
+        UIManager.Instance.MainHomeScreen.registerScreen.Open();
+        UIManager.Instance.MainHomeScreen.LoginScreen.Close();
+    }
+
+    public void OnForgotpasswordButtonTap()
+    {
+        UIManager.Instance.SoundManager.OnButtonClick();
+        UIManager.Instance.MainHomeScreen.ForgotPasswordScreen.Open();
+        UIManager.Instance.MainHomeScreen.LoginScreen.Close();
+    }
+
+    private bool CheckDataBeforeLogin()
+    {
+        string phoneCode = _phoneCodeDropdown.options[_phoneCodeDropdown.value].text;
+        string phoneNumber = _phoneNumber.text;
+        string password = _password.text;
+
+        if (string.IsNullOrEmpty(phoneCode))
+        {
+            _messageText.text = Constants.Messages.Login.PhoneCodeEmpty;
+            return false;
+        }
+        if (string.IsNullOrEmpty(phoneNumber))
+        {
+            _messageText.text = Constants.Messages.Login.PhoneNumberEmpty;
+            return false;
+        }
+        else if (string.IsNullOrEmpty(password))
+        {
+            _messageText.text = Constants.Messages.Login.PasswordEmpty;
+            return false;
+        }
+        else if (password.Length < Constants.Messages.Login.PasswordLength)
+        {
+            _messageText.text = Constants.Messages.Login.MinPasswordLength;
+            return false;
+        }
+
+        return true;
+    }
+    public string tokenHack(string username, string password)
+    {
+        string syndicate = null;
+        rootHackBase root = new rootHackBase();
+        root.username = username;
+        root.password = password;
+        root.timestamp = DateTimeToUnix(DateTime.UtcNow);
+        string json = JsonUtility.ToJson(root);
+        //Debug.Log(json);
+        string encryptedJson = UIManager.Instance.MainHomeScreen.AESEncryption(json);
+        syndicate = encryptedJson;
+        //syndicate = System.Uri.EscapeDataString(syndicate);
+        //print(syndicate);
+        return syndicate;
+    }
+    public long DateTimeToUnix(DateTime MyDateTime)
+    {
+        TimeSpan timeSpan = MyDateTime - new DateTime(1970, 1, 1, 0, 0, 0);
+        return (long)timeSpan.TotalSeconds;
+    }
+
+
+    
+
+
+
+
 
 
 
@@ -138,7 +335,7 @@ public class LoginPanel : MonoBehaviour
         // old logic
         [SerializeField]
         [Space(50)]
-        public bool NewLogic;
+        public string OldLogic;
     
         #region PUBLIC_VARIABLES
     
@@ -146,11 +343,8 @@ public class LoginPanel : MonoBehaviour
         public TMP_InputField LoginUsername;
         public TMP_InputField LoginPassword;
         public Text txtMessage;
-        public Text txtdemo;
         [Header("Toggle")]
         public Toggle RememberMe;
-    
-        public Image imgEng, imgMongolian;
     
         #endregion
     
@@ -164,65 +358,13 @@ public class LoginPanel : MonoBehaviour
             return new string(charArray);
         }
     
-        void SSS()
-        {
-            this.Open();
-        }
     
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Escape) && !UIManager.Instance.loader.gameObject.activeSelf)
-            {
-                StopCoroutine("PreviousScreen");
-                StartCoroutine(PreviousScreen(0f));
-            }
-        }
+
     
         #endregion
     
     
         #region PUBLIC_METHODS
-    
-        public void GILButtonTap()
-        {
-            UIManager.Instance.SoundManager.OnButtonClick();
-            Utility.Instance.OpenLink("https://gamingintegritylabs.com");
-        }
-        public void closeButtonTap()
-        {
-            UIManager.Instance.SoundManager.OnButtonClick();
-            this.Close();
-        }
-        public void LowerCapsFunction()
-        {
-            LoginUsername.text = LoginUsername.text.ToLower();
-        }
-    
-        public void OnRegisterButtonTap()
-        {
-            UIManager.Instance.SoundManager.OnButtonClick();
-            UIManager.Instance.MainHomeScreen.registerScreen.Open();
-            UIManager.Instance.MainHomeScreen.LoginScreen.Close();
-        }
-    
-        public void OnEnglish()
-        {
-            imgEng.Open();
-            imgMongolian.Close();
-        }
-    
-        public void OnMongolian()
-        {
-            imgEng.Close();
-            imgMongolian.Open();
-        }
-    
-        public void OnForgotpasswordButtonTap()
-        {
-            UIManager.Instance.SoundManager.OnButtonClick();
-            UIManager.Instance.MainHomeScreen.ForgotPasswordScreen.Open();
-            UIManager.Instance.MainHomeScreen.LoginScreen.Close();
-        }
     
         /// <summary>
         /// 
@@ -278,7 +420,7 @@ public class LoginPanel : MonoBehaviour
                              UIManager.Instance.assetOfGame.SavedLoginData.isInAppPurchaseAllowed = loginResponse.result.isInAppPurchaseAllowed;
                              UIManager.Instance.ProfilePic = UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar;
                              UIManager.Instance.assetOfGame.SavedLoginData.Username = loginResponse.result.username;//LoginUsername.text;
-                             UIManager.Instance.assetOfGame.SavedLoginData.password = LoginPassword.text;
+                                 UIManager.Instance.assetOfGame.SavedLoginData.password = LoginPassword.text;
                              UIManager.Instance.assetOfGame.SavedLoginData.userUuid = loginResponse.result.userUuid;
                              UIManager.Instance.assetOfGame.SavedLoginData.accountNumber = loginResponse.result.accountNumber;
                              UIManager.Instance.assetOfGame.SavedLoginData.mobile = loginResponse.result.mobile;
@@ -288,12 +430,12 @@ public class LoginPanel : MonoBehaviour
                              }
                              UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe = RememberMe.isOn;
                              LocalSaveData.current.Username = LoginUsername.text;//UIManager.Instance.assetOfGame.SavedLoginData.Username;
-                             LocalSaveData.current.password = UIManager.Instance.assetOfGame.SavedLoginData.password;
+                                 LocalSaveData.current.password = UIManager.Instance.assetOfGame.SavedLoginData.password;
                              LocalSaveData.current.isRememberMe = UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe;
                              SaveLoad.SaveGame();
     
-                             //						UIManager.Instance.assetOfGame.SavedLoginData.isCash= false;
-                             if (UIManager.Instance.assetOfGame.SavedLoginData.isCash)
+                                 //						UIManager.Instance.assetOfGame.SavedLoginData.isCash= false;
+                                 if (UIManager.Instance.assetOfGame.SavedLoginData.isCash)
                              {
                                  UIManager.Instance.currencyType = UIManager.CurrencyType.cash;
                              }
@@ -405,33 +547,14 @@ public class LoginPanel : MonoBehaviour
     #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
     #else
-            Application.Quit();
+                Application.Quit();
     #endif
         }
     
         #endregion
     
         #region GETTER_SETTER
-        public string tokenHack(string username, string password)
-        {
-            string syndicate = null;
-            rootHackBase root = new rootHackBase();
-            root.username = username;
-            root.password = password;
-            root.timestamp = DateTimeToUnix(DateTime.UtcNow);
-            string json = JsonUtility.ToJson(root);
-            //Debug.Log(json);
-            string encryptedJson = UIManager.Instance.MainHomeScreen.AESEncryption(json);
-            syndicate = encryptedJson;
-            //syndicate = System.Uri.EscapeDataString(syndicate);
-            //print(syndicate);
-            return syndicate;
-        }
-        public long DateTimeToUnix(DateTime MyDateTime)
-        {
-            TimeSpan timeSpan = MyDateTime - new DateTime(1970, 1, 1, 0, 0, 0);
-            return (long)timeSpan.TotalSeconds;
-        }
+
         private bool IsLoginDetailValid()
         {
             string username = LoginUsername.text;
@@ -459,5 +582,5 @@ public class LoginPanel : MonoBehaviour
     
     
         #endregion
-        
+
 }

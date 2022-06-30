@@ -10,6 +10,8 @@ public class LocalSaveData
 
 	public string Username;
 	public string password;
+	public string phoneCode;
+	public string phoneNumber;
 	public bool isRememberMe;
 	//public GameObjects SettedGameObjects;
 }

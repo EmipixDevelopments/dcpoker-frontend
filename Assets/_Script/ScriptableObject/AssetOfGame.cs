@@ -21,6 +21,8 @@ public class LoginSaved
 {
     public string Username;
     public string password;
+    public string phoneCode;
+    public string phoneNumber;
     public bool isRememberMe;
     public bool isCash;
     public bool isInAppPurchaseAllowed;

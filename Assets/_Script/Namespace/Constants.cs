@@ -89,6 +89,8 @@ namespace Constants
         {
             public const int PasswordLength = 6;
 
+            public const string PhoneCodeEmpty = "Phone code is empty.";
+            public const string PhoneNumberEmpty = "Phone number is empty.";
             public const string UsernameEmpty = "Username is empty.";
             public const string PasswordEmpty = "Password is empty.";
 

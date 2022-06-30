@@ -34,10 +34,6 @@ public class MainHomePageScreen : MonoBehaviour
     }
     void Start() 
     {
-        if (_soundToggle)
-        {
-            _soundToggle.OnChanged += SoundToggleCallBack;
-        }
 
         ///--- Test zone ---///
         FreeTournamentTableElementData[] elements = new FreeTournamentTableElementData[5];
@@ -222,9 +218,9 @@ public class MainHomePageScreen : MonoBehaviour
         UIManager.Instance.SoundManager.OnButtonClick();
         Utility.Instance.OpenLink("https://support.macau-gold.com");
     }
-    private void SoundToggleCallBack(bool toggleState)
+    public void SoundToggleCallBack()
     {
-        Debug.Log($"toggleState {toggleState}");
+        Debug.Log($"toggleState");
     }
     // PanelMenu
     public void OnClickTournamentsButton()
