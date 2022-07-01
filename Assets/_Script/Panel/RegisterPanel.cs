@@ -7,79 +7,112 @@ using System.Text.RegularExpressions;
 
 public class RegisterPanel : MonoBehaviour
 {
+    [SerializeField] private FlagsOfCountries _flags;
+    [SerializeField] private TMP_Dropdown _phoneCode;
+    [SerializeField] private TMP_InputField _phoneNumber;
+    [SerializeField] private TMP_InputField _userName;
+    [SerializeField] private TMP_InputField _password;
+    [SerializeField] private TMP_InputField _repeatPassword;
+    [SerializeField] private Toggle _showPassword;
+    [SerializeField] private Toggle _showRepeatPassword;
+    [SerializeField] private TMP_Text _massageText;
+    [Space]
+    [SerializeField] private GameObject _otherUserNamePanel; // need created class and logic
+    [SerializeField] private TMP_Text _userNameTaken;
 
-    #region PUBLIC_VARIABLES
-    public TMP_InputField inputFieldName;
-    public TMP_InputField inputFieldUsername;
-    public TMP_InputField inputFieldPassword;
-    public TMP_InputField inputFieldPhoneNumber;
-    public TMP_InputField inputFieldConfirmPassword;
-    public TMP_InputField inputfieldRefferalCode;
-    //	public InputField inputFieldName;
-    //	public InputField inputFieldUsername;
-    //	public InputField inputFieldPassword;
-    //	public InputField inputFieldEmail;
-    //	public InputField inputFieldConfirmPassword;
-    public Text TxtError;
-    #endregion
+    private PhoneCodeAndFlagListData _phoneAndCodeList = new PhoneCodeAndFlagListData();
 
-    #region PRIVATE_VARIABLES
-
-    #endregion
-
-    #region UNITY_CALLBACKS
-    // Use this for initialization
-    // Update is called once per frame
     void OnEnable()
     {
-        /*
-#if UNITY_WEBGL || UNITY_EDITOR || UNITY_STANDALONE
-        gameObject.transform.localScale = new Vector2(.8f, .8f);
-#elif UNITY_IOS
-		if(SystemInfo.deviceModel.Contains("iPad")) {
-			gameObject.transform.localScale = new Vector2(.8f,.8f);
-		}
-#else
-        gameObject.transform.localScale = new Vector2(1f, 1f);
-#endif
-        */
         ResetAllInputFields();
+
+        _phoneAndCodeList.InitializeUsingSettings();
+        // or download JSON online
+        //string url = "https://drive.google.com/uc?export=download&id=1Qs9VTpx-n8IT2FpXI_jhIJwomLbsuo_P";
+        //StartCoroutine(GetData(url));
+        AddOptionToDropdown(_phoneAndCodeList);
     }
 
-    #endregion
+    private void AddOptionToDropdown(PhoneCodeAndFlagListData phoneAndCodeList)
+    {
+        // added phone code options
+        _phoneCode.options.Clear();
+        foreach (var item in phoneAndCodeList.List)
+        {
+            TMP_Dropdown.OptionData optionData = new TMP_Dropdown.OptionData();
+            optionData.text = item.PhoneCode;
+            optionData.image = _flags.GetSpriteByName(item.FlagName);
+            _phoneCode.options.Add(optionData);
+        }
+        _phoneCode.options.Add(new TMP_Dropdown.OptionData());
+    }
 
-    #region DELEGATE_CALLBACKS
+    private void ResetAllInputFields()
+    {
+        _phoneCode.value = 0;
+        _phoneNumber.text = "";
+        _userName.text = "";
+        _password.text = "";
+        _repeatPassword.text = "";
+    }
 
-    #endregion
+    public void OnClickShowPasswordToggle()
+    {
+        if (_showPassword.isOn)
+        {
+            _password.contentType = TMP_InputField.ContentType.Standard;
+        }
+        else
+        {
+            _password.contentType = TMP_InputField.ContentType.Password;
+        }
+        _password.ForceLabelUpdate();
+    }
 
-    #region PUBLIC_METHODS
-    public void closeButtonTap()
+    public void OnClickShowRepeatPasswordToggle()
+    {
+        if (_showRepeatPassword.isOn)
+        {
+            _repeatPassword.contentType = TMP_InputField.ContentType.Standard;
+        }
+        else
+        {
+            _repeatPassword.contentType = TMP_InputField.ContentType.Password;
+        }
+        _repeatPassword.ForceLabelUpdate();
+    }
+
+    public void OnClickLoginButton() 
+    {
+        UIManager.Instance.SoundManager.OnButtonClick();
+        UIManager.Instance.MainHomeScreen.LoginScreen.Open();
+        UIManager.Instance.MainHomeScreen.registerScreen.Close();
+    }
+
+    public void OnClickCloseButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         this.Close();
     }
-    public void LowerCapsFunction()
-    {
-        inputFieldUsername.text = inputFieldUsername.text.ToLower();
-    }
+
 
     public void OnRegisterButtonTap()
     {
-        string Name = inputFieldName.text;
-        string username = inputFieldUsername.text.ToLower(); ;
-        string password = inputFieldPassword.text;
-        string phNo = inputFieldPhoneNumber.text;
-        string confirmPassword = inputFieldConfirmPassword.text;
-        string rCode = inputfieldRefferalCode.text;
+        string username = _userName.text.ToLower(); ;
+        string password = _password.text;
+        string phNo = _phoneNumber.text;
+        string repeatPassword = _repeatPassword.text;
+        string rCode = _phoneCode.options[_phoneCode.value].text;
         if (UIManager.Instance.SocketGameManager.HasInternetConnection())
         {
             UIManager.Instance.SoundManager.OnButtonClick();
             if (IsLoginDetailValid())
             {
-                removeAllMessage();
                 UIManager.Instance.DisplayLoader("");
 
-                UIManager.Instance.SocketGameManager.RegisterPlayer(username, password, phNo, rCode, (socket, packet, args) =>
+                // until changes are made to the backend
+                UIManager.Instance.SocketGameManager.RegisterPlayer(rCode+ phNo, password, phNo, rCode, (socket, packet, args) =>
+                //UIManager.Instance.SocketGameManager.RegisterPlayer(username, password, phNo, rCode, (socket, packet, args) =>
                 {
                     Debug.Log("RegisterPlayer  => " + packet.ToString());
 
@@ -93,10 +126,10 @@ public class RegisterPanel : MonoBehaviour
                     if (registrationResp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
                     {
                         UIManager.Instance.DisplayMessagePanel(registrationResp.message, () =>
-                          {
-                              this.Close();
-                              UIManager.Instance.HidePopup();
-                          });
+                        {
+                            this.Close();
+                            UIManager.Instance.HidePopup();
+                        });
 
                     }
                     else
@@ -107,170 +140,58 @@ public class RegisterPanel : MonoBehaviour
             }
         }
     }
-
     private bool IsLoginDetailValid()
     {
         StopCoroutine(textempti());
-        removeAllMessage();
 
-        string Name = inputFieldName.text;
-        string username = inputFieldUsername.text;
-        string Mobile = inputFieldPhoneNumber.text;
-        string password = inputFieldPassword.text;
-        string confirmPassword = inputFieldConfirmPassword.text;
-        string accNo = inputfieldRefferalCode.text;
+        string username = _userName.text;
+        string Mobile = _phoneNumber.text;
+        string password = _password.text;
+        string repeatPassword = _repeatPassword.text;
 
-        /*if (string.IsNullOrEmpty(Name))
-		{
-			TxtError.text = Constants.Messages.Register.FirstNameEmpty;
-			StartCoroutine(textempti());
-			return false;
-		}*/
         if (string.IsNullOrEmpty(username))
         {
-            TxtError.text = Constants.Messages.Register.UsernameEmpty;
+            _massageText.text = Constants.Messages.Register.UsernameEmpty;
             StartCoroutine(textempti());
             return false;
         }
 
         else if (!IsUsernameValid())
         {
-            TxtError.text = Constants.Messages.Register.UsernameInvalid;
+            _massageText.text = Constants.Messages.Register.UsernameInvalid;
             StartCoroutine(textempti());
             return false;
         }
-        //else if (!IsEmailValid())
-        //{
-        //	TxtError.text = Constants.Messages.Register.EmailInvalid;
-        //	StartCoroutine(textempti());
-        //	return false;
-        //}
-
-        /* else if (string.IsNullOrEmpty(Mobile))
-         {
-             TxtError.text = Constants.Messages.Register.MobileEmpty;
-             StartCoroutine(textempti());
-             return false;
-         }
-         else if (!IsMobileValid())
-         {
-             TxtError.text = Constants.Messages.Register.MobileInvalid;
-             StartCoroutine(textempti());
-             return false;
-         }*/
-
-        /*if (string.IsNullOrEmpty(accNo))
-        {
-            TxtError.text = Constants.Messages.Register.AccountNumberEmpty;
-            StartCoroutine(textempti());
-            return false;
-        }*/
         else if (string.IsNullOrEmpty(password))
         {
-            TxtError.text = Constants.Messages.Register.PasswordEmpty;
+            _massageText.text = Constants.Messages.Register.PasswordEmpty;
             StartCoroutine(textempti());
             return false;
         }
         else if (password.Length < Constants.Messages.Login.PasswordLength)
         {
-            TxtError.text = Constants.Messages.Register.MinPasswordLength;
+            _massageText.text = Constants.Messages.Register.MinPasswordLength;
             StartCoroutine(textempti());
             return false;
         }
-        else if (string.IsNullOrEmpty(confirmPassword))
+        else if (string.IsNullOrEmpty(repeatPassword))
         {
-            TxtError.text = Constants.Messages.Register.ConfirmPasswordEmpty;
+            _massageText.text = Constants.Messages.Register.ConfirmPasswordEmpty;
             StartCoroutine(textempti());
             return false;
         }
-        else if (!password.Equals(confirmPassword))
+        else if (!password.Equals(repeatPassword))
         {
-            TxtError.text = Constants.Messages.Register.PasswordNotMatched;
+            _massageText.text = Constants.Messages.Register.PasswordNotMatched;
             StartCoroutine(textempti());
             return false;
-        }
-        return true;
-    }
-    #endregion
-
-    #region PRIVATE_METHODS
-    private void ResetAllInputFields()
-    {
-        inputFieldName.text = "";
-        inputFieldUsername.text = "";
-        inputFieldPhoneNumber.text = "";
-        inputFieldPassword.text = "";
-        inputFieldConfirmPassword.text = "";
-        inputfieldRefferalCode.text = "";
-        removeAllMessage();
-        JSON_Object jsonObj = new JSON_Object(UIManager.Instance.StoreDetails);
-        //print("registrationResp => " + jsonObj.getString("country_calling_code"));
-        string code = jsonObj.getString("country_calling_code").ToString();
-
-
-        inputFieldPhoneNumber.placeholder.GetComponent<TextMeshProUGUI>().text = code + "********  (Optional)";
-    }
-    void removeAllMessage()
-    {
-        for (int i = 0; i < TxtError.text.Length; i++)
-        {
-            TxtError.text = "";
-        }
-    }
-
-    //	void ApiCall()
-    //	{
-    //		apimain ("ddf", 0);
-    //	}
-    //
-    //	void apimain(string s,int id)
-    //	{
-    //		id.Equals(0)
-    //		
-    //	}
-    #endregion
-
-    #region COROUTINES
-    IEnumerator textempti()
-    {
-        yield return new WaitForSeconds(4.3f);
-        TxtError.text = "";
-    }
-    #endregion
-
-    #region GETTER_SETTER
-    private bool IsEmailValid()
-    {
-        string email = inputFieldPhoneNumber.text;
-        Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-        Match match = regex.Match(email);
-
-        if (!match.Success)
-        {
-            return false;
-        }
-
-        return true;
-    }
-    private bool IsMobileValid()
-    {
-        string number = inputFieldPhoneNumber.text;
-        Regex regex = new Regex(@"^(\+[0-9]{9})$");
-        Match match = regex.Match(number);
-
-        if (!match.Success)
-        {
-            if (number.Length < 10)
-            {
-                return false;
-            }
         }
         return true;
     }
 
     private bool IsUsernameValid()
     {
-        string number = inputFieldUsername.text;
+        string number = _userName.text;
 
         if (number.Length < 4)
         {
@@ -278,33 +199,9 @@ public class RegisterPanel : MonoBehaviour
         }
         return true;
     }
-    #endregion
+    IEnumerator textempti()
+    {
+        yield return new WaitForSeconds(4.3f);
+        _massageText.text = "";
+    }
 }
-/*#region PUBLIC_VARIABLES
-
-	#endregion
-
-	#region PRIVATE_VARIABLES
-
-	#endregion
-
-	#region UNITY_CALLBACKS
-	// Use this for initialization
-	// Update is called once per frame
-	#endregion
-
-	#region DELEGATE_CALLBACKS
-    #endregion
-
-	#region PUBLIC_METHODS
-	#endregion
-
-	#region PRIVATE_METHODS
-	#endregion
-
-	#region COROUTINES
-	#endregion
-
-	#region GETTER_SETTER
-	#endregion
-*/

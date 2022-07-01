@@ -10,12 +10,14 @@ using UnityEngine.UI;
 
 public class MainHomePageScreen : MonoBehaviour
 {
-    [Header("GameObjects")]
     [SerializeField] private ToggleImage _soundToggle;
     [SerializeField] private FreeTournamentTable _tournamentTable;
     [SerializeField] private HomePageTournamentTable _texasHoldemTable;
     [SerializeField] private HomePageTournamentTable _omahaOrPLO5Table;
-
+    [Space]
+    public LoginPanel LoginScreen;
+    public RegisterPanel registerScreen;
+    public forgetPasswordPanel ForgotPasswordScreen;
 
     void OnEnable()
     {
@@ -306,7 +308,6 @@ public class MainHomePageScreen : MonoBehaviour
     }
     #endregion
 
-
     void OnDisable()
     {
         SelectedGames = 0;
@@ -342,9 +343,7 @@ public class MainHomePageScreen : MonoBehaviour
 
 
     [Header("ScriptableObjects")]
-    public LoginPanel LoginScreen;
-    public RegisterPanel registerScreen;
-    public forgetPasswordPanel ForgotPasswordScreen;
+
     //public ResendEmailPasswordPanel ResendEmailPasswordScreen;
 
     //[Header ("DropDowns")]
