@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 
@@ -87,7 +88,7 @@ public class MainHomePageScreen : MonoBehaviour
         elements[4].BuyIn = 10;
         elements[4].Type = "KUTUZOV";
 
-        _tournamentTable?.Init(elements, () => { Debug.Log("Hi ZSU"); });
+        _tournamentTable?.Init(elements, () => { Debug.Log("Hi"); });
 
         //_texasHoldemTable
         HomePageTournamentElementData[] elements1 = new HomePageTournamentElementData[5];
@@ -131,7 +132,7 @@ public class MainHomePageScreen : MonoBehaviour
         elements1[4].BlindsMaximum = 4;
         elements1[4].BuyIn = 1000;
 
-        _texasHoldemTable?.Init(elements1, () => { Debug.Log("Hi ZSU"); });
+        _texasHoldemTable?.Init(elements1, () => { Debug.Log("Hi"); });
 
         //_omahaOrPLO5Table
         HomePageTournamentElementData[] elements2 = new HomePageTournamentElementData[5];
@@ -175,7 +176,7 @@ public class MainHomePageScreen : MonoBehaviour
         elements2[4].BlindsMaximum = 15;
         elements2[4].BuyIn = 100;
 
-        _omahaOrPLO5Table?.Init(elements2, () => { Debug.Log("Hi ZSU"); });
+        _omahaOrPLO5Table?.Init(elements2, () => { Debug.Log("Hi"); });
         /// Test zone end ///
     }
 
@@ -221,6 +222,23 @@ public class MainHomePageScreen : MonoBehaviour
     public void SoundToggleCallBack()
     {
         Debug.Log($"toggleState");
+    }
+    public void OnClickBanner() 
+    {
+        StartCoroutine(GetBannerUrl("https://httpbin.org/ip"));
+    }
+    IEnumerator GetBannerUrl(string url) 
+    {
+        UnityWebRequest infoRequest = UnityWebRequest.Get(url);
+        yield return infoRequest.SendWebRequest();
+        if (infoRequest.isNetworkError || infoRequest.isHttpError)
+        {
+            Debug.LogError(infoRequest.error);
+            yield break;
+        }
+        
+        Debug.Log(infoRequest.downloadHandler.text);
+        //Utility.Instance.OpenLink(infoRequest.downloadHandler.text);
     }
     // PanelMenu
     public void OnClickTournamentsButton()
