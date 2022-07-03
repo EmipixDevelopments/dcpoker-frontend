@@ -8,6 +8,11 @@ public class PhoneCodeAndFlagListData
 
     public void InitializeUsingSettings()
     {
+        if (List != null && List.Count > 0)
+        {
+            return;
+        }
+
         // in code
         //List.Add(new CodeAndFlag() { PhoneCode = "+1", FlagName = "united-states" });//United States
         //List.Add(new CodeAndFlag() { PhoneCode = "+1-264", FlagName = "anguilla" });//Anguilla
