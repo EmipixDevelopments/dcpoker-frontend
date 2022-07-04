@@ -21,7 +21,7 @@ public class MainHomePageScreen : MonoBehaviour
 
     void OnEnable()
     {
-        SelectedOptionButtonTap(0);
+        //SelectedOptionButtonTap(0);
         Reset();
 #if UNITY_EDITOR || UNITY_ANDROID || UNITY_IOS || UNITY_IPHONE
         if (!PlayerPrefs.HasKey("gameRules"))
@@ -90,7 +90,7 @@ public class MainHomePageScreen : MonoBehaviour
         elements[4].BuyIn = 10;
         elements[4].Type = "KUTUZOV";
 
-        _tournamentTable?.Init(elements, () => { Debug.Log("Hi"); });
+        _tournamentTable?.Init(elements, () => { OnClickloginButton(); });
 
         //_texasHoldemTable
         HomePageTournamentElementData[] elements1 = new HomePageTournamentElementData[5];
@@ -134,7 +134,7 @@ public class MainHomePageScreen : MonoBehaviour
         elements1[4].BlindsMaximum = 4;
         elements1[4].BuyIn = 1000;
 
-        _texasHoldemTable?.Init(elements1, () => { Debug.Log("Hi"); });
+        _texasHoldemTable?.Init(elements1, () => { OnClickloginButton(); });
 
         //_omahaOrPLO5Table
         HomePageTournamentElementData[] elements2 = new HomePageTournamentElementData[5];
@@ -178,7 +178,7 @@ public class MainHomePageScreen : MonoBehaviour
         elements2[4].BlindsMaximum = 15;
         elements2[4].BuyIn = 100;
 
-        _omahaOrPLO5Table?.Init(elements2, () => { Debug.Log("Hi"); });
+        _omahaOrPLO5Table?.Init(elements2, () => { OnClickloginButton(); });
         /// Test zone end ///
     }
 
@@ -186,22 +186,22 @@ public class MainHomePageScreen : MonoBehaviour
 
 
 
-    public void SelectedOptionButtonTap(int SelectedOption)
-    {
-        ResetSelectedgameButtons(SelectedOption);
-    }
-    private void ResetSelectedgameButtons(int GameSelect)
-    {
-        foreach (GameObject Obj in SelectedGame)
-        {
-            Obj.SetActive(false);
-        }
-    }
+    //public void SelectedOptionButtonTap(int SelectedOption)
+    //{
+    //    ResetSelectedgameButtons(SelectedOption);
+    //}
+    //private void ResetSelectedgameButtons(int GameSelect)
+    //{
+    //    foreach (GameObject Obj in SelectedGame)
+    //    {
+    //        Obj.SetActive(false);
+    //    }
+    //}
     public void Reset()
     {
         registerScreen.Close();
         ForgotPasswordScreen.Close();
-        LoginScreen.Close();
+        //LoginScreen.Close();
     }
 
 
@@ -210,11 +210,11 @@ public class MainHomePageScreen : MonoBehaviour
     // PanelTopButtons
     public void OnClickHowToPlayButton()
     {
-        Debug.Log("OnClickHowToPlay");
+        OnClickloginButton();
     }
     public void OnClickAboutButton()
     {
-        Debug.Log("OnClickAboutButton");
+        OnClickloginButton();
     }
     public void OnClickSupportButton()
     {
@@ -227,7 +227,8 @@ public class MainHomePageScreen : MonoBehaviour
     }
     public void OnClickBanner() 
     {
-        StartCoroutine(GetBannerUrl("https://httpbin.org/ip"));
+        //StartCoroutine(GetBannerUrl("https://httpbin.org/ip"));
+        Utility.Instance.OpenLink("https://google.com");
     }
     IEnumerator GetBannerUrl(string url) 
     {
@@ -271,6 +272,7 @@ public class MainHomePageScreen : MonoBehaviour
     public void OnClickloginButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
+        Reset();
         LoginScreen.Open();
     }
     // Free Tournament panel
@@ -294,17 +296,18 @@ public class MainHomePageScreen : MonoBehaviour
     {
         Debug.Log("OnClickTournamentToggleFreeroll");
     }
+    // the bottom panel
     public void OnClickTermsOfServiceButton()
     {
-        Debug.Log("OnClickTermsOfServiceButton");
+        OnClickloginButton();
     }
     public void OnClickPrivacyPolicyButton()
     {
-        Debug.Log("OnClickPrivacyPolicyButton");
+        OnClickloginButton();
     }
     public void OnClickResponsibleGaming()
     {
-        Debug.Log("OnClickResponsibleGaming");
+        OnClickloginButton();
     }
     #endregion
 

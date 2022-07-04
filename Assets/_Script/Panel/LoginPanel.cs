@@ -36,8 +36,8 @@ public class LoginPanel : MonoBehaviour
     IEnumerator GetData(string url)
     {
         UnityWebRequest request = UnityWebRequest.Get(url);
-        yield return request.Send();
-        if (request.isError)
+        yield return request.SendWebRequest();
+        if (request.isHttpError || request.isNetworkError)
         {
             Debug.LogError("Error get phone JSON");
         }
