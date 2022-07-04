@@ -290,7 +290,7 @@ public class forgetPasswordPanel : MonoBehaviour
 
 
 
-
+    // need remove
     [Space(50)]
     public bool Oldlogic;
   
