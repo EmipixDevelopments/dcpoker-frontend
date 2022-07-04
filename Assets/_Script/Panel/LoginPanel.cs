@@ -69,7 +69,7 @@ public class LoginPanel : MonoBehaviour
             _messageText.text = "";
         }
 
-        if (UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe)
+        if (UIManager.Instance && UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe)
         {
             string phoneCode = UIManager.Instance.assetOfGame.SavedLoginData.phoneCode;
             int index = 0;
@@ -88,12 +88,18 @@ public class LoginPanel : MonoBehaviour
         }
         else
         {
-            _rememberMeToggle.isOn = UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe;
+            if (UIManager.Instance)
+            {
+                _rememberMeToggle.isOn = UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe;
+            }
             _phoneNumber.text = "";
             _password.text = "";
             _phoneCodeDropdown.value = 0;
         }
-        UIManager.Instance.HideLoader();
+        if (UIManager.Instance)
+        {
+            UIManager.Instance.HideLoader();
+        }
     }
 
     public void OnClickLoginButton(bool forceLoin = false)
