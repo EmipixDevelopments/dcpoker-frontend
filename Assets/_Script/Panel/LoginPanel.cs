@@ -172,6 +172,9 @@ public class LoginPanel : MonoBehaviour
                             }
                             UIManager.Instance.SetCurrencyImages();
                             UIManager.Instance.ipLocationService.SendIPAddress("login");
+
+                            UIManager.Instance.LobbyScreeen.Open();
+                            UIManager.Instance.MainHomeScreen.Close();
                         }
                         else
                         {
