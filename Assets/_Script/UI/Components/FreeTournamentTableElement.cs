@@ -9,10 +9,10 @@ public class FreeTournamentTableElement : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _dateText;
     [SerializeField] private TextMeshProUGUI _nameText;
-    [SerializeField] private TextMeshProUGUI _seatsText;
-    [SerializeField] private TextMeshProUGUI _blindsText;
-    [SerializeField] private TextMeshProUGUI _buyInText;
     [SerializeField] private TextMeshProUGUI _typeText;
+    [SerializeField] private TextMeshProUGUI _playersText;
+    [SerializeField] private TextMeshProUGUI _buyInText;
+    [SerializeField] private TextMeshProUGUI _status;
     [SerializeField] private Button _button;
 
     private Action _onButtonClick;
@@ -21,10 +21,10 @@ public class FreeTournamentTableElement : MonoBehaviour
     {
         _dateText.text = data.Data;
         _nameText.text = data.Name;
-        _seatsText.text = $"{data.SeatsCurrent}/{data.SeatsMaximum}";
-        _blindsText.text = $"{data.BlindsCurrent}/{data.BlindsMaximum}";
+        _typeText.text = $"{data.Type}";
+        _playersText.text = $"{data.Players}";
         _buyInText.text = $"{data.BuyIn}";
-        _typeText.text = data.Type;
+        _status.text = data.Status;
         _onButtonClick = onButtonClick;
 
         _button.onClick.RemoveAllListeners();

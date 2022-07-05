@@ -39,56 +39,14 @@ public class MainHomePageScreen : MonoBehaviour
     {
 
         ///--- Test zone ---///
-        FreeTournamentTableElementData[] elements = new FreeTournamentTableElementData[5];
+        FreeTournamentTableElementData[] elements = new FreeTournamentTableElementData[1];
         elements[0] = new FreeTournamentTableElementData();
-        elements[0].Data = "Aug12/12:00";
+        elements[0].Data = "Aug 12 / 12:00";
         elements[0].Name = "Don Huan Alberto";
-        elements[0].SeatsCurrent = 5;
-        elements[0].SeatsMaximum = 9;
-        elements[0].BlindsCurrent = 100;
-        elements[0].BlindsMaximum = 200;
-        elements[0].BuyIn = 10000;
         elements[0].Type = "NML";
-
-        elements[1] = new FreeTournamentTableElementData();
-        elements[1].Data = "Jan12/12:00";
-        elements[1].Name = "Hanna Kukina";
-        elements[1].SeatsCurrent = 1;
-        elements[1].SeatsMaximum = 6;
-        elements[1].BlindsCurrent = 10;
-        elements[1].BlindsMaximum = 900;
-        elements[1].BuyIn = 1000;
-        elements[1].Type = "MLRS";
-
-        elements[2] = new FreeTournamentTableElementData();
-        elements[2].Data = "Sep5/10:50";
-        elements[2].Name = "Seva Kurov";
-        elements[2].SeatsCurrent = 8;
-        elements[2].SeatsMaximum = 9;
-        elements[2].BlindsCurrent = 200;
-        elements[2].BlindsMaximum = 200;
-        elements[2].BuyIn = 20000;
-        elements[2].Type = "LAMBDA";
-
-        elements[3] = new FreeTournamentTableElementData();
-        elements[3].Data = "Oct22/09:30";
-        elements[3].Name = "Zubr Zubrovich";
-        elements[3].SeatsCurrent = 7;
-        elements[3].SeatsMaximum = 9;
-        elements[3].BlindsCurrent = 100;
-        elements[3].BlindsMaximum = 200;
-        elements[3].BuyIn = 10;
-        elements[3].Type = "KU";
-
-        elements[4] = new FreeTournamentTableElementData();
-        elements[4].Data = "Nov01/01:30";
-        elements[4].Name = "Zoya Zubrova";
-        elements[4].SeatsCurrent = 2;
-        elements[4].SeatsMaximum = 6;
-        elements[4].BlindsCurrent = 10;
-        elements[4].BlindsMaximum = 100;
-        elements[4].BuyIn = 10;
-        elements[4].Type = "KUTUZOV";
+        elements[0].Players = "1,345";
+        elements[0].BuyIn = 10000;
+        elements[0].Status = "ACTIVE";
 
         _tournamentTable?.Init(elements, () => { OnClickloginButton(); });
 

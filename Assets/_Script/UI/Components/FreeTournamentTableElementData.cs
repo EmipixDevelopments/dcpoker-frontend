@@ -8,10 +8,8 @@ public class FreeTournamentTableElementData
 {
     public string Data;
     public string Name;
-    public int SeatsCurrent;
-    public int SeatsMaximum;
-    public int BlindsCurrent;
-    public int BlindsMaximum;
-    public int BuyIn;
     public string Type;
+    public string Players;
+    public int BuyIn;
+    public string Status;
 }

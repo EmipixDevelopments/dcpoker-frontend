@@ -21,7 +21,17 @@ public class HomePageTournamentTable : MonoBehaviour
 
     private void AddElements(HomePageTournamentElementData[] elements)
     {
-        for (int i = 0; i < _maxElements; i++)
+        int allowedAmount = 0;
+        if (elements.Length > _maxElements)
+        {
+            allowedAmount = _maxElements;
+        }
+        else
+        {
+            allowedAmount = elements.Length;
+        }
+
+        for (int i = 0; i < allowedAmount; i++)
         {
             HomePageTournamentElement element = Instantiate(_elemantPrefab, transform);
             element.Init(elements[i], _onClickButton);
