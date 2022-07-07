@@ -1,18 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class LobbyPanelNew : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private GameObject _panelHome;
+    [SerializeField] private GameObject _panelMyAccount;
 
-    // Update is called once per frame
-    void Update()
+    //--- Test zone ---//
+    private void CloseAll()
     {
-        
+        _panelHome.SetActive(false);
+        _panelMyAccount.SetActive(false);
     }
+    public void OpenPanelHome()
+    {
+        CloseAll();
+        _panelHome.SetActive(true);
+    }
+    public void OpenPanelMyAccount()
+    {
+        CloseAll();
+        _panelMyAccount.SetActive(true);
+    }
+    //-------------------
 }
