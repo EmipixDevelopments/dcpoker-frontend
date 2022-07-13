@@ -208,7 +208,7 @@ namespace Constants
         public static string MacauBaseUrl = "https://macau-gold.com";
         public static string clubBaseUrl = "https://macau.aistechnolabs.club";
         public static string StagingUrl = "https://pokerbet.aistechnolabs.pro";
-        public static string DevelopmentBaseUrl = "https://pokerbet.aistechnolabs.in";
+        public static string DevelopmentBaseUrl = "http://localhost:401"; //"https://pokerbet.aistechnolabs.in";
 
 
         public const string KeyPlayerIdUrl = "[PLAYER_ID]";
