@@ -84,10 +84,8 @@ public class SocketGamemanager : MonoBehaviour
     /// <summary>
     /// Login player.
     /// </summary>
-    /// <param name="username">Username.</param>
-    /// <param name="password">Password.</param>
     /// <param name="action">Action.</param>
-    public void Login(string username, string password, string authset, string ipAddress, bool forceLogin, SocketIOAckCallback action)
+    public void Login(string authset, string ipAddress, bool forceLogin, SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
             return;
@@ -146,7 +144,7 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("username", username.ToLower());
         jsonObj.put("password", password);
         jsonObj.put("mobile", mobile);
-        jsonObj.put("refferralCode", refferralcode);
+        jsonObj.put("refferralCode", refferralcode); // not used
         jsonObj.put("deviceId", SystemInfo.deviceUniqueIdentifier.ToString());
         jsonObj.put("os", Utility.Instance.GetOSName());
         jsonObj.put("appVersion", Utility.Instance.GetApplicationVersion());

@@ -110,9 +110,7 @@ public class RegisterPanel : MonoBehaviour
             {
                 UIManager.Instance.DisplayLoader("");
 
-                // until changes are made to the backend
-                UIManager.Instance.SocketGameManager.RegisterPlayer(rCode+ phNo, password, phNo, rCode, (socket, packet, args) =>
-                //UIManager.Instance.SocketGameManager.RegisterPlayer(username, password, phNo, rCode, (socket, packet, args) =>
+                UIManager.Instance.SocketGameManager.RegisterPlayer(username, password, rCode + phNo, "", (socket, packet, args) =>
                 {
                     Debug.Log("RegisterPlayer  => " + packet.ToString());
 

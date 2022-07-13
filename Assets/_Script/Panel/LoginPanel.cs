@@ -17,9 +17,6 @@ public class LoginPanel : MonoBehaviour
     [SerializeField] private TMP_Text _messageText;
 
 
-    [Header("Note. Remove old UI logic after finish")]
-    [SerializeField] bool _useNewUI;
-
     private PhoneCodeAndFlagListData _phoneAndCodeList = new PhoneCodeAndFlagListData();
 
     void OnEnable()
@@ -109,10 +106,10 @@ public class LoginPanel : MonoBehaviour
             UIManager.Instance.SoundManager.OnButtonClick();
             if (UIManager.Instance.SocketGameManager.HasInternetConnection())
             {
-                string username = _phoneCodeDropdown.options[_phoneCodeDropdown.value].text + _phoneNumber.text;
-                username = username.ToLower();
+                string fullPhoneNumber = _phoneCodeDropdown.options[_phoneCodeDropdown.value].text + _phoneNumber.text;
+                fullPhoneNumber = fullPhoneNumber.ToLower();
                 string password = _password.text;
-                string AuthTokenverify = tokenHack(username, password);
+                string AuthTokenverify = tokenHack(fullPhoneNumber, password);
                 UIManager.Instance.DisplayLoader("");
                 HTTPRequest httpRequest = new HTTPRequest(new Uri("http://ip-api.com/json"), (request, response) =>
                 {
@@ -127,7 +124,8 @@ public class LoginPanel : MonoBehaviour
                     {
                         ipAddress = data.getString("query");
                     }
-                    UIManager.Instance.SocketGameManager.Login(username, password, AuthTokenverify, ipAddress, forceLoin, (socket, packet, args) =>
+                    // login and password not used
+                    UIManager.Instance.SocketGameManager.Login(AuthTokenverify, ipAddress, forceLoin, (socket, packet, args) =>
                     {
                         Debug.Log("login = " + packet.ToString());
                         UIManager.Instance.HideLoader();
