@@ -16,8 +16,9 @@ public class RegisterPanel : MonoBehaviour
     [SerializeField] private Toggle _showPassword;
     [SerializeField] private Toggle _showRepeatPassword;
     [SerializeField] private TMP_Text _massageText;
-    [Space]
-    [SerializeField] private GameObject _otherUserNamePanel; // need created class and logic
+
+    [Header("Other user name panel")]
+    [SerializeField] private OtherUserNamePanel _otherUserNamePanel; // need created class and logic
     [SerializeField] private TMP_Text _userNameTaken;
 
     private PhoneCodeAndFlagListData _phoneAndCodeList = new PhoneCodeAndFlagListData();
@@ -31,6 +32,16 @@ public class RegisterPanel : MonoBehaviour
         //string url = "https://drive.google.com/uc?export=download&id=1Qs9VTpx-n8IT2FpXI_jhIJwomLbsuo_P";
         //StartCoroutine(GetData(url));
         AddOptionToDropdown(_phoneAndCodeList);
+    }
+
+    private void Start()
+    {
+        _otherUserNamePanel.OnSelectName = SelectOtherName;
+    }
+
+    private void OnDisable()
+    {
+        _otherUserNamePanel.OnSelectName -= SelectOtherName;
     }
 
     private void AddOptionToDropdown(PhoneCodeAndFlagListData phoneAndCodeList)
@@ -54,6 +65,7 @@ public class RegisterPanel : MonoBehaviour
         _userName.text = "";
         _password.text = "";
         _repeatPassword.text = "";
+        _otherUserNamePanel.gameObject.SetActive(false);
     }
 
     public void OnClickShowPasswordToggle()
@@ -100,9 +112,14 @@ public class RegisterPanel : MonoBehaviour
     {
         string username = _userName.text.ToLower(); ;
         string password = _password.text;
-        string phNo = _phoneNumber.text;
+        string phoneNumber = _phoneNumber.text;
         string repeatPassword = _repeatPassword.text;
-        string rCode = _phoneCode.options[_phoneCode.value].text;
+        string phoneCode = _phoneCode.options[_phoneCode.value].text;
+
+        string fullymobylePhone = phoneCode + phoneNumber;
+        fullymobylePhone = fullymobylePhone.Replace("+", "");
+        fullymobylePhone = fullymobylePhone.Replace("-", "");
+
         if (UIManager.Instance.SocketGameManager.HasInternetConnection())
         {
             UIManager.Instance.SoundManager.OnButtonClick();
@@ -110,7 +127,7 @@ public class RegisterPanel : MonoBehaviour
             {
                 UIManager.Instance.DisplayLoader("");
 
-                UIManager.Instance.SocketGameManager.RegisterPlayer(username, password, rCode + phNo, "", (socket, packet, args) =>
+                UIManager.Instance.SocketGameManager.RegisterPlayer(username, password, fullymobylePhone, "", (socket, packet, args) =>
                 {
                     Debug.Log("RegisterPlayer  => " + packet.ToString());
 
@@ -128,7 +145,10 @@ public class RegisterPanel : MonoBehaviour
                             this.Close();
                             UIManager.Instance.HidePopup();
                         });
-
+                    }
+                    else if (registrationResp.message == "Username already taken.")
+                    {
+                        ShowOtherUserNameWindow(registrationResp.result);
                     }
                     else
                     {
@@ -138,12 +158,27 @@ public class RegisterPanel : MonoBehaviour
             }
         }
     }
+
+    private void ShowOtherUserNameWindow(string otherNames) 
+    {
+        _userNameTaken.gameObject.SetActive(true);
+
+        _otherUserNamePanel.gameObject.SetActive(true);
+        string[] nameArr = otherNames.Split(',');
+        _otherUserNamePanel.Init(nameArr);
+    }
+
+    private void SelectOtherName(string name)
+    {
+        _userName.text = name;
+        _userNameTaken.gameObject.SetActive(false);
+    }
+
     private bool IsLoginDetailValid()
     {
         StopCoroutine(textempti());
 
         string username = _userName.text;
-        string Mobile = _phoneNumber.text;
         string password = _password.text;
         string repeatPassword = _repeatPassword.text;
 

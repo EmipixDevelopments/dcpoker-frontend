@@ -1590,7 +1590,7 @@ public class ReBuyAcceptResult
 [Serializable]
 public class rootHackBase
 {
-    public string username = "";
+    public string mobile = "";
     public string password = "";
     public long timestamp;
 }

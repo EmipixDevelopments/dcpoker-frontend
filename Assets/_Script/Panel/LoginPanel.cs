@@ -80,7 +80,7 @@ public class LoginPanel : MonoBehaviour
             _phoneCodeDropdown.value = index;
 
             _rememberMeToggle.isOn = UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe;
-            _phoneNumber.text = UIManager.Instance.assetOfGame.SavedLoginData.Username;
+            _phoneNumber.text = UIManager.Instance.assetOfGame.SavedLoginData.phoneNumber;
             _password.text = UIManager.Instance.assetOfGame.SavedLoginData.password;
         }
         else
@@ -107,7 +107,8 @@ public class LoginPanel : MonoBehaviour
             if (UIManager.Instance.SocketGameManager.HasInternetConnection())
             {
                 string fullPhoneNumber = _phoneCodeDropdown.options[_phoneCodeDropdown.value].text + _phoneNumber.text;
-                fullPhoneNumber = fullPhoneNumber.ToLower();
+                fullPhoneNumber = fullPhoneNumber.Replace("+","");
+                fullPhoneNumber = fullPhoneNumber.Replace("-", "");
                 string password = _password.text;
                 string AuthTokenverify = tokenHack(fullPhoneNumber, password);
                 UIManager.Instance.DisplayLoader("");
@@ -151,7 +152,11 @@ public class LoginPanel : MonoBehaviour
                             UIManager.Instance.assetOfGame.SavedLoginData.isInAppPurchaseAllowed = loginResponse.result.isInAppPurchaseAllowed;
                             UIManager.Instance.ProfilePic = UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar;
                             UIManager.Instance.assetOfGame.SavedLoginData.Username = loginResponse.result.username;//LoginUsername.text;
+
                             UIManager.Instance.assetOfGame.SavedLoginData.password = _password.text;
+                            UIManager.Instance.assetOfGame.SavedLoginData.phoneNumber = _phoneNumber.text;
+                            UIManager.Instance.assetOfGame.SavedLoginData.phoneCode = _phoneCodeDropdown.options[_phoneCodeDropdown.value].text;
+
                             UIManager.Instance.assetOfGame.SavedLoginData.userUuid = loginResponse.result.userUuid;
                             UIManager.Instance.assetOfGame.SavedLoginData.accountNumber = loginResponse.result.accountNumber;
                             UIManager.Instance.assetOfGame.SavedLoginData.mobile = loginResponse.result.mobile;
@@ -160,10 +165,8 @@ public class LoginPanel : MonoBehaviour
                                 UIManager.Instance.SetPlayerLoginType(1);
                             }
                             UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe = _rememberMeToggle.isOn;
-                            //LocalSaveData.current.Username = LoginUsername.text;//UIManager.Instance.assetOfGame.SavedLoginData.Username;
-                            LocalSaveData.current.password = UIManager.Instance.assetOfGame.SavedLoginData.password;
-                            LocalSaveData.current.isRememberMe = UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe;
                             SaveLoad.SaveGame();
+                            //------------------//
 
                             //						UIManager.Instance.assetOfGame.SavedLoginData.isCash= false;
                             if (UIManager.Instance.assetOfGame.SavedLoginData.isCash)
@@ -284,11 +287,11 @@ public class LoginPanel : MonoBehaviour
 
         return true;
     }
-    public string tokenHack(string username, string password)
+    public string tokenHack(string mobile, string password)
     {
         string syndicate = null;
         rootHackBase root = new rootHackBase();
-        root.username = username;
+        root.mobile = mobile;
         root.password = password;
         root.timestamp = DateTimeToUnix(DateTime.UtcNow);
         string json = JsonUtility.ToJson(root);

@@ -71,11 +71,7 @@ public class WebGLAffiliatePanel : MonoBehaviour
                 StartCoroutine(NextScreen(1.1f));
                 UIManager.Instance.assetOfGame.SavedLoginData.Username = loginResponse.result.username;
                 UIManager.Instance.assetOfGame.SavedLoginData.password = "";
-
                 UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe = false;
-                LocalSaveData.current.Username = UIManager.Instance.assetOfGame.SavedLoginData.Username;
-                LocalSaveData.current.password = UIManager.Instance.assetOfGame.SavedLoginData.password;
-                LocalSaveData.current.isRememberMe = UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe;
 
                 SaveLoad.SaveGame();
 

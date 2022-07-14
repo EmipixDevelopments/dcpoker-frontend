@@ -84,7 +84,6 @@ public class ChangeUsernamePanel : MonoBehaviour
                     UIManager.Instance.LobbyScreeen.ProfileScreen.PanelMyAccount.ProfilePanel.Username = username;
 
                     UIManager.Instance.assetOfGame.SavedLoginData.Username = username;
-                    LocalSaveData.current.Username = username;
                     SaveLoad.SaveGame();
 
                     ClosePanelBtnTap(false);

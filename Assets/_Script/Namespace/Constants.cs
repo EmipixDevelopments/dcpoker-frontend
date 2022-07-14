@@ -199,7 +199,9 @@ namespace Constants
         public const string KeyResult = "result";
         public const string KeyMessage = "message";
         public const string KeyssStatus = "status";
+
         public const string KeyStatusSuccess = "success";
+        public const string KeyStatusFail = "fail";
 
 
         public static string EssentialLiveUrl = "https://mgl2020.com";
