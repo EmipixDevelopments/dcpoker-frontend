@@ -110,7 +110,7 @@ public class RegisterPanel : MonoBehaviour
 
     public void OnRegisterButtonTap()
     {
-        string username = _userName.text.ToLower(); ;
+        string username = _userName.text;
         string password = _password.text;
         string phoneNumber = _phoneNumber.text;
         string repeatPassword = _repeatPassword.text;
