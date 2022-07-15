@@ -35,8 +35,6 @@ public class forgetPasswordPanel : MonoBehaviour
     private string _password;
     private string _repeatPassword;
 
-    private string _verificationCode = "1234";
-
     private enum States { First = 1, Second = 2, Third = 3}
     private States _state = States.First;
 
@@ -98,19 +96,29 @@ public class forgetPasswordPanel : MonoBehaviour
 
     public void OnClickButtonNextPanel1() 
     {
-        if (PermissionToGoState2())
+        UIManager.Instance.SoundManager.OnButtonClick();
+        string fullyPhoneNumber = _phoneCodeDropdownPanel1.options[_phoneCodeDropdownPanel1.value].text + _phoneNumberPanel1.text;
+        fullyPhoneNumber = fullyPhoneNumber.Replace("+", "");
+        fullyPhoneNumber = fullyPhoneNumber.Replace("-", "");
+
+        UIManager.Instance.SocketGameManager.PlayerForgotPassword(fullyPhoneNumber, (socket, packet, args) =>
         {
-            _phoneCodeIndex = _phoneCodeDropdownPanel1.value;
-            _phoneNumber = _phoneNumberPanel1.text;
-            ChangeState(States.Second);
-        }
-    }
-    private bool PermissionToGoState2() 
-    {
-        bool serverAnswer = true;
-        // Sending data to the server and obtaining permission
-        //_code = "" //verification code from server
-        return serverAnswer;
+            Debug.Log("ForgotPasswordPart1  : " + packet.ToString());
+
+            JSONArray jsonArray = new JSONArray(packet.ToString());
+            string Source = jsonArray.getString(jsonArray.length() - 1);
+            PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(Source);
+            if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+            {
+                _phoneCodeIndex = _phoneCodeDropdownPanel1.value;
+                _phoneNumber = _phoneNumberPanel1.text;
+                ChangeState(States.Second);
+            }
+            else
+            {
+                UIManager.Instance.DisplayMessagePanel(resp.message);
+            }
+        });
     }
 
     #endregion
@@ -155,16 +163,29 @@ public class forgetPasswordPanel : MonoBehaviour
 
     public void OnClickButtonNextPanel2()
     {
-        StopCoroutine(HideMessagePanel2());
-        if (_codePanel2.text == _verificationCode)
+        UIManager.Instance.SoundManager.OnButtonClick();
+        string fullyPhoneNumber = _phoneCodeDropdownPanel2.options[_phoneCodeDropdownPanel2.value].text + _phoneNumberPanel2.text;
+        fullyPhoneNumber = fullyPhoneNumber.Replace("+", "");
+        fullyPhoneNumber = fullyPhoneNumber.Replace("-", "");
+        int code = int.Parse(_codePanel2.text);
+
+        UIManager.Instance.SocketGameManager.PlayerConfirmForgotPasswordCode(fullyPhoneNumber, code, (socket, packet, args) =>
         {
-            ChangeState(States.Third);
-        }
-        else
-        {
-            _messageTextPanel2.SetActive(true);
-            StartCoroutine(HideMessagePanel2());
-        }
+            Debug.Log("PlayerConfirmForgotPasswordCode  : " + packet.ToString());
+
+            JSONArray jsonArray = new JSONArray(packet.ToString());
+            string Source = jsonArray.getString(jsonArray.length() - 1);
+            PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(Source);
+            if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+            {
+                ChangeState(States.Third);
+            }
+            else
+            {
+                _messageTextPanel2.SetActive(true);
+                StartCoroutine(HideMessagePanel2());
+            }
+        });
     }
     IEnumerator HideMessagePanel2() 
     {
@@ -316,7 +337,7 @@ public class forgetPasswordPanel : MonoBehaviour
             {
                 ErrorText.text = "";
                 string Email = ValidEmail.text;
-                UIManager.Instance.SocketGameManager.GetplayerForgotPassword(Email, (socket, packet, args) =>
+                UIManager.Instance.SocketGameManager.PlayerNewPassword(Email, (socket, packet, args) =>
                 {
 
                     Debug.Log("GetplayerForgotPassword  : " + packet.ToString());

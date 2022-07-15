@@ -840,16 +840,44 @@ public class SocketGamemanager : MonoBehaviour
     /// </summary>
     /// <param name="Email">Email iD.</param>
     /// <param name="action">Action.</param>
-    public void GetplayerForgotPassword(string Email, SocketIOAckCallback action)
+    public void PlayerNewPassword(string Email, SocketIOAckCallback action)
     {
         ///		Debug.Log("TexasAndOmahaRoomLists");
         JSON_Object jsonObj = new JSON_Object();
         jsonObj.put("email", Email);
         jsonObj.put("productName", Application.productName);
-        print(Constants.PokerEvents.playerForgotPassword + " - " + jsonObj.toString());
+        print(Constants.PokerEvents.playerNewPassword + " - " + jsonObj.toString());
 
-        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.playerForgotPassword, action, Json.Decode(jsonObj.toString()));
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.playerNewPassword, action, Json.Decode(jsonObj.toString()));
     }
+
+    /// <summary>
+    /// Forget password part 1
+    /// </summary>
+    /// <param name="fullyPhoneNumber">state code and phone</param>
+    /// <param name="action"></param>
+    public void PlayerForgotPassword(string fullyPhoneNumber, SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("mobile", fullyPhoneNumber);
+        print(Constants.PokerEvents.PlayerForgotPassword + " - " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.PlayerForgotPassword, action, Json.Decode(jsonObj.toString()));
+    }
+
+    public void PlayerConfirmForgotPasswordCode(string fullyPhoneNumber, int code, SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("mobile", fullyPhoneNumber);
+        jsonObj.put("code", code);
+        print(Constants.PokerEvents.PlayerConfirmForgotPasswordCode + " - " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.PlayerConfirmForgotPasswordCode, action, Json.Decode(jsonObj.toString()));
+    }
+
+
+
+
+
+
 
     /// <summary>
     /// newsBlog.

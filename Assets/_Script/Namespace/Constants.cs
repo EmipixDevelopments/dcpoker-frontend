@@ -367,7 +367,11 @@ namespace Constants
         public const string playerChangePassword = "playerChangePassword";
         public const string TransferChips = "TransferChips";
         public const string ChangeUsername = "ChangeUsername";
-        public const string playerForgotPassword = "playerForgotPassword";
+        public const string playerNewPassword = "playerNewPassword"; // old logic
+
+        public const string PlayerForgotPassword = "playerForgotPassword";
+        public const string PlayerConfirmForgotPasswordCode = "playerConfirmForgotPasswordCode";
+
         public const string newsBlog = "newsBlog";
         public const string playerProfilePic = "playerProfilePic";
         public const string GetReBuyInChips = "GetReBuyInChips";
