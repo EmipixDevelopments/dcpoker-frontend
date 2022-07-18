@@ -15,9 +15,16 @@ public class MainHomePageScreen : MonoBehaviour
     [SerializeField] private HomePageTournamentTable _texasHoldemTable;
     [SerializeField] private HomePageTournamentTable _omahaOrPLO5Table;
     [Space]
+    public GameObject PanelTournamentUnlogin;
     public LoginPanel LoginScreen;
     public RegisterPanel registerScreen;
     public forgetPasswordPanel ForgotPasswordScreen;
+    public GameObject PanelHowToPlay;
+    public GameObject PanelAbout;
+    public GameObject PanelSupport;
+    public GameObject PanelTermsOfService;
+    public GameObject PanelPrivacyPolicy;
+    public GameObject PanelResponsibleGaming;
 
     void OnEnable()
     {
@@ -157,27 +164,55 @@ public class MainHomePageScreen : MonoBehaviour
     //}
     public void Reset()
     {
-        registerScreen.Close();
-        ForgotPasswordScreen.Close();
-        //LoginScreen.Close();
+        CloseAllWindow();
+        PanelTournamentUnlogin.SetActive(true);
+        LoginScreen.Open();
     }
 
+
+    private void CloseAllWindow() 
+    {
+        PanelTournamentUnlogin.SetActive(false);
+        LoginScreen.gameObject.SetActive(false);
+        registerScreen.gameObject.SetActive(false);
+        ForgotPasswordScreen.gameObject.SetActive(false);
+        PanelHowToPlay.gameObject.SetActive(false);
+        PanelAbout.gameObject.SetActive(false);
+        PanelSupport.gameObject.SetActive(false);
+        PanelTermsOfService.gameObject.SetActive(false);
+        PanelPrivacyPolicy.gameObject.SetActive(false);
+        PanelResponsibleGaming.gameObject.SetActive(false);
+    }
 
 
     #region Buttons / Toggls method
     // PanelTopButtons
+    public void OnClickMacauGoldLogo() 
+    {
+        UIManager.Instance.SoundManager.OnButtonClick();
+        CloseAllWindow();
+        PanelTournamentUnlogin.SetActive(true);
+    }
+
     public void OnClickHowToPlayButton()
     {
-        OnClickloginButton();
+        UIManager.Instance.SoundManager.OnButtonClick();
+        CloseAllWindow();
+        PanelHowToPlay.SetActive(true);
     }
     public void OnClickAboutButton()
     {
-        OnClickloginButton();
+        UIManager.Instance.SoundManager.OnButtonClick();
+        CloseAllWindow();
+        PanelAbout.SetActive(true);
     }
     public void OnClickSupportButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
-        Utility.Instance.OpenLink("https://support.macau-gold.com");
+        CloseAllWindow();
+        PanelSupport.SetActive(true);
+        //UIManager.Instance.SoundManager.OnButtonClick();
+        //Utility.Instance.OpenLink("https://support.macau-gold.com");
     }
     public void SoundToggleCallBack()
     {
@@ -257,15 +292,21 @@ public class MainHomePageScreen : MonoBehaviour
     // the bottom panel
     public void OnClickTermsOfServiceButton()
     {
-        OnClickloginButton();
+        UIManager.Instance.SoundManager.OnButtonClick();
+        CloseAllWindow();
+        PanelTermsOfService.SetActive(true);
     }
     public void OnClickPrivacyPolicyButton()
     {
-        OnClickloginButton();
+        UIManager.Instance.SoundManager.OnButtonClick();
+        CloseAllWindow();
+        PanelPrivacyPolicy.SetActive(true);
     }
     public void OnClickResponsibleGaming()
     {
-        OnClickloginButton();
+        UIManager.Instance.SoundManager.OnButtonClick();
+        CloseAllWindow();
+        PanelResponsibleGaming.SetActive(true);
     }
     #endregion
 
