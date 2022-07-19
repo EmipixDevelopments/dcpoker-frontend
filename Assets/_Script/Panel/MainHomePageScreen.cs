@@ -331,6 +331,8 @@ public class MainHomePageScreen : MonoBehaviour
 
 
 
+    // need remove old logic
+
 
     [Header("Old Logic")]
     [Space(100)]

@@ -10,6 +10,12 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private GameObject _panelOmaha;
     [SerializeField] private GameObject _panelPlo5;
 
+    [SerializeField] private GameObject _panelHowToPlay;
+    [SerializeField] private GameObject _panelAbout;
+    [SerializeField] private GameObject _panelSupport;
+    [SerializeField] private GameObject _panelTermsOfService;
+    [SerializeField] private GameObject _panelPrivacyPolicy;
+    [SerializeField] private GameObject _panelResponsibleGaming;
 
 
     public void OpenPanelHome()
@@ -47,6 +53,37 @@ public class LobbyPanelNew : MonoBehaviour
         CloseAll();
         _panelPlo5.SetActive(true);
     }
+    public void OpenPanelHowToPlay()
+    {
+        CloseAll();
+        _panelHowToPlay.SetActive(true);
+    }
+    public void OpenPanelAbout()
+    {
+        CloseAll();
+        _panelAbout.SetActive(true);
+    }
+    public void OpenPanelSupport()
+    {
+        CloseAll();
+        _panelSupport.SetActive(true);
+    }
+    public void OpenPanelTermsOfService()
+    {
+        CloseAll();
+        _panelTermsOfService.SetActive(true);
+    }
+    public void OpenPanelPrivacyPolicy()
+    {
+        CloseAll();
+        _panelPrivacyPolicy.SetActive(true);
+    }
+    public void OpenPanelResponsibleGaming()
+    {
+        CloseAll();
+        _panelResponsibleGaming.SetActive(true);
+    }
+
     private void CloseAll()
     {
         _panelHome.SetActive(false);
@@ -56,5 +93,11 @@ public class LobbyPanelNew : MonoBehaviour
         _panelTexasHoldem.SetActive(false);
         _panelOmaha.SetActive(false);
         _panelPlo5.SetActive(false);
+        _panelHowToPlay.SetActive(false);
+        _panelAbout.SetActive(false);
+        _panelSupport.SetActive(false);
+        _panelTermsOfService.SetActive(false);
+        _panelPrivacyPolicy.SetActive(false);
+        _panelResponsibleGaming.SetActive(false);
     }
 }
