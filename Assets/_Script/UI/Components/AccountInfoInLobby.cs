@@ -8,12 +8,27 @@ public class AccountInfoInLobby : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _chip;
     [SerializeField] private TextMeshProUGUI _myAccount;
 
-    
+    private int _avatarImageIndex = -1;
+
     void OnEnable()
     {
         if (UIManager.Instance)
         {
             CallProfileEvent();
+        }
+    }
+
+    private void Update()
+    {
+        UpdateAvatarImage();
+    }
+
+    private void UpdateAvatarImage()
+    {
+        if (UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar != _avatarImageIndex)
+        {
+            _avatarImageIndex = UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar;
+            _avatarImage.sprite = UIManager.Instance.assetOfGame.profileAvatarList.profileAvatarSprite[_avatarImageIndex];
         }
     }
 

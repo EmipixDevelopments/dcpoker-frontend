@@ -7,7 +7,6 @@ public class MyAccountPanelNew : MonoBehaviour
     [SerializeField] private GameObject _panelProfile;
     [SerializeField] private GameObject _panelMyBonuses;
 
-    // --- test methods ---//
     public void OpenPanelProfile() 
     {
         CloseAll();
@@ -25,5 +24,4 @@ public class MyAccountPanelNew : MonoBehaviour
         _panelProfile.SetActive(false);
         _panelMyBonuses.SetActive(false);
     }
-    //----------------------
 }
