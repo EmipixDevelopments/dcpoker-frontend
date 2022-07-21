@@ -37,23 +37,23 @@ public class PokerEventListResponse<T> where T : class
 public class PlayerLoginResponse
 {
     public string storeUrl = "";
-    public string username;
+    public string username; // used in server
     public string email;
     public string firstname;
     public string lastname;
-    public string mobile;
+    public string mobile; // used in server
     public string gender;
-    public double chips;
+    public double chips; // used in server
     public string status;
     public string activationCode;
     public string createdAt;
     public string updatedAt;
     public string id;
-    public string playerId;
+    public string playerId; // used in server
     public string socketId;
     public string token;
     public string timeZone;
-    public int profilePic;
+    public int profilePic; // used in server
     public int winningCount;
     public int winningToken;
     public int winningTotal;
@@ -63,13 +63,13 @@ public class PlayerLoginResponse
     public int totalTournament;
     public int winningSpecial;
     public int totalSpecial;
-    public bool isCash;
-    public bool isSuperPlayer = false;
-    public string accountNumber;
-    public string webGLDeviceId = "";
-    public bool isMultipleTableAllowed = true;
+    public bool isCash; // used in server
+    public bool isSuperPlayer = false; // used in server
+    public string accountNumber; // used in server
+    public string webGLDeviceId = ""; // used in server
+    public bool isMultipleTableAllowed = true; // used in server
     public bool isInAppPurchaseAllowed = true;
-    public bool isChipsTransferAllowed = false;
+    public bool isChipsTransferAllowed = false;// used in server
 
     public string userUuid = "";
     public string deviceId = "";
@@ -1600,4 +1600,9 @@ public class TableBalanceNoticeResp
     public bool isVisible = false;
     public string message = "";
     public string roomId;
+}
+[Serializable]
+public class AuthTokenFromJSON
+{
+    public string authToken = "";
 }

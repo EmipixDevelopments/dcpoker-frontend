@@ -873,9 +873,14 @@ public class SocketGamemanager : MonoBehaviour
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.PlayerConfirmForgotPasswordCode, action, Json.Decode(jsonObj.toString()));
     }
 
+    public void PlayerChangeForgetPassword(string authToken, SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("authToken", authToken);
+        print(Constants.PokerEvents.PlayerChangeForgetPassword + " - " + jsonObj.toString());
 
-
-
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.PlayerChangeForgetPassword, action, Json.Decode(jsonObj.toString()));
+    }
 
 
 

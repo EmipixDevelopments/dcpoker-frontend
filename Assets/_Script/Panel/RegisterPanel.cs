@@ -32,10 +32,7 @@ public class RegisterPanel : MonoBehaviour
         //string url = "https://drive.google.com/uc?export=download&id=1Qs9VTpx-n8IT2FpXI_jhIJwomLbsuo_P";
         //StartCoroutine(GetData(url));
         AddOptionToDropdown(_phoneAndCodeList);
-    }
 
-    private void Start()
-    {
         _otherUserNamePanel.OnSelectName = SelectOtherName;
     }
 

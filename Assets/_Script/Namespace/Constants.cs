@@ -371,6 +371,7 @@ namespace Constants
 
         public const string PlayerForgotPassword = "playerForgotPassword";
         public const string PlayerConfirmForgotPasswordCode = "playerConfirmForgotPasswordCode";
+        public const string PlayerChangeForgetPassword = "playerChangeForgotPassword";
 
         public const string newsBlog = "newsBlog";
         public const string playerProfilePic = "playerProfilePic";

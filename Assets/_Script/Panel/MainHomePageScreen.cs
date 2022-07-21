@@ -18,7 +18,7 @@ public class MainHomePageScreen : MonoBehaviour
     public GameObject PanelTournamentUnlogin;
     public LoginPanel LoginScreen;
     public RegisterPanel registerScreen;
-    public forgetPasswordPanel ForgotPasswordScreen;
+    public PanelForgotPassword ForgotPasswordScreen;
     public GameObject PanelHowToPlay;
     public GameObject PanelAbout;
     public GameObject PanelSupport;
