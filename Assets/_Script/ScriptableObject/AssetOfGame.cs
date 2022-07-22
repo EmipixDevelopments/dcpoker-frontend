@@ -37,6 +37,7 @@ public class LoginSaved
     public bool isSuperPlayer;
     public bool isAbsolute;
     public string timeZone;
+    public double cash;
 }
 [Serializable]
 public class GamePlay

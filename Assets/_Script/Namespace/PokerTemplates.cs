@@ -44,6 +44,7 @@ public class PlayerLoginResponse
     public string mobile; // used in server
     public string gender;
     public double chips; // used in server
+    public double cash;
     public string status;
     public string activationCode;
     public string createdAt;

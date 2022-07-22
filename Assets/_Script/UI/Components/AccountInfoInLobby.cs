@@ -36,7 +36,6 @@ public class AccountInfoInLobby : MonoBehaviour
     {
         UIManager.Instance.SocketGameManager.GetProfile((socket, packet, args) =>
         {
-
             Debug.Log("GetProfile  : " + packet.ToString());
 
             UIManager.Instance.HideLoader();
@@ -45,11 +44,11 @@ public class AccountInfoInLobby : MonoBehaviour
             Source = arr.getString(arr.length() - 1);
             var resp1 = Source;
 
-            PokerEventResponse<Profile> resp = JsonUtility.FromJson<PokerEventResponse<Profile>>(resp1);
+            PokerEventResponse<PlayerLoginResponse> resp = JsonUtility.FromJson<PokerEventResponse<PlayerLoginResponse>>(resp1);
 
             if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
             {
-                _avatarImage.sprite = UIManager.Instance.assetOfGame.profileAvatarList.profileAvatarSprite[resp.result.avatar];
+                _avatarImage.sprite = UIManager.Instance.assetOfGame.profileAvatarList.profileAvatarSprite[resp.result.profilePic];
                 UIManager.Instance.assetOfGame.SavedLoginData.chips = resp.result.chips;
                 _chip.text = UIManager.Instance.assetOfGame.SavedLoginData.chips.ToString();
 

@@ -14,7 +14,7 @@ public class BackgroundEventManager : MonoBehaviour
     #region UNITY_CALLBACKS
     void Start()
     {
-        StartCoroutine(CallProfileEvent());
+        //StartCoroutine(CallProfileEvent());
     }
     #endregion
 

@@ -840,12 +840,12 @@ public class SocketGamemanager : MonoBehaviour
     /// </summary>
     /// <param name="Email">Email iD.</param>
     /// <param name="action">Action.</param>
-    public void PlayerNewPassword(string Email, SocketIOAckCallback action)
+    public void PlayerNewPassword(string password, SocketIOAckCallback action)
     {
-        ///		Debug.Log("TexasAndOmahaRoomLists");
         JSON_Object jsonObj = new JSON_Object();
-        jsonObj.put("email", Email);
-        jsonObj.put("productName", Application.productName);
+        jsonObj.put("newPassword", password);
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
         print(Constants.PokerEvents.playerNewPassword + " - " + jsonObj.toString());
 
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.playerNewPassword, action, Json.Decode(jsonObj.toString()));

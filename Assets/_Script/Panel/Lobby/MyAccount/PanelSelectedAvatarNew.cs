@@ -36,7 +36,31 @@ public class PanelSelectedAvatarNew : MonoBehaviour
 
     public void OnClickSelectButton() 
     {
-        UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar = _avatarId;
+        UIManager.Instance.SoundManager.OnButtonClick();
+        UIManager.Instance.SocketGameManager.GetplayerProfilePic(_avatarId, (socket, packet, args) =>
+        {
+            Debug.Log("GetplayerProfilePic  : " + packet.ToString());
+
+            UIManager.Instance.HideLoader();
+
+            JSONArray arr = new JSONArray(packet.ToString());
+            string Source;
+            Source = arr.getString(arr.length() - 1);
+            var resp1 = Source;
+
+            PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(resp1);
+
+            if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+            {
+                UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar = _avatarId;
+            }
+            else
+            {
+                UIManager.Instance.DisplayMessagePanel(resp.message);
+            }
+        });
+
+
         OnClickCloseButton();
     }
 }
