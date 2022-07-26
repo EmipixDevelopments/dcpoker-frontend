@@ -32,6 +32,7 @@ public class UIManager : MonoBehaviour
     public MainHomePageScreen MainHomeScreen;
     public WebGLAffiliatePanel webGLAffiliatePanel;
     public LobbyPanel LobbyScreeen;
+    public LobbyPanelNew LobbyPanelNew;
     public GamePanel GameScreeen;
     public TournamentWinnerPanel TournamentWinnerPanel;
     public HistoryPanel historyPanel;

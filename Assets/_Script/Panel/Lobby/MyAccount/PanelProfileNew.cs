@@ -29,80 +29,38 @@ public class PanelProfileNew : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Input.GetKeyUp(KeyCode.Q))
-        {
-            ChangeUsername();
-        }
-        if (Input.GetKeyUp(KeyCode.W))
-        {
-            ChangePassword();
-        }
-
         // autoupdate
         UpdateFields();
     }
 
-    private void ChangeUsername()
-    {
-        string username = "Sobak";
-
-        if (username == UIManager.Instance.assetOfGame.SavedLoginData.Username)
-        {
-            //ClosePanelBtnTap(false);
-            return;
-        }
-
-        UIManager.Instance.SocketGameManager.ChangeUsername(username, (socket, packet, args) =>
-        {
-
-            Debug.Log("ChangesUsername response : " + packet.ToString());
-
-            UIManager.Instance.HideLoader();
-            PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(Utility.Instance.GetPacketString(packet));
-
-            if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
-            {
-                UIManager.Instance.DisplayMessagePanel(resp.message);
-                UIManager.Instance.LobbyScreeen.Username = username;
-                UIManager.Instance.LobbyScreeen.ProfileScreen.PanelMyAccount.ProfilePanel.Username = username;
-
-                UIManager.Instance.assetOfGame.SavedLoginData.Username = username;
-                SaveLoad.SaveGame();
-            }
-            else
-            {
-                UIManager.Instance.DisplayMessagePanel(resp.message);
-            }
-        });
-    }
-
-    private void ChangePassword() 
-    {
-            UIManager.Instance.SoundManager.OnButtonClick();
-            string newPassword = "112233";
-            UIManager.Instance.SocketGameManager.PlayerNewPassword(newPassword, (socket, packet, args) =>
-            {
-                Debug.Log("GetplayerForgotPassword  : " + packet.ToString());
-
-                UIManager.Instance.HideLoader();
-                JSONArray arr = new JSONArray(packet.ToString());
-                string Source;
-                Source = arr.getString(arr.length() - 1);
-                var resp1 = Source;
-
-                PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(resp1);
-
-                if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
-                {
-                    UIManager.Instance.DisplayMessagePanel(resp.message);
-                    UIManager.Instance.assetOfGame.SavedLoginData.password = newPassword;
-                }
-                else
-                {
-                    UIManager.Instance.DisplayMessagePanel(resp.message);
-                }
-            });
-    }
+    // not used
+    //private void ChangePassword() 
+    //{
+    //        UIManager.Instance.SoundManager.OnButtonClick();
+    //        string newPassword = "112233";
+    //        UIManager.Instance.SocketGameManager.PlayerNewPassword(newPassword, (socket, packet, args) =>
+    //        {
+    //            Debug.Log("GetplayerForgotPassword  : " + packet.ToString());
+    //
+    //            UIManager.Instance.HideLoader();
+    //            JSONArray arr = new JSONArray(packet.ToString());
+    //            string Source;
+    //            Source = arr.getString(arr.length() - 1);
+    //            var resp1 = Source;
+    //
+    //            PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(resp1);
+    //
+    //            if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+    //            {
+    //                UIManager.Instance.DisplayMessagePanel(resp.message);
+    //                UIManager.Instance.assetOfGame.SavedLoginData.password = newPassword;
+    //            }
+    //            else
+    //            {
+    //                UIManager.Instance.DisplayMessagePanel(resp.message);
+    //            }
+    //        });
+    //}
 
     public void CallProfileEvent()
     {
