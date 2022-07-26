@@ -101,6 +101,13 @@ public class PanelProfileNew : MonoBehaviour
         });
     }
 
+    public void OnClickChipsOrCashs() 
+    {
+        // send request on change pay Type
+        bool isCashe = _cashToggle.isOn;
+        Debug.Log($"user select cashe {isCashe}");
+    }
+
     private void UpdateFields()
     {
         _avatarImage.sprite = UIManager.Instance.assetOfGame.profileAvatarList.profileAvatarSprite[UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar];

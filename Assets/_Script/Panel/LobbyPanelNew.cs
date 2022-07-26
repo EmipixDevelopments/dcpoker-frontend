@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class LobbyPanelNew : MonoBehaviour
 {
@@ -100,4 +101,72 @@ public class LobbyPanelNew : MonoBehaviour
         _panelPrivacyPolicy.SetActive(false);
         _panelResponsibleGaming.SetActive(false);
     }
+
+    private void OnEnable()
+    {
+        OpenPanelHome();
+    }
+
+    #region Logout
+    public void OnClickLogoutButton()
+    {
+        UIManager.Instance.SoundManager.OnButtonClick();
+        if (UIManager.Instance.IsWebGLAffiliat)
+#if UNITY_EDITOR
+            UIManager.Instance.DisplayConfirmationPanel("Are you sure you want to exit? ", OnLogOutDone);
+#else
+            OnLogOutDone();
+#endif
+        else
+            UIManager.Instance.DisplayConfirmationPanel("Are you sure you want to Logout? ", OnLogOutDone);
+    }
+
+    private void OnLogOutDone()
+    {
+        UIManager.Instance.SocketGameManager.LogOutPlayer((socket, packet, args) =>
+        {
+            Debug.Log("LogOutPlayer  : " + packet.ToString());
+            UIManager.Instance.HideLoader();
+            JSONArray arr = new JSONArray(packet.ToString());
+            string Source;
+            Source = arr.getString(arr.length() - 1);
+            var resp1 = Source;
+
+            PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(resp1);
+
+            if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+            {
+                if (UIManager.Instance.IsWebGLAffiliat)
+                {
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.isPlaying = false;
+#endif
+                    ExternalCallClass.Instance.ExitGame();
+                }
+                else
+                {
+                    StopCoroutine("LogoutFunction");
+                    StartCoroutine(LogoutFunction(0f));
+                }
+            }
+            else
+            {
+                UIManager.Instance.DisplayMessagePanel(resp.message);
+            }
+        });
+    }
+
+    IEnumerator LogoutFunction(float timer)
+    {
+        UIManager.Instance.isLogOut = true;
+        Game.Lobby.socketManager.Close();
+        UIManager.Instance.DisplayLoader("");
+        Game.Lobby.socketManager.Open();
+        Game.Lobby.ConnectToSocket();
+        UIManager.Instance.tableManager.RemoveAllMiniTableData();
+        UIManager.Instance.SoundManager.stopBgSound();
+        yield return new WaitForSeconds(timer);
+        UIManager.Instance.Reset(false);
+    }
+    #endregion
 }
