@@ -548,7 +548,7 @@ public class UIManager : MonoBehaviour
             panels.gameObject.SetActive (false);
         }*/
         UIManager.Instance.DisplayLoader("");
-        UIManager.Instance.LobbyScreeen.Close();
+        UIManager.Instance.LobbyPanelNew.Close(); // LobbyScreeen not used more
         UIManager.Instance.GameScreeen.Open();
     }
 
@@ -583,7 +583,7 @@ public class UIManager : MonoBehaviour
                 if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
                 {
                     UIManager.Instance.GameScreeen.Close();
-                    UIManager.Instance.LobbyScreeen.Open();
+                    UIManager.Instance.LobbyPanelNew.Open(); // LobbyScreeen not used more
                     UIManager.Instance.HideTournamentRequestPopup();
                     //UIManager.Instance.GameScreeen.currentRoomData.roomId = resp.result.roomId;
                     //Constants.Poker.TableId = resp.result.roomId;

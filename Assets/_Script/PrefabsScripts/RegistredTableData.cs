@@ -103,7 +103,7 @@ public class RegistredTableData : MonoBehaviour
         yield return new WaitForSeconds(timer);
         UIManager.Instance.DisplayLoader("");
 
-        UIManager.Instance.LobbyScreeen.Close();
+        UIManager.Instance.LobbyPanelNew.Close(); // LobbyScreeen not used more
         UIManager.Instance.GameScreeen.Open();
     }
 

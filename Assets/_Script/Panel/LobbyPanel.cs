@@ -1506,7 +1506,7 @@ public class LobbyPanel : MonoBehaviour
     {
         UIManager.Instance.DisplayLoader("");
         yield return new WaitForSeconds(timer);
-        UIManager.Instance.LobbyScreeen.Close();
+        UIManager.Instance.LobbyPanelNew.Close(); // LobbyScreeen not used more
     }
 
     IEnumerator LogoutFunction(float timer)

@@ -163,7 +163,7 @@ public class TournamentWinnerPanel : MonoBehaviour
         UIManager.Instance.GameScreeen.Close();
         yield return new WaitForSeconds(timer);
         this.Close();
-        UIManager.Instance.LobbyScreeen.Open();
+        UIManager.Instance.LobbyPanelNew.Open(); // LobbyScreeen not used more
     }
 
     #endregion

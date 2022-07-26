@@ -255,7 +255,7 @@ public class TableData : MonoBehaviour
 
         UIManager.Instance.DisplayLoader("");
         yield return new WaitForSeconds(timer);
-        UIManager.Instance.LobbyScreeen.Close();
+        UIManager.Instance.LobbyPanelNew.Close(); // LobbyScreeen not used more
         UIManager.Instance.GameScreeen.Open();
     }
     #endregion

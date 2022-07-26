@@ -281,7 +281,7 @@ public class TableManager : MonoBehaviour
             if (!UIManager.Instance.GameScreeen.isActiveAndEnabled)
             {
                 UIManager.Instance.GameScreeen.Open();
-                UIManager.Instance.LobbyScreeen.Close();
+                UIManager.Instance.LobbyPanelNew.Close(); // LobbyScreeen not used more
             }
             yield return 0;
 

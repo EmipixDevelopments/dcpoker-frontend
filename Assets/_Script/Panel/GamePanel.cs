@@ -2983,7 +2983,7 @@ public class GamePanel : MonoBehaviour
                 {
                     this.Close();
                     UIManager.Instance.tableManager.RemoveMiniTable(this.currentRoomData.roomId);
-                    UIManager.Instance.LobbyScreeen.Open();
+                    UIManager.Instance.LobbyPanelNew.Open(); // LobbyScreeen not used more
                     UIManager.Instance.HidePopup();
                 });
             }
@@ -2993,7 +2993,7 @@ public class GamePanel : MonoBehaviour
                 {
                     this.Close();
                     UIManager.Instance.tableManager.RemoveMiniTable(this.currentRoomData.roomId);
-                    UIManager.Instance.LobbyScreeen.Open();
+                    UIManager.Instance.LobbyPanelNew.Open(); // LobbyScreeen not used more
                     UIManager.Instance.HidePopup();
                 });
             }
@@ -5330,7 +5330,7 @@ public class GamePanel : MonoBehaviour
         UIManager.Instance.DisplayLoader("");
         yield return new WaitForSeconds(timer);
         UIManager.Instance.GameScreeen.Close();
-        UIManager.Instance.LobbyScreeen.Open();
+        UIManager.Instance.LobbyPanelNew.Open(); // LobbyScreeen not used more
     }
 
     //	private IEnumerator DistributeCards ()
