@@ -68,7 +68,7 @@ public class ChangeUsernamePanel : MonoBehaviour
                 return;
             }
 
-            UIManager.Instance.SocketGameManager.ChangeUsername(username, (socket, packet, args) =>
+            UIManager.Instance.SocketGameManager.ChangeUserName(username, (socket, packet, args) =>
             {
 
                 Debug.Log("ChangesUsername response : " + packet.ToString());

@@ -110,9 +110,9 @@ public class PanelDeleteAccount : MonoBehaviour
         fullyPhoneNumber = fullyPhoneNumber.Replace("-", "");
         _fullyPhoneNumber = fullyPhoneNumber;
 
-        UIManager.Instance.SocketGameManager.PlayerForgotPassword(fullyPhoneNumber, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.DeletePlayerSendCode(fullyPhoneNumber, (socket, packet, args) =>
         {
-            Debug.Log("PlayerForgotPassword  : " + packet.ToString());
+            Debug.Log("DeletePlayerSendCode  : " + packet.ToString());
 
             JSONArray jsonArray = new JSONArray(packet.ToString());
             string Source = jsonArray.getString(jsonArray.length() - 1);
@@ -175,9 +175,9 @@ public class PanelDeleteAccount : MonoBehaviour
         UIManager.Instance.SoundManager.OnButtonClick();
         int code = int.Parse(_codePanel2.text);
 
-        UIManager.Instance.SocketGameManager.PlayerConfirmForgotPasswordCode(_fullyPhoneNumber, code, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.DeletePlayerConfirmCode(_fullyPhoneNumber, code, (socket, packet, args) =>
         {
-            Debug.Log("PlayerConfirmForgotPasswordCode  : " + packet.ToString());
+            Debug.Log("DeletePlayerConfirmCode  : " + packet.ToString());
 
             JSONArray jsonArray = new JSONArray(packet.ToString());
             string Source = jsonArray.getString(jsonArray.length() - 1);
@@ -214,15 +214,18 @@ public class PanelDeleteAccount : MonoBehaviour
         string authToken = tokenHack(_fullyPhoneNumber, _password);
 
         UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.SocketGameManager.PlayerChangeForgetPassword(authToken, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.DeleteUser((socket, packet, args) =>
         {
-            Debug.Log("PlayerChangeForgetPassword  : " + packet.ToString());
+            Debug.Log("DeleteUser  : " + packet.ToString());
 
             JSONArray jsonArray = new JSONArray(packet.ToString());
             string Source = jsonArray.getString(jsonArray.length() - 1);
             PokerEventResponse<AuthTokenFromJSON> resp = JsonUtility.FromJson<PokerEventResponse<AuthTokenFromJSON>>(Source);
             if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
             {
+                UIManager.Instance.LobbyPanelNew.Close();
+                UIManager.Instance.MainHomeScreen.Open();
+
                 UIManager.Instance.DisplayMessagePanel(resp.message, null);
                 gameObject.SetActive(false);
             }

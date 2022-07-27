@@ -81,6 +81,21 @@ public class SocketGamemanager : MonoBehaviour
     }
 
 
+    public void UpdateIsCashe( bool isCash, SocketIOAckCallback action)
+    {
+        if (!HasInternetConnection())
+            return;
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+        jsonObj.put("isCash", isCash);
+        print("UpdateIsCashe: " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.UpdateIsCash, action, Json.Decode(jsonObj.toString()));
+    }
+
+
     /// <summary>
     /// Login player.
     /// </summary>
@@ -822,7 +837,7 @@ public class SocketGamemanager : MonoBehaviour
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.TransferChips, action, Json.Decode(jsonObj.toString()));
     }
 
-    public void ChangeUsername(string newUsername, SocketIOAckCallback action)
+    public void ChangeUserName(string newUsername, SocketIOAckCallback action)
     {
         JSON_Object jsonObj = new JSON_Object();
         jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
@@ -834,6 +849,41 @@ public class SocketGamemanager : MonoBehaviour
 
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.ChangeUsername, action, Json.Decode(jsonObj.toString()));
     }
+
+
+    public void DeletePlayerSendCode(string fullyPhoneNumber, SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("mobile", fullyPhoneNumber);
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        print(Constants.PokerEvents.DeletePlayerSendCode + " - " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.DeletePlayerSendCode, action, Json.Decode(jsonObj.toString()));
+    }
+
+    public void DeletePlayerConfirmCode(string fullyPhoneNumber, int code, SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("mobile", fullyPhoneNumber);
+        jsonObj.put("code", code);
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        print(Constants.PokerEvents.DeletePlayerConfirmCode + " - " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.DeletePlayerConfirmCode, action, Json.Decode(jsonObj.toString()));
+    }
+
+    public void DeleteUser(SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+        print(Constants.PokerEvents.DeletePlayer + " - " + jsonObj.toString());
+
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.DeletePlayer, action, Json.Decode(jsonObj.toString()));
+    }
+
 
     /// <summary>
     /// playerForgotPassword.
@@ -851,11 +901,6 @@ public class SocketGamemanager : MonoBehaviour
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.playerNewPassword, action, Json.Decode(jsonObj.toString()));
     }
 
-    /// <summary>
-    /// Forget password part 1
-    /// </summary>
-    /// <param name="fullyPhoneNumber">state code and phone</param>
-    /// <param name="action"></param>
     public void PlayerForgotPassword(string fullyPhoneNumber, SocketIOAckCallback action)
     {
         JSON_Object jsonObj = new JSON_Object();

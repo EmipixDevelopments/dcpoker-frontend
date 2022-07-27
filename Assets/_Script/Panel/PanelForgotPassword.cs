@@ -56,6 +56,10 @@ public class PanelForgotPassword : MonoBehaviour
         _fullyPhoneNumber = "";
         _password = "";
 
+        _showCodePanel2.isOn = false;
+        _showPasswordPanel3.isOn = false;
+        _showRepeatPasswordPanel3.isOn = false;
+
         ChangeState(_state);
     }
 
@@ -144,6 +148,7 @@ public class PanelForgotPassword : MonoBehaviour
         AddOptionToDropdown(_phoneAndCodeList, _phoneCodeDropdownPanel2);
         _phoneCodeDropdownPanel2.value = _phoneCodeIndex;
         _phoneNumberPanel2.text = _phoneNumber;
+        _showCodePanel2.isOn = false;
     }
     private void UpdateForState2()
     {
@@ -209,6 +214,8 @@ public class PanelForgotPassword : MonoBehaviour
     private void StartStateThird()
     {
         OpenPanelAndCloseOther(_state);
+        _showPasswordPanel3.isOn = false;
+        _showRepeatPasswordPanel3.isOn = false;
     }
     private void UpdateForState3()
     {

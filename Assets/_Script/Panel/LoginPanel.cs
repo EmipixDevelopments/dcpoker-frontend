@@ -65,6 +65,7 @@ public class LoginPanel : MonoBehaviour
         {
             _messageText.text = "";
         }
+        _showPasswordToggle.isOn = false;
 
         if (UIManager.Instance && UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe)
         {

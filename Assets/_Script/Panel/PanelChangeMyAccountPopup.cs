@@ -47,7 +47,7 @@ public class PanelChangeMyAccountPopup : MonoBehaviour
     private bool NameIsCorrect()
     {
         bool answer = true;
-        if (_newNameInputField.text.Length < 3)
+        if (_newNameInputField.text.Length < 4)
         {
             answer = answer & false;
         }
@@ -82,7 +82,7 @@ public class PanelChangeMyAccountPopup : MonoBehaviour
     {
         string username = _newNameInputField.text;
 
-        UIManager.Instance.SocketGameManager.ChangeUsername(username, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.ChangeUserName(username, (socket, packet, args) =>
         {
 
             Debug.Log("ChangesUsername response : " + packet.ToString());
@@ -100,11 +100,13 @@ public class PanelChangeMyAccountPopup : MonoBehaviour
                 SaveLoad.SaveGame();
                 OnClickCancelButton();
             }
+            else if (resp.message == "Username already exists")
+            {
+                IfNameExist();
+            }
             else
             {
-                //add logic to get information from the server about the existence of the name
-
-                //UIManager.Instance.DisplayMessagePanel(resp.message);
+                UIManager.Instance.DisplayMessagePanel(resp.message);
             }
         });
     }

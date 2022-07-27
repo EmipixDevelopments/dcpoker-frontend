@@ -386,6 +386,12 @@ namespace Constants
         public const string UpdateProfile = "UpdateProfile";
         public const string PrivateRoomLogin = "PrivateRoomLogin";
 
+        public const string UpdateIsCash = "updateIsCash";
+
+        public const string DeletePlayerSendCode = "deletePlayerSendCode";
+        public const string DeletePlayerConfirmCode = "deletePlayerConfirmCode";
+        public const string DeletePlayer = "deletePlayer";
+
         public const string ListRooms = "ListTouFrnaments";
         public const string PlayerLeaderBoard = "PlayerLeaderBoard";
         public const string SupportAdmin = "SupportAdmin";

@@ -33,34 +33,6 @@ public class PanelProfileNew : MonoBehaviour
         UpdateFields();
     }
 
-    // not used
-    //private void ChangePassword() 
-    //{
-    //        UIManager.Instance.SoundManager.OnButtonClick();
-    //        string newPassword = "112233";
-    //        UIManager.Instance.SocketGameManager.PlayerNewPassword(newPassword, (socket, packet, args) =>
-    //        {
-    //            Debug.Log("GetplayerForgotPassword  : " + packet.ToString());
-    //
-    //            UIManager.Instance.HideLoader();
-    //            JSONArray arr = new JSONArray(packet.ToString());
-    //            string Source;
-    //            Source = arr.getString(arr.length() - 1);
-    //            var resp1 = Source;
-    //
-    //            PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(resp1);
-    //
-    //            if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
-    //            {
-    //                UIManager.Instance.DisplayMessagePanel(resp.message);
-    //                UIManager.Instance.assetOfGame.SavedLoginData.password = newPassword;
-    //            }
-    //            else
-    //            {
-    //                UIManager.Instance.DisplayMessagePanel(resp.message);
-    //            }
-    //        });
-    //}
 
     public void CallProfileEvent()
     {
@@ -103,9 +75,24 @@ public class PanelProfileNew : MonoBehaviour
 
     public void OnClickChipsOrCashs() 
     {
-        // send request on change pay Type
         bool isCashe = _cashToggle.isOn;
-        Debug.Log($"user select cashe {isCashe}");
+        UIManager.Instance.SocketGameManager.UpdateIsCashe(isCashe, (socket, packet, args) =>
+        {
+            UIManager.Instance.HideLoader();
+            JSONArray arr = new JSONArray(packet.ToString());
+            string Source = arr.getString(arr.length() - 1);
+
+            PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(Source);
+            Debug.Log("UpdateIsCashe Response  : " + Source);
+            if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+            {
+
+            }
+            else
+            {
+                UIManager.Instance.DisplayMessagePanel(resp.message);
+            }
+        });
     }
 
     private void UpdateFields()

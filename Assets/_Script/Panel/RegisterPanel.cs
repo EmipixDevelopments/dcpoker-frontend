@@ -63,6 +63,8 @@ public class RegisterPanel : MonoBehaviour
         _password.text = "";
         _repeatPassword.text = "";
         _otherUserNamePanel.gameObject.SetActive(false);
+        _showPassword.isOn = false;
+        _showRepeatPassword.isOn = false;
     }
 
     public void OnClickShowPasswordToggle()
