@@ -205,7 +205,9 @@ public class PanelDeleteAccount : MonoBehaviour
     {
         OpenPanelAndCloseOther(_state);
         // write correct text in here
-        _infoTextPanel3.text = "";
+        _infoTextPanel3.text = $"You are about to delete your account \n" +
+            $"“{UIManager.Instance.assetOfGame.SavedLoginData.Username}” \n" +
+            $"Are you sure";
     }
 
 
