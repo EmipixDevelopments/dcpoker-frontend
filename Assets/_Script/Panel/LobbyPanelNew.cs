@@ -1,8 +1,28 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LobbyPanelNew : MonoBehaviour
 {
+    [Header("Menu toggles")]
+    [SerializeField] private Toggle _tournamentsToggle;
+    [SerializeField] private Toggle _sitNGoToggle;
+    [SerializeField] private Toggle _texasHoldemToggle;
+    [SerializeField] private Toggle _omahaToggle;
+    [SerializeField] private Toggle _pLO5Toggle;
+    [SerializeField] private Toggle _accountInfoInToggle;
+    [Header("Top panel buttons")]
+    [SerializeField] private Button _homeButton;
+    [SerializeField] private Button _logout;
+    [SerializeField] private Button _howToPlayButton;
+    [SerializeField] private Button _aboutButton;
+    [SerializeField] private Button _supportButton;
+    [Header("Bottom panel buttons")]
+    [SerializeField] private Button _termsOfServiceButton;
+    [SerializeField] private Button _privacyPolicyButton;
+    [SerializeField] private Button _responsibleGamingButton;
+
+    [Header("Panel objects")]
     [SerializeField] private GameObject _panelHome;
     [SerializeField] private GameObject _panelMyAccount;
     [SerializeField] private GameObject _panelTournaments;
@@ -10,7 +30,6 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private GameObject _panelTexasHoldem;
     [SerializeField] private GameObject _panelOmaha;
     [SerializeField] private GameObject _panelPlo5;
-
     [SerializeField] private GameObject _panelHowToPlay;
     [SerializeField] private GameObject _panelAbout;
     [SerializeField] private GameObject _panelSupport;
@@ -19,67 +38,125 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private GameObject _panelResponsibleGaming;
 
 
-    public void OpenPanelHome()
+    private void Start()
+    {
+        InitButtonsAndToggles();
+    }
+
+
+    private void OnEnable()
+    {
+        OpenPanelHome();
+    }
+
+    #region Menu
+    private void InitButtonsAndToggles()
+    {
+        // init
+        // clear all listeners
+        _tournamentsToggle.onValueChanged.RemoveAllListeners();
+        _sitNGoToggle.onValueChanged.RemoveAllListeners();
+        _texasHoldemToggle.onValueChanged.RemoveAllListeners();
+        _omahaToggle.onValueChanged.RemoveAllListeners();
+        _pLO5Toggle.onValueChanged.RemoveAllListeners();
+        _accountInfoInToggle.onValueChanged.RemoveAllListeners();
+
+        _homeButton.onClick.RemoveAllListeners();
+        _logout.onClick.RemoveAllListeners();
+        _howToPlayButton.onClick.RemoveAllListeners();
+        _aboutButton.onClick.RemoveAllListeners();
+        _supportButton.onClick.RemoveAllListeners();
+
+        _termsOfServiceButton.onClick.RemoveAllListeners();
+        _privacyPolicyButton.onClick.RemoveAllListeners();
+        _responsibleGamingButton.onClick.RemoveAllListeners();
+
+        // set listeners
+        _tournamentsToggle.onValueChanged.AddListener(OpenPanelTournaments);
+        _sitNGoToggle.onValueChanged.AddListener(OpenPanelSitNGo);
+        _texasHoldemToggle.onValueChanged.AddListener(OpenPanelTexasHoldem);
+        _omahaToggle.onValueChanged.AddListener(OpenPanelOmaha);
+        _pLO5Toggle.onValueChanged.AddListener(OpenPanelPlo5);
+        _accountInfoInToggle.onValueChanged.AddListener(OpenPanelMyAccount);
+
+        _homeButton.onClick.AddListener(OpenPanelHome);
+        _logout.onClick.AddListener(OnClickLogoutButton);
+        _howToPlayButton.onClick.AddListener(OpenPanelHowToPlay);
+        _aboutButton.onClick.AddListener(OpenPanelAbout);
+        _supportButton.onClick.AddListener(OpenPanelSupport);
+
+        _termsOfServiceButton.onClick.AddListener(OpenPanelTermsOfService);
+        _privacyPolicyButton.onClick.AddListener(OpenPanelPrivacyPolicy);
+        _responsibleGamingButton.onClick.AddListener(OpenPanelResponsibleGaming);
+    }
+
+    private void OpenPanelHome()
     {
         CloseAll();
         _panelHome.SetActive(true);
     }
-    public void OpenPanelMyAccount()
+    private void OpenPanelMyAccount(bool run)
     {
+        if (!run) return;
         CloseAll();
         _panelMyAccount.SetActive(true);
     }
-    public void OpenPanelTournaments()
+    private void OpenPanelTournaments(bool run)
     {
+        if (!run) return;
         CloseAll();
         _panelTournaments.SetActive(true);
     }
-    public void OpenPanelSitNGo()
+    private void OpenPanelSitNGo(bool run)
     {
+        if (!run) return;
         CloseAll();
         _panelSitNGo.SetActive(true);
     }
-    public void OpenPanelTexasHoldem()
+    private void OpenPanelTexasHoldem(bool run)
     {
+        if (!run) return;
         CloseAll();
         _panelTexasHoldem.SetActive(true);
     }
-    public void OpenPanelOmaha()
+    private void OpenPanelOmaha(bool run)
     {
+        if (!run) return;
         CloseAll();
         _panelOmaha.SetActive(true);
     }
-    public void OpenPanelPlo5()
+    private void OpenPanelPlo5(bool run)
     {
+        if (!run) return;
         CloseAll();
         _panelPlo5.SetActive(true);
     }
-    public void OpenPanelHowToPlay()
+    private void OpenPanelHowToPlay()
     {
         CloseAll();
         _panelHowToPlay.SetActive(true);
     }
-    public void OpenPanelAbout()
+    private void OpenPanelAbout()
     {
         CloseAll();
         _panelAbout.SetActive(true);
     }
-    public void OpenPanelSupport()
+    private void OpenPanelSupport()
     {
         CloseAll();
         _panelSupport.SetActive(true);
     }
-    public void OpenPanelTermsOfService()
+    private void OpenPanelTermsOfService()
     {
         CloseAll();
         _panelTermsOfService.SetActive(true);
     }
-    public void OpenPanelPrivacyPolicy()
+    private void OpenPanelPrivacyPolicy()
     {
         CloseAll();
         _panelPrivacyPolicy.SetActive(true);
     }
-    public void OpenPanelResponsibleGaming()
+    private void OpenPanelResponsibleGaming()
     {
         CloseAll();
         _panelResponsibleGaming.SetActive(true);
@@ -101,14 +178,10 @@ public class LobbyPanelNew : MonoBehaviour
         _panelPrivacyPolicy.SetActive(false);
         _panelResponsibleGaming.SetActive(false);
     }
-
-    private void OnEnable()
-    {
-        OpenPanelHome();
-    }
+    #endregion
 
     #region Logout
-    public void OnClickLogoutButton()
+    private void OnClickLogoutButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         if (UIManager.Instance.IsWebGLAffiliat)
