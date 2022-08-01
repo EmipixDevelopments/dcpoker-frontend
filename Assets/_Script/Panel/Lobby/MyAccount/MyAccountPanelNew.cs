@@ -1,10 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MyAccountPanelNew : MonoBehaviour
 {
+    [SerializeField] private LobbyPanelNew _lobbyPanelNew;
+
     [Header("Menu toggles")]
     public Toggle ProfileToggle;
     public Toggle MyBonusesToggle;
@@ -21,12 +24,35 @@ public class MyAccountPanelNew : MonoBehaviour
     [SerializeField] private GameObject _panelDepositsAndWithdrawals;
     [SerializeField] private GameObject _panelPurchaseHistory;
 
-    private void OnEnable()
+    private enum MyAccountPanel
     {
-        ProfileToggle.isOn = true;
+        Profile,
+        MyBonuses,
+        GameHistory,
+        LeaderBoard,
+        DepositsAndWithdrawals,
+        PurchaseHistory
     }
+    private MyAccountPanel _currentPanel;
 
     private void Start()
+    {
+        InitButtonsAndToggles();
+    }
+
+    private void OnEnable()
+    {
+        //ProfileToggle.isOn = true;
+    }
+
+
+    public void UpdatePanel()
+    {
+        SwitchPanel(_currentPanel);
+    }
+
+
+    private void InitButtonsAndToggles()
     {
         ProfileToggle.onValueChanged.RemoveAllListeners();
         MyBonusesToggle.onValueChanged.RemoveAllListeners();
@@ -43,41 +69,69 @@ public class MyAccountPanelNew : MonoBehaviour
         PurchaseHistoryToggle.onValueChanged.AddListener(OpenPanelPurchaseHistory);
     }
 
+    private void SwitchPanel(MyAccountPanel nextPanel)
+    {
+        // default, close all windows
+        CloseAll();
+
+        switch (nextPanel)
+        {
+            case MyAccountPanel.Profile:
+                _panelProfile.SetActive(true);
+                break;
+            case MyAccountPanel.MyBonuses:
+                _panelMyBonuses.SetActive(true);
+                break;
+            case MyAccountPanel.GameHistory:
+                _panelGameHistory.SetActive(true);
+                break;
+            case MyAccountPanel.LeaderBoard:
+                _panelLeaderBoard.SetActive(true);
+                break;
+            case MyAccountPanel.DepositsAndWithdrawals:
+                _panelDepositsAndWithdrawals.SetActive(true);
+                break;
+            case MyAccountPanel.PurchaseHistory:
+                _panelPurchaseHistory.SetActive(true);
+                break;
+            default:
+                break;
+        }
+        _currentPanel = nextPanel;
+
+        // default need call update on main menu
+        _lobbyPanelNew.UpdatePanel();
+    }
+
     private void OpenPanelProfile(bool run)
     {
         if (!run) return;
-        CloseAll();
-        _panelProfile.SetActive(true);
+        SwitchPanel(MyAccountPanel.Profile);
     }
     private void OpenPanelMyBonuses(bool run)
     {
         if (!run) return;
-        CloseAll();
-        _panelMyBonuses.SetActive(true);
+        SwitchPanel(MyAccountPanel.MyBonuses);
     }
     private void OpenPanelGameHistory(bool run)
     {
         if (!run) return;
-        CloseAll();
-        _panelGameHistory.SetActive(true);
+        SwitchPanel(MyAccountPanel.GameHistory);
     }
     private void OpenPanelLeaderBoard(bool run)
     {
         if (!run) return;
-        CloseAll();
-        _panelLeaderBoard.SetActive(true);
+        SwitchPanel(MyAccountPanel.LeaderBoard);
     }
     private void OpenPanelDepositsAndWithdrawals(bool run)
     {
         if (!run) return;
-        CloseAll();
-        _panelDepositsAndWithdrawals.SetActive(true);
+        SwitchPanel(MyAccountPanel.DepositsAndWithdrawals);
     }
     private void OpenPanelPurchaseHistory(bool run)
     {
         if (!run) return;
-        CloseAll();
-        _panelPurchaseHistory.SetActive(true);
+        SwitchPanel(MyAccountPanel.PurchaseHistory);
     }
 
     private void CloseAll()

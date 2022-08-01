@@ -36,7 +36,26 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private GameObject _panelTermsOfService;
     [SerializeField] private GameObject _panelPrivacyPolicy;
     [SerializeField] private GameObject _panelResponsibleGaming;
+    [SerializeField] private GameObject _panelBottomMenu;
 
+
+    private enum LobbyPanel
+    {
+        Home,
+        MyAccount,
+        Tournaments,
+        SitNGo,
+        TexasHoldem,
+        Omaha,
+        Plo5,
+        HowToPlay,
+        About,
+        Support,
+        TermsOfService,
+        PrivacyPolicy,
+        ResponsibleGaming
+    }
+    private LobbyPanel _currentPanel;
 
     private void Start()
     {
@@ -46,7 +65,12 @@ public class LobbyPanelNew : MonoBehaviour
 
     private void OnEnable()
     {
-        OpenPanelHome();
+        SwitchAtlHome();
+    }
+
+    public void UpdatePanel() 
+    {
+        SwitchPanel(_currentPanel);
     }
 
     #region Menu
@@ -72,94 +96,142 @@ public class LobbyPanelNew : MonoBehaviour
         _responsibleGamingButton.onClick.RemoveAllListeners();
 
         // set listeners
-        _tournamentsToggle.onValueChanged.AddListener(OpenPanelTournaments);
-        _sitNGoToggle.onValueChanged.AddListener(OpenPanelSitNGo);
-        _texasHoldemToggle.onValueChanged.AddListener(OpenPanelTexasHoldem);
-        _omahaToggle.onValueChanged.AddListener(OpenPanelOmaha);
-        _pLO5Toggle.onValueChanged.AddListener(OpenPanelPlo5);
-        _accountInfoInToggle.onValueChanged.AddListener(OpenPanelMyAccount);
+        _tournamentsToggle.onValueChanged.AddListener(SwitchAtTournaments);
+        _sitNGoToggle.onValueChanged.AddListener(SwitchAtSitNGo);
+        _texasHoldemToggle.onValueChanged.AddListener(SwitchAtTexasHoldem);
+        _omahaToggle.onValueChanged.AddListener(SwitchAtOmaha);
+        _pLO5Toggle.onValueChanged.AddListener(SwitchAtPlo5);
+        _accountInfoInToggle.onValueChanged.AddListener(SwitchAtMyAccount);
 
-        _homeButton.onClick.AddListener(OpenPanelHome);
+        _homeButton.onClick.AddListener(SwitchAtlHome);
         _logout.onClick.AddListener(OnClickLogoutButton);
-        _howToPlayButton.onClick.AddListener(OpenPanelHowToPlay);
-        _aboutButton.onClick.AddListener(OpenPanelAbout);
-        _supportButton.onClick.AddListener(OpenPanelSupport);
+        _howToPlayButton.onClick.AddListener(SwitchAtHowToPlay);
+        _aboutButton.onClick.AddListener(SwitchAtAbout);
+        _supportButton.onClick.AddListener(SwitchAtSupport);
 
-        _termsOfServiceButton.onClick.AddListener(OpenPanelTermsOfService);
-        _privacyPolicyButton.onClick.AddListener(OpenPanelPrivacyPolicy);
-        _responsibleGamingButton.onClick.AddListener(OpenPanelResponsibleGaming);
+        _termsOfServiceButton.onClick.AddListener(SwitchAtTermsOfService);
+        _privacyPolicyButton.onClick.AddListener(SwitchAtPrivacyPolicy);
+        _responsibleGamingButton.onClick.AddListener(SwitchAtResponsibleGaming);
     }
 
-    private void OpenPanelHome()
+    private void SwitchPanel(LobbyPanel nextWindow)
     {
+        // default, close all windows
         CloseAll();
-        _panelHome.SetActive(true);
+
+        switch (nextWindow)
+        {
+            case LobbyPanel.Home:
+                _panelHome.SetActive(true);
+                break;
+            case LobbyPanel.MyAccount:
+                _panelMyAccount.SetActive(true);
+                break;
+            case LobbyPanel.Tournaments:
+                _panelTournaments.SetActive(true);
+                break;
+            case LobbyPanel.SitNGo:
+                _panelSitNGo.SetActive(true);
+                break;
+            case LobbyPanel.TexasHoldem:
+                _panelTexasHoldem.SetActive(true);
+                break;
+            case LobbyPanel.Omaha:
+                _panelOmaha.SetActive(true);
+                break;
+            case LobbyPanel.Plo5:
+                _panelPlo5.SetActive(true);
+                break;
+            case LobbyPanel.HowToPlay:
+                _panelHowToPlay.SetActive(true);
+                break;
+            case LobbyPanel.About:
+                _panelAbout.SetActive(true);
+                break;
+            case LobbyPanel.Support:
+                _panelSupport.SetActive(true);
+                break;
+            case LobbyPanel.TermsOfService:
+                _panelTermsOfService.SetActive(true);
+                break;
+            case LobbyPanel.PrivacyPolicy:
+                _panelPrivacyPolicy.SetActive(true);
+                break;
+            case LobbyPanel.ResponsibleGaming:
+                _panelResponsibleGaming.SetActive(true);
+                break;
+            default:
+                break;
+        }
+        _currentPanel = nextWindow;
+
+        // need open in next frame for other panels to be opened
+        StartCoroutine(ShowBottomMenu());
     }
-    private void OpenPanelMyAccount(bool run)
+
+    IEnumerator ShowBottomMenu()
+    {
+        yield return new WaitForEndOfFrame();
+        _panelBottomMenu.SetActive(true);
+    }
+
+    private void SwitchAtlHome()
+    {
+        SwitchPanel(LobbyPanel.Home);
+    }
+    private void SwitchAtMyAccount(bool run)
     {
         if (!run) return;
-        CloseAll();
-        _panelMyAccount.SetActive(true);
+        SwitchPanel(LobbyPanel.MyAccount);
     }
-    private void OpenPanelTournaments(bool run)
+    private void SwitchAtTournaments(bool run)
     {
         if (!run) return;
-        CloseAll();
-        _panelTournaments.SetActive(true);
+        SwitchPanel(LobbyPanel.Tournaments);
     }
-    private void OpenPanelSitNGo(bool run)
+    private void SwitchAtSitNGo(bool run)
     {
         if (!run) return;
-        CloseAll();
-        _panelSitNGo.SetActive(true);
+        SwitchPanel(LobbyPanel.SitNGo);
     }
-    private void OpenPanelTexasHoldem(bool run)
+    private void SwitchAtTexasHoldem(bool run)
     {
         if (!run) return;
-        CloseAll();
-        _panelTexasHoldem.SetActive(true);
+        SwitchPanel(LobbyPanel.TexasHoldem);
     }
-    private void OpenPanelOmaha(bool run)
+    private void SwitchAtOmaha(bool run)
     {
         if (!run) return;
-        CloseAll();
-        _panelOmaha.SetActive(true);
+        SwitchPanel(LobbyPanel.Omaha);
     }
-    private void OpenPanelPlo5(bool run)
+    private void SwitchAtPlo5(bool run)
     {
         if (!run) return;
-        CloseAll();
-        _panelPlo5.SetActive(true);
+        SwitchPanel(LobbyPanel.Plo5);
     }
-    private void OpenPanelHowToPlay()
+    private void SwitchAtHowToPlay()
     {
-        CloseAll();
-        _panelHowToPlay.SetActive(true);
+        SwitchPanel(LobbyPanel.HowToPlay);
     }
-    private void OpenPanelAbout()
+    private void SwitchAtAbout()
     {
-        CloseAll();
-        _panelAbout.SetActive(true);
+        SwitchPanel(LobbyPanel.About);
     }
-    private void OpenPanelSupport()
+    private void SwitchAtSupport()
     {
-        CloseAll();
-        _panelSupport.SetActive(true);
+        SwitchPanel(LobbyPanel.Support);
     }
-    private void OpenPanelTermsOfService()
+    private void SwitchAtTermsOfService()
     {
-        CloseAll();
-        _panelTermsOfService.SetActive(true);
+        SwitchPanel(LobbyPanel.TermsOfService);
     }
-    private void OpenPanelPrivacyPolicy()
+    private void SwitchAtPrivacyPolicy()
     {
-        CloseAll();
-        _panelPrivacyPolicy.SetActive(true);
+        SwitchPanel(LobbyPanel.PrivacyPolicy);
     }
-    private void OpenPanelResponsibleGaming()
+    private void SwitchAtResponsibleGaming()
     {
-        CloseAll();
-        _panelResponsibleGaming.SetActive(true);
+        SwitchPanel(LobbyPanel.ResponsibleGaming);
     }
 
     private void CloseAll()
@@ -177,6 +249,7 @@ public class LobbyPanelNew : MonoBehaviour
         _panelTermsOfService.SetActive(false);
         _panelPrivacyPolicy.SetActive(false);
         _panelResponsibleGaming.SetActive(false);
+        _panelBottomMenu.SetActive(false);
     }
     #endregion
 
