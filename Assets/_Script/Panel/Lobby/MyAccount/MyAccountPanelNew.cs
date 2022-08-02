@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class MyAccountPanelNew : MonoBehaviour
 {
+    [Header("Parent menu script")]
     [SerializeField] private LobbyPanelNew _lobbyPanelNew;
 
     [Header("Menu toggles")]
