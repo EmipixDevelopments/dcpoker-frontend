@@ -41,12 +41,6 @@ public class MyAccountPanelNew : MonoBehaviour
         InitButtonsAndToggles();
     }
 
-    private void OnEnable()
-    {
-        //ProfileToggle.isOn = true;
-    }
-
-
     public void UpdatePanel()
     {
         SwitchPanel(_currentPanel);
