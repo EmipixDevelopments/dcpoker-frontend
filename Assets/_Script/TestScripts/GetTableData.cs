@@ -16,17 +16,16 @@ public class GetTableData : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Q))
         {
-            string pokerGameType = "";
-            GameSpeed tableSpeed = GameSpeed.regular;
+            string pokerGameType = PokerGameType.omaha.ToString();
+            GameSpeed gameSpeed = UIManager.Instance.selectedGameSpeed;
             string tableName = "";
-            bool limit = true;
-            string gametype = "";
-            string game = "";
-            string stacks = "";
-            string maxPlayer = "";
-            string currencyType = "";
-            UIManager.Instance.SocketGameManager.SearchLobby(pokerGameType, tableSpeed, tableName, limit,
-               gametype, game, stacks, maxPlayer, currencyType,OnTableListReceived);
+            bool isLimitSelected = false;
+            string gametype = "Touranment";//"sng"; or  "Touranment"
+            string SelectedLimitType = LimitType.All.ToString();
+            string SelectedStack = "all";
+            string SelectedPlayerPerTable = "all";
+            string currencyType = UIManager.CurrencyType.cash.ToString();//  UIManager.Instance.currencyType = UIManager.CurrencyType.cash; // может не важно
+            UIManager.Instance.SocketGameManager.SearchLobby(pokerGameType, gameSpeed, tableName, isLimitSelected, gametype, SelectedLimitType, SelectedStack, SelectedPlayerPerTable, currencyType, OnTableListReceived);
         }
     }
 
