@@ -34,6 +34,13 @@ public class PanelDepositsAndWithdrawals : MonoBehaviour
         SwitchPanel(_currentPanel);
     }
 
+    public void OpenWithdraw() 
+    {
+        _currentPanel = DepositsAndWithdrawalsPanels.DepositStartPanel;
+        UpdatePanel();
+    }
+
+    #region Menu
     private void InitButtonsAndToggles()
     {
         _depositToggle.onValueChanged.RemoveAllListeners();
@@ -78,4 +85,5 @@ public class PanelDepositsAndWithdrawals : MonoBehaviour
         _depositStartPanel.SetActive(false);
         _cardPanel.SetActive(false);
     }
+    #endregion
 }

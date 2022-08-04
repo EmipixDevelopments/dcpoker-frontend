@@ -13,28 +13,66 @@ public class PanelDeleteAccount : MonoBehaviour
     [SerializeField] private TMP_Dropdown _phoneCodeDropdownPanel1;
     [SerializeField] private TMP_InputField _phoneNumberPanel1;
     [SerializeField] private Button _okButton;
+    [SerializeField] private Button _closeButtonPanel1;
     [Header("Panel 2")]
     [SerializeField] private GameObject _panel2;
     [SerializeField] private TMP_Dropdown _phoneCodeDropdownPanel2;
-    [SerializeField] private TMP_InputField _phoneNumberPanel2;
-    [SerializeField] private TMP_InputField _codePanel2;
-    [SerializeField] private Toggle _showCodePanel2;
-    [SerializeField] private Button _verifyButton;
+    [SerializeField] private TMP_InputField _phoneNumberInputFieldPanel2;
+    [SerializeField] private TMP_InputField _codeInputFieldPanel2;
+    [SerializeField] private Toggle _showCodeTogglePanel2;
+    [SerializeField] private Button _verifyButtonPanel2;
+    [SerializeField] private Button _backButtonPanel2;
     [SerializeField] private GameObject _messageTextPanel2;
     [Header("Panel 3")]
     [SerializeField] private GameObject _panel3;
     [SerializeField] private TextMeshProUGUI _infoTextPanel3;
+    [SerializeField] private Button _deleteButtonPanel3;
+    [SerializeField] private Button _cancelButtonPanel3;
+    [Header("Panel 4")]
+    [SerializeField] private GameObject _panel4;
+    [SerializeField] private TextMeshProUGUI _infoTextPanel4;
+    [SerializeField] private Button _deleteButtonPanel4;
+    [SerializeField] private Button _cancelButtonPanel4;
 
     private int _phoneCodeIndex;
     private string _phoneNumber;
     private string _fullyPhoneNumber;
     private string _password;
 
-    private enum States { First = 1, Second = 2, Third = 3 }
+    private enum States { First = 1, Second = 2, Third = 3, Fourth = 4 }
     private States _state = States.First;
 
     private PhoneCodeAndFlagListData _phoneAndCodeList = new PhoneCodeAndFlagListData();
 
+    private void Start()
+    {
+        // Initialization panel 1
+        _okButton.onClick.RemoveAllListeners();
+        _closeButtonPanel1.onClick.RemoveAllListeners();
+
+        _okButton.onClick.AddListener(OnClickButtonNextPanel1);
+        _closeButtonPanel1.onClick.AddListener(OnClickCloseButton);
+
+        // Initialization panel 2
+        _backButtonPanel2.onClick.RemoveAllListeners();
+        _verifyButtonPanel2.onClick.RemoveAllListeners();
+        _showCodeTogglePanel2.onValueChanged.RemoveAllListeners();
+
+        _backButtonPanel2.onClick.AddListener(OnClickButtonBackPanel2);
+        _verifyButtonPanel2.onClick.AddListener(OnClickButtonNextPanel2);
+        _showCodeTogglePanel2.onValueChanged.AddListener(OnClickShowCodeToggle);
+
+        // Initialization Panel 3
+        _cancelButtonPanel3.onClick.RemoveAllListeners();
+        _deleteButtonPanel3.onClick.RemoveAllListeners();
+
+        _cancelButtonPanel3.onClick.AddListener(OnClickCloseButton);
+        _deleteButtonPanel3.onClick.AddListener(OnClickButtonNextPanel3);
+
+        // Initialization Panel 4
+        _cancelButtonPanel4.onClick.AddListener(OnClickCloseButton);
+        _deleteButtonPanel4.onClick.AddListener(OnClickButtonNextPanel3);
+    }
 
     private void OnEnable()
     {
@@ -43,8 +81,8 @@ public class PanelDeleteAccount : MonoBehaviour
         _phoneCodeDropdownPanel1.value = 0;
         _phoneNumberPanel1.text = "";
         _phoneCodeDropdownPanel2.value = 0;
-        _phoneNumberPanel2.text = "";
-        _codePanel2.text = "";
+        _phoneNumberInputFieldPanel2.text = "";
+        _codeInputFieldPanel2.text = "";
         _infoTextPanel3.text = "";
         _phoneCodeIndex = 0;
         _phoneNumber = "";
@@ -52,6 +90,12 @@ public class PanelDeleteAccount : MonoBehaviour
         _password = "";
 
         ChangeState(_state);
+    }
+
+    private void Update()
+    {
+        if (_state == States.First) UpdateForState1();
+        if (_state == States.Second) UpdateForState2();
     }
 
     private void ChangeState(States state)
@@ -68,10 +112,14 @@ public class PanelDeleteAccount : MonoBehaviour
             case States.Third:
                 StartStateThird();
                 break;
+            case States.Fourth:
+                StartStateFourth();
+                break;
             default:
                 break;
         }
     }
+
 
     #region Panel 1
     private void StartStateFirst()
@@ -96,13 +144,13 @@ public class PanelDeleteAccount : MonoBehaviour
         }
     }
 
-    public void OnClickCloseButton()
+    private void OnClickCloseButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         this.Close();
     }
 
-    public void OnClickButtonNextPanel1()
+    private void OnClickButtonNextPanel1()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         string fullyPhoneNumber = _phoneCodeDropdownPanel1.options[_phoneCodeDropdownPanel1.value].text + _phoneNumberPanel1.text;
@@ -138,42 +186,42 @@ public class PanelDeleteAccount : MonoBehaviour
         OpenPanelAndCloseOther(_state);
         AddOptionToDropdown(_phoneAndCodeList, _phoneCodeDropdownPanel2);
         _phoneCodeDropdownPanel2.value = _phoneCodeIndex;
-        _phoneNumberPanel2.text = _phoneNumber;
+        _phoneNumberInputFieldPanel2.text = _phoneNumber;
     }
     private void UpdateForState2()
     {
-        if (_codePanel2.text.Length > 3)
+        if (_codeInputFieldPanel2.text.Length > 3)
         {
-            _verifyButton.interactable = true;
+            _verifyButtonPanel2.interactable = true;
         }
         else
         {
-            _verifyButton.interactable = false;
+            _verifyButtonPanel2.interactable = false;
         }
     }
 
-    public void OnClickShowCodeToggle()
+    private void OnClickShowCodeToggle(bool value)
     {
-        if (_showCodePanel2.isOn)
+        if (value)
         {
-            _codePanel2.contentType = TMP_InputField.ContentType.Standard;
+            _codeInputFieldPanel2.contentType = TMP_InputField.ContentType.Standard;
         }
         else
         {
-            _codePanel2.contentType = TMP_InputField.ContentType.Password;
+            _codeInputFieldPanel2.contentType = TMP_InputField.ContentType.Password;
         }
-        _codePanel2.ForceLabelUpdate();
+        _codeInputFieldPanel2.ForceLabelUpdate();
     }
 
-    public void OnClickButtonBackPanel2()
+    private void OnClickButtonBackPanel2()
     {
         ChangeState(States.First);
     }
 
-    public void OnClickButtonNextPanel2()
+    private void OnClickButtonNextPanel2()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
-        int code = int.Parse(_codePanel2.text);
+        int code = int.Parse(_codeInputFieldPanel2.text);
 
         UIManager.Instance.SocketGameManager.DeletePlayerConfirmCode(_fullyPhoneNumber, code, (socket, packet, args) =>
         {
@@ -184,7 +232,14 @@ public class PanelDeleteAccount : MonoBehaviour
             PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(Source);
             if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
             {
-                ChangeState(States.Third);
+                if (UIManager.Instance.assetOfGame.SavedLoginData.cash <= 0)
+                {
+                    ChangeState(States.Third);
+                }
+                else
+                {
+                    ChangeState(States.Fourth);
+                }
             }
             else
             {
@@ -204,14 +259,15 @@ public class PanelDeleteAccount : MonoBehaviour
     private void StartStateThird()
     {
         OpenPanelAndCloseOther(_state);
-        // write correct text in here
+
+        string userName = UIManager.Instance.assetOfGame.SavedLoginData.Username;
+
         _infoTextPanel3.text = $"You are about to delete your account \n" +
-            $"“{UIManager.Instance.assetOfGame.SavedLoginData.Username}” \n" +
+            $"“<b>{userName}</b>” \n" +
             $"Are you sure";
     }
 
-
-    public void OnClickButtonNextPanel3()
+    private void OnClickButtonNextPanel3()
     {
         string authToken = tokenHack(_fullyPhoneNumber, _password);
 
@@ -239,6 +295,24 @@ public class PanelDeleteAccount : MonoBehaviour
     }
     #endregion
 
+    #region Panel 4
+    private void StartStateFourth()
+    {
+        OpenPanelAndCloseOther(_state);
+
+        double cash = UIManager.Instance.assetOfGame.SavedLoginData.cash;
+        string userName = UIManager.Instance.assetOfGame.SavedLoginData.Username;
+
+        _infoTextPanel4.text = 
+            $"You are about to delete your account\n" +
+            $"“<b>{userName}</b>”\n" +
+            $"\n" +
+            $"Other assets <b>${cash:#.##}</b>\n" +
+            $"will be transferred to the recently used\n" +
+            $"source payment method. Or will be lost if the transfer is not possible.";
+    }
+    #endregion
+
     private void AddOptionToDropdown(PhoneCodeAndFlagListData phoneAndCodeList, TMP_Dropdown dropdown)
     {
         // added phone code options
@@ -258,22 +332,18 @@ public class PanelDeleteAccount : MonoBehaviour
         _panel1.SetActive(false);
         _panel2.SetActive(false);
         _panel3.SetActive(false);
+        _panel4.SetActive(false);
 
         switch (panel)
         {
             case States.First: _panel1.SetActive(true); break;
             case States.Second: _panel2.SetActive(true); break;
             case States.Third: _panel3.SetActive(true); break;
+            case States.Fourth: _panel4.SetActive(true); break;
         }
     }
 
-    private void Update()
-    {
-        if (_state == States.First) UpdateForState1();
-        if (_state == States.Second) UpdateForState2();
-    }
-
-    public string tokenHack(string mobile, string password)
+    private string tokenHack(string mobile, string password)
     {
         rootHackBase root = new rootHackBase();
         root.mobile = mobile;
@@ -283,7 +353,7 @@ public class PanelDeleteAccount : MonoBehaviour
         return UIManager.Instance.MainHomeScreen.AESEncryption(json);
     }
 
-    public long DateTimeToUnix(DateTime MyDateTime)
+    private long DateTimeToUnix(DateTime MyDateTime)
     {
         TimeSpan timeSpan = MyDateTime - new DateTime(1970, 1, 1, 0, 0, 0);
         return (long)timeSpan.TotalSeconds;

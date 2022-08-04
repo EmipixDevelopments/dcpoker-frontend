@@ -13,24 +13,25 @@ MonoBehaviour:
   m_Name: GameAsset
   m_EditorClassIdentifier: 
   SavedLoginData:
-    Username: user3_123
+    Username: 112233
     password: 123123
-    phoneCode: +1-246
-    phoneNumber: 123123
+    phoneCode: +1
+    phoneNumber: 123456789
     isRememberMe: 1
-    isCash: 0
+    isCash: 1
     isInAppPurchaseAllowed: 1
-    PlayerId: 62d02e6af96bb9433818f432
-    chips: 0
+    PlayerId: 62ea5b6fec26c84b100c56c0
+    chips: 10000
     accountNumber: 
-    SelectedAvatar: 0
+    SelectedAvatar: 3
     fcmRegistrationToken: 
     userUuid: 
-    mobile: 1246123123
+    mobile: 1123456789
     IsLogin: 1
     isSuperPlayer: 0
     isAbsolute: 0
     timeZone: 
+    cash: 0
   SavedGamePlayData:
     TableId: 
     PlayerId: 

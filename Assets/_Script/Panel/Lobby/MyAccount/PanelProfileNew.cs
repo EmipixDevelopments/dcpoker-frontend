@@ -7,6 +7,9 @@ using System;
 
 public class PanelProfileNew : MonoBehaviour
 {
+    [SerializeField] private Button _changeNameButton;
+    [SerializeField] private Button _changePasswordButton;
+    [SerializeField] private Button _deleteAccountButton;
     [SerializeField] private Image _avatarImage;
     [SerializeField] private TextMeshProUGUI _userName;
     [SerializeField] private TextMeshProUGUI _chipsValue;
@@ -14,9 +17,24 @@ public class PanelProfileNew : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _phoneNumber;
     [SerializeField] private Toggle _chipsToggle;
     [SerializeField] private Toggle _cashToggle;
+    [Space]
+    [SerializeField] private GameObject _panelChangeName;
+    [SerializeField] private GameObject _panelChangePassword;
+    [SerializeField] private GameObject _panelInformationAboutMoneyOnAccountPopup;
 
-    private int _avatarImageIndex = -1;
 
+    private void Start()
+    {
+        _changeNameButton.onClick.RemoveAllListeners();
+        _changePasswordButton.onClick.RemoveAllListeners();
+        _deleteAccountButton.onClick.RemoveAllListeners();
+        _cashToggle.onValueChanged.RemoveAllListeners();
+
+        _changeNameButton.onClick.AddListener(()=> _panelChangeName.SetActive(true));
+        _changePasswordButton.onClick.AddListener(() => _panelChangePassword.SetActive(true));
+        _deleteAccountButton.onClick.AddListener(() => _panelInformationAboutMoneyOnAccountPopup.SetActive(true));
+        _cashToggle.onValueChanged.AddListener(OnClickChipsOrCashs);
+    }
 
     void OnEnable()
     {
@@ -73,9 +91,8 @@ public class PanelProfileNew : MonoBehaviour
         });
     }
 
-    public void OnClickChipsOrCashs() 
+    public void OnClickChipsOrCashs(bool isCashe) 
     {
-        bool isCashe = _cashToggle.isOn;
         UIManager.Instance.SocketGameManager.UpdateIsCashe(isCashe, (socket, packet, args) =>
         {
             UIManager.Instance.HideLoader();

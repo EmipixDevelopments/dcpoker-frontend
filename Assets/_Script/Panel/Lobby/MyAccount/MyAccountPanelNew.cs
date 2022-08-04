@@ -22,7 +22,7 @@ public class MyAccountPanelNew : MonoBehaviour
     [SerializeField] private GameObject _panelMyBonuses;
     [SerializeField] private GameObject _panelGameHistory;
     [SerializeField] private GameObject _panelLeaderBoard;
-    [SerializeField] private GameObject _panelDepositsAndWithdrawals;
+    [SerializeField] private PanelDepositsAndWithdrawals _panelDepositsAndWithdrawals;
     [SerializeField] private GameObject _panelPurchaseHistory;
 
     private enum MyAccountPanel
@@ -46,7 +46,15 @@ public class MyAccountPanelNew : MonoBehaviour
         SwitchPanel(_currentPanel);
     }
 
+    public void OpenWithdraw() 
+    {
+        DepositsAndWithdrawalsToggle.isOn = true;
+        _currentPanel = MyAccountPanel.DepositsAndWithdrawals;
+        UpdatePanel();
+        _panelDepositsAndWithdrawals.OpenWithdraw();
+    }
 
+    #region Menu
     private void InitButtonsAndToggles()
     {
         ProfileToggle.onValueChanged.RemoveAllListeners();
@@ -84,7 +92,7 @@ public class MyAccountPanelNew : MonoBehaviour
                 _panelLeaderBoard.SetActive(true);
                 break;
             case MyAccountPanel.DepositsAndWithdrawals:
-                _panelDepositsAndWithdrawals.SetActive(true);
+                _panelDepositsAndWithdrawals.gameObject.SetActive(true);
                 break;
             case MyAccountPanel.PurchaseHistory:
                 _panelPurchaseHistory.SetActive(true);
@@ -135,8 +143,8 @@ public class MyAccountPanelNew : MonoBehaviour
         _panelMyBonuses.SetActive(false);
         _panelGameHistory.SetActive(false);
         _panelLeaderBoard.SetActive(false);
-        _panelDepositsAndWithdrawals.SetActive(false);
+        _panelDepositsAndWithdrawals.gameObject.SetActive(false);
         _panelPurchaseHistory.SetActive(false);
     }
-
+    #endregion
 }

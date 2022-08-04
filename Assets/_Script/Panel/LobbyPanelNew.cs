@@ -24,7 +24,7 @@ public class LobbyPanelNew : MonoBehaviour
 
     [Header("Panel objects")]
     [SerializeField] private GameObject _panelHome;
-    [SerializeField] private GameObject _panelMyAccount;
+    [SerializeField] private MyAccountPanelNew _panelMyAccount;
     [SerializeField] private GameObject _panelTournaments;
     [SerializeField] private GameObject _panelSitNGo;
     [SerializeField] private GameObject _panelTexasHoldem;
@@ -71,6 +71,14 @@ public class LobbyPanelNew : MonoBehaviour
     public void UpdatePanel() 
     {
         SwitchPanel(_currentPanel);
+    }
+
+    public void OpenWitchdawPanel() 
+    {
+        _accountInfoInToggle.isOn = true;
+        _currentPanel = LobbyPanel.MyAccount;
+        UpdatePanel();
+        _panelMyAccount.OpenWithdraw();
     }
 
     #region Menu
@@ -125,7 +133,7 @@ public class LobbyPanelNew : MonoBehaviour
                 _panelHome.SetActive(true);
                 break;
             case LobbyPanel.MyAccount:
-                _panelMyAccount.SetActive(true);
+                _panelMyAccount.gameObject.SetActive(true);
                 break;
             case LobbyPanel.Tournaments:
                 _panelTournaments.SetActive(true);
@@ -237,7 +245,7 @@ public class LobbyPanelNew : MonoBehaviour
     private void CloseAll()
     {
         _panelHome.SetActive(false);
-        _panelMyAccount.SetActive(false);
+        _panelMyAccount.gameObject.SetActive(false);
         _panelTournaments.SetActive(false);
         _panelSitNGo.SetActive(false);
         _panelTexasHoldem.SetActive(false);

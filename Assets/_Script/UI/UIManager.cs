@@ -53,6 +53,8 @@ public class UIManager : MonoBehaviour
     public tournamentMessagePanel TournamentRequestPanel;
     public UtilityMessagePanel RebuyInMessagePanel;
     public termsAndConditonspanel TandCondPopup;
+    public PanelDeleteAccount DeleteAccountPopup;
+    public PanelInformationAboutMoneyOnAccountPopup PanelInformationAboutMoneyOnAccountPopup;
 
     [Header("Public Variables")]
     public bool isLogAllEnabled = false;
