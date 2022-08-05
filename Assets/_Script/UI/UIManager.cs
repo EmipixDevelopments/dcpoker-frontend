@@ -55,6 +55,7 @@ public class UIManager : MonoBehaviour
     public termsAndConditonspanel TandCondPopup;
     public PanelDeleteAccount DeleteAccountPopup;
     public PanelInformationAboutMoneyOnAccountPopup PanelInformationAboutMoneyOnAccountPopup;
+    public PanelContactSupportPopup PanelContactSupportPopup;
 
     [Header("Public Variables")]
     public bool isLogAllEnabled = false;
