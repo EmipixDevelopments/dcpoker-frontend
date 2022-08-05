@@ -198,6 +198,19 @@ public class SocketGamemanager : MonoBehaviour
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.SearchLobby, action, Json.Decode(jsonObj.toString()));
     }
 
+    public void СontactUs(string message, SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("message", message);
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+
+        print(Constants.PokerEvents.СontactUs + " - " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.СontactUs, action, Json.Decode(jsonObj.toString()));
+    }
+
     /// <summary>
     /// Lists the rooms.
     /// </summary>

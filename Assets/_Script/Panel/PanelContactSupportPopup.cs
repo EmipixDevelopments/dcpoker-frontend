@@ -82,8 +82,26 @@ public class PanelContactSupportPopup : MonoBehaviour
 
     private void OnClickSendButton()
     {
-        Debug.Log($"Sent to report: {_messageInputFieldPanel1.text}");
-        ChanheState(State.Panel2);
+        //Debug.Log($"Sent to report: {_messageInputFieldPanel1.text}");
+        //ChanheState(State.Panel2);
+        UIManager.Instance.SocketGameManager.СontactUs(_messageInputFieldPanel1.text, (socket, packet, args) =>
+        {
+            Debug.Log("СontactUs  => " + packet.ToString());
+
+            UIManager.Instance.HideLoader();
+            JSONArray arr = new JSONArray(packet.ToString());
+            string Source = arr.getString(arr.length() - 1);
+            PokerEventResponse registrationResp = JsonUtility.FromJson<PokerEventResponse>(Source);
+
+            if (registrationResp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+            {
+                ChanheState(State.Panel2);
+            }
+            else
+            {
+                UIManager.Instance.DisplayMessagePanel(registrationResp.message, null);
+            }
+        });
     }
 
     private void OnClickCloseButton()
