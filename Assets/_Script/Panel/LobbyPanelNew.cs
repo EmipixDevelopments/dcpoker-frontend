@@ -65,7 +65,8 @@ public class LobbyPanelNew : MonoBehaviour
 
     private void OnEnable()
     {
-        SwitchAtlHome();
+        //SwitchAtlHome();
+        SwitchAtTournaments(true);
     }
 
     public void UpdatePanel() 
