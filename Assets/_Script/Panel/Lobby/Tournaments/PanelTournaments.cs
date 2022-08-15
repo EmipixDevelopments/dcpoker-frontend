@@ -7,28 +7,22 @@ public class PanelTournaments : MonoBehaviour
 {
     [SerializeField] TournamentTableElement _tournamentTablePrefab;
     [SerializeField] Transform _content;
-
-    [SerializeField] private List<TournamentTableElement> _tableElements = new List<TournamentTableElement>();
-    private int updateTimeInSecconds = 3;
+    
+    private int _updatePanelAfterSecconds = 8;
+    private List<TournamentTableElement> _tableElements = new List<TournamentTableElement>();
 
     private void OnEnable()
     {
-        StopAllCoroutines();
         StartCoroutine(UpdateAtTime());
     }
 
-    bool firstStart = true;
     IEnumerator UpdateAtTime() 
     {
-        if (firstStart)
+        while (true)
         {
-            RemoveAllRow();
             UpdateTable();
-            firstStart = false;
+            yield return new WaitForSeconds(_updatePanelAfterSecconds);
         }
-        yield return new WaitForSeconds(updateTimeInSecconds);
-        RemoveAllRow();
-        UpdateTable();
     }
 
     private void RemoveAllRow()
@@ -37,7 +31,7 @@ public class PanelTournaments : MonoBehaviour
         {
             Destroy(_content.GetChild(i).gameObject);
         }
-        _tableElements = new List<TournamentTableElement>();
+        _tableElements.Clear();
     }
 
     private void UpdateTable()
@@ -101,15 +95,8 @@ public class PanelTournaments : MonoBehaviour
                     _tableElements.Add(row);
                 }
                 // update all UI
-                //UIManager.Instance.LobbyPanelNew.UpdatePanel();
-                StartCoroutine(UpdateUIInNextFrame());
+                UIManager.Instance.LobbyPanelNew.UpdatePanel();
             }
         }
-    }
-
-    IEnumerator UpdateUIInNextFrame()
-    {
-        yield return new WaitForEndOfFrame();
-        UIManager.Instance.LobbyPanelNew.UpdatePanel();
     }
 }
