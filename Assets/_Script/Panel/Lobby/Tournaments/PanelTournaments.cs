@@ -1,5 +1,6 @@
 ﻿using BestHTTP.SocketIO;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PanelTournaments : MonoBehaviour
@@ -7,7 +8,8 @@ public class PanelTournaments : MonoBehaviour
     [SerializeField] TournamentTableElement _tournamentTablePrefab;
     [SerializeField] Transform _content;
 
-    private int updateTimeInSecconds = 8;
+    [SerializeField] private List<TournamentTableElement> _tableElements = new List<TournamentTableElement>();
+    private int updateTimeInSecconds = 3;
 
     private void OnEnable()
     {
@@ -15,19 +17,27 @@ public class PanelTournaments : MonoBehaviour
         StartCoroutine(UpdateAtTime());
     }
 
+    bool firstStart = true;
     IEnumerator UpdateAtTime() 
     {
+        if (firstStart)
+        {
+            RemoveAllRow();
+            UpdateTable();
+            firstStart = false;
+        }
         yield return new WaitForSeconds(updateTimeInSecconds);
-        ClearAllRow();
+        RemoveAllRow();
         UpdateTable();
     }
 
-    private void ClearAllRow()
+    private void RemoveAllRow()
     {
         for (int i = 0; i < _content.childCount; i++)
         {
             Destroy(_content.GetChild(i).gameObject);
         }
+        _tableElements = new List<TournamentTableElement>();
     }
 
     private void UpdateTable()
@@ -37,7 +47,7 @@ public class PanelTournaments : MonoBehaviour
             string tournamentPokerType = "all";
             string selectedGameSpeed = UIManager.Instance.selectedGameSpeed.ToString();
             bool isLimitSelected = false;
-            string gametype = "Touranment"; // "sng";
+            string gametype = "Touranment"; // or "sng";
             string selectedLimitType = "all";
             string selectedStack = "all";
             string selectedPlayerPerTable = "all";
@@ -61,33 +71,45 @@ public class PanelTournaments : MonoBehaviour
 
         JSONArray arr = new JSONArray(packet.ToString());
         string Source = arr.getString(arr.length() - 1);
-        NormalTournamentDetails TouramentDetail = JsonUtility.FromJson<NormalTournamentDetails>(Source);
+        NormalTournamentDetails touramentDetail = JsonUtility.FromJson<NormalTournamentDetails>(Source);
 
-        if (!TouramentDetail.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+        if (!touramentDetail.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
         {
-            UIManager.Instance.DisplayMessagePanel(TouramentDetail.message, null);
+            UIManager.Instance.DisplayMessagePanel(touramentDetail.message, null);
             return;
         }
 
-        if (TouramentDetail.result != null)
+        if (touramentDetail.result != null)
         {
-            foreach (var item in TouramentDetail.result)
+            // if the number of rows in the table has not changed, update them
+            if (_tableElements.Count == touramentDetail.result.Count)
             {
-                TournamentTableElementData tournamentTableElementData = new TournamentTableElementData();
-                tournamentTableElementData.Type = item.type;
-                tournamentTableElementData.TournamentId = item.tournamentId;
-                tournamentTableElementData.Name = item.name;
-                tournamentTableElementData.BuyIn = item.buyIn;
-                tournamentTableElementData.Status = item.status;
-                tournamentTableElementData.IsJoinable = item.isJoinable;
-                tournamentTableElementData.Players = item.players;
-                tournamentTableElementData.DateTime = item.dateTime;
-                tournamentTableElementData.TournamentStartTime = item.displayDateTime; // finde bug here
-
-                TournamentTableElement row = Instantiate(_tournamentTablePrefab, _content);
-                row.Init(tournamentTableElementData);
+                for (int i = 0; i < touramentDetail.result.Count; i++)
+                {
+                    var rowTableData = touramentDetail.result[i];
+                    _tableElements[i].UpdateValue(rowTableData);
+                }
+            }
+            else // remove all rows and create new rows
+            {
+                RemoveAllRow();
+                // create new row
+                foreach (var item in touramentDetail.result)
+                {
+                    TournamentTableElement row = Instantiate(_tournamentTablePrefab, _content);
+                    row.Init(item);
+                    _tableElements.Add(row);
+                }
+                // update all UI
+                //UIManager.Instance.LobbyPanelNew.UpdatePanel();
+                StartCoroutine(UpdateUIInNextFrame());
             }
         }
+    }
+
+    IEnumerator UpdateUIInNextFrame()
+    {
+        yield return new WaitForEndOfFrame();
         UIManager.Instance.LobbyPanelNew.UpdatePanel();
     }
 }

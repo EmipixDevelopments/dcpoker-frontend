@@ -14,7 +14,7 @@ public class TournamentTableElement : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _statusInText;
 
     private Button _button;
-    TournamentTableElementData _tournamentTableElementData;
+    NormalTournamentDetails.NormalTournamentData _tournamentTableElementData;
 
     private void Start()
     {
@@ -31,22 +31,28 @@ public class TournamentTableElement : MonoBehaviour
         }
     }
 
-    public void Init(TournamentTableElementData data) 
+    public void Init(NormalTournamentDetails.NormalTournamentData data) 
+    {
+        UpdateValue(data);
+    }
+
+    public void UpdateValue(NormalTournamentDetails.NormalTournamentData data) 
     {
         _tournamentTableElementData = data;
-        _dateTimeText.text  = $"{CheckStringData(data.TournamentStartTime)}";
-        _nameText.text      = $"{CheckStringData(data.Name)}";
-        _typeText.text      = $"{CheckStringData(data.Type)}";
-        _playersText.text   = $"{data.Players}";
-        _buyInText.text     = $"{CheckStringData(data.BuyIn)}";
-        _statusInText.text  = $"{CheckStringData(data.Status)}";
+        _dateTimeText.text = $"{CheckStringData(data.dateTime)}";
+        _nameText.text = $"{CheckStringData(data.name)}";
+        _typeText.text = $"{CheckStringData(data.type)}";
+        _playersText.text = $"{data.players}";
+        _buyInText.text = $"{CheckStringData(data.buyIn)}";
+        _statusInText.text = $"{CheckStringData(data.status)}";
     }
+    public NormalTournamentDetails.NormalTournamentData GetData() { return _tournamentTableElementData; }
 
     public void OnTournamentTableSelectButtonTap()
     {
-        UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.TournamentDetailsId = _tournamentTableElementData.TournamentId;
+        UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.TournamentDetailsId = _tournamentTableElementData.tournamentId;
         UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.GetDetailsTournamentButtonTap(_tournamentTableElementData.TournamentId, _tournamentTableElementData.PokerGameType);
+        UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.GetDetailsTournamentButtonTap(_tournamentTableElementData.tournamentId, _tournamentTableElementData.pokerGameType);
     }
 
     private string CheckStringData(string text) 
