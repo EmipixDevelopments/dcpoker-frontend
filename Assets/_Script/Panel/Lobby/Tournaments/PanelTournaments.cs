@@ -18,6 +18,10 @@ public class PanelTournaments : MonoBehaviour
     {
         _tournamentTableFilter.FilterChanged = OnEnable;
     }
+    private void OnDestroy()
+    {
+        _tournamentTableFilter.FilterChanged = null;
+    }
 
     private void OnEnable()
     {

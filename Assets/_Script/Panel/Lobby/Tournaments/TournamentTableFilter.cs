@@ -29,6 +29,15 @@ public class TournamentTableFilter : MonoBehaviour
     private string keyHightPriceToggle  = "TournamentTableSettings.hightPriceToggle";
     private string keyFreeRollToggle    = "TournamentTableSettings.freeRollToggle";
 
+    private void OnEnable()
+    {
+        Init();
+    }
+    private void OnDisable()
+    {
+        Save();
+    }
+
     #region Save/Load
     private void Save() 
     {
@@ -60,40 +69,7 @@ public class TournamentTableFilter : MonoBehaviour
         if (value > 0) return true;
         else return false;
     }
-
-    public List<NormalTournamentDetails.NormalTournamentData> UseFilter(List<NormalTournamentDetails.NormalTournamentData> tableData)
-    {
-        List<NormalTournamentDetails.NormalTournamentData> answer = new List<NormalTournamentDetails.NormalTournamentData>();
-
-        // game GameType filter
-        List<string> gameFilter = new List<string>();
-        if (_texasHoldemToggle.isOn) gameFilter.Add("texas");
-        if (_omahaToggle.isOn) gameFilter.Add("omaha");
-        if (_plo5Toggle.isOn) gameFilter.Add("PLO5");
-        foreach (var tableItem in tableData)
-        {
-            foreach (var game in gameFilter)
-            {
-                if (tableItem.pokerGameType == game)
-                {
-                    answer.Add(tableItem);
-                }
-            }
-        }
-
-
-        return answer;
-    }
     #endregion
-
-    private void OnEnable()
-    {
-        Init();
-    }
-    private void OnDisable()
-    {
-        Save();
-    }
 
     private void Init() 
     {
@@ -117,6 +93,38 @@ public class TournamentTableFilter : MonoBehaviour
         _mediumPriceToggle.onValueChanged.AddListener(MediumPriceToggle);
         _hightPriceToggle.onValueChanged.AddListener(HightPriceToggle);
         _freeRollToggle.onValueChanged.AddListener(FreeRollToggle);
+
+        // select all games if none is selected. Required to get data
+        if (_texasHoldemToggle.isOn == false
+            && _omahaToggle.isOn == false
+            && _plo5Toggle.isOn == false)
+        {
+            AllTypeButton();
+        }
+    }
+
+    public List<NormalTournamentDetails.NormalTournamentData> UseFilter(List<NormalTournamentDetails.NormalTournamentData> tableData)
+    {
+        List<NormalTournamentDetails.NormalTournamentData> answer = new List<NormalTournamentDetails.NormalTournamentData>();
+
+        // game GameType filter
+        List<string> gameFilter = new List<string>();
+        if (_texasHoldemToggle.isOn) gameFilter.Add("texas");
+        if (_omahaToggle.isOn) gameFilter.Add("omaha");
+        if (_plo5Toggle.isOn) gameFilter.Add("PLO5");
+        foreach (var tableItem in tableData)
+        {
+            foreach (var game in gameFilter)
+            {
+                if (tableItem.pokerGameType == game)
+                {
+                    answer.Add(tableItem);
+                }
+            }
+        }
+
+
+        return answer;
     }
 
 
