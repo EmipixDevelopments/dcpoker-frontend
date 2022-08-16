@@ -913,6 +913,7 @@ public class NormalTournamentDetails
         public string dateTime;
         public string pokerGameType = "";
         public int    timerDueSeconds;
+        public string tournamentStartTime;
         public int    timerDisplayWhen;
         public string displayDateTime;
         public bool   isJoinable = false;
@@ -930,6 +931,7 @@ public class NormalTournamentDetails
             if (dateTime != data.dateTime) answer = false;
             if (pokerGameType != data.pokerGameType) answer = false;
             if (timerDueSeconds != data.timerDueSeconds) answer = false;
+            if (tournamentStartTime != data.tournamentStartTime) answer = false;
             if (timerDisplayWhen != data.timerDisplayWhen) answer = false;
             if (displayDateTime != data.displayDateTime) answer = false;
             if (isJoinable != data.isJoinable) answer = false;

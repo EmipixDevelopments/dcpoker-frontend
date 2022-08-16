@@ -1,18 +1,27 @@
 ﻿using BestHTTP.SocketIO;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PanelTournaments : MonoBehaviour
 {
-    [SerializeField] TournamentTableElement _tournamentTablePrefab;
-    [SerializeField] Transform _content;
+    [SerializeField] private TournamentTableFilter _tournamentTableFilter;
+    [Space]
+    [SerializeField] private TournamentTableElement _tournamentTablePrefab;
+    [SerializeField] private Transform _content;
     
     private int _updatePanelAfterSecconds = 8;
     private List<TournamentTableElement> _tableElements = new List<TournamentTableElement>();
 
+    private void Start()
+    {
+        _tournamentTableFilter.FilterChanged = OnEnable;
+    }
+
     private void OnEnable()
     {
+        StopAllCoroutines();
         StartCoroutine(UpdateAtTime());
     }
 
@@ -73,14 +82,18 @@ public class PanelTournaments : MonoBehaviour
             return;
         }
 
-        if (touramentDetail.result != null)
+        List<NormalTournamentDetails.NormalTournamentData> tableData = touramentDetail.result;
+        // used filter
+        tableData = _tournamentTableFilter.UseFilter(tableData);
+
+        if (tableData != null)
         {
             // if the number of rows in the table has not changed, update them
-            if (_tableElements.Count == touramentDetail.result.Count)
+            if (_tableElements.Count == tableData.Count)
             {
-                for (int i = 0; i < touramentDetail.result.Count; i++)
+                for (int i = 0; i < tableData.Count; i++)
                 {
-                    var rowTableData = touramentDetail.result[i];
+                    var rowTableData = tableData[i];
                     _tableElements[i].UpdateValue(rowTableData);
                 }
             }
@@ -88,7 +101,7 @@ public class PanelTournaments : MonoBehaviour
             {
                 RemoveAllRow();
                 // create new row
-                foreach (var item in touramentDetail.result)
+                foreach (var item in tableData)
                 {
                     TournamentTableElement row = Instantiate(_tournamentTablePrefab, _content);
                     row.Init(item);

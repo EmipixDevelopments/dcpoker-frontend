@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System;
+using System.Globalization;
 
 public class TournamentTableElement : MonoBehaviour
 {
@@ -39,7 +41,7 @@ public class TournamentTableElement : MonoBehaviour
     public void UpdateValue(NormalTournamentDetails.NormalTournamentData data) 
     {
         _tournamentTableElementData = data;
-        _dateTimeText.text = $"{CheckStringData(data.dateTime)}";
+        _dateTimeText.text = $"{CheckStringData(ParsingDateTime(data.tournamentStartTime))}";
         _nameText.text = $"{CheckStringData(data.name)}";
         _typeText.text = $"{CheckStringData(data.type)}";
         _playersText.text = $"{data.players}";
@@ -50,9 +52,10 @@ public class TournamentTableElement : MonoBehaviour
 
     public void OnTournamentTableSelectButtonTap()
     {
-        UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.TournamentDetailsId = _tournamentTableElementData.tournamentId;
-        UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.GetDetailsTournamentButtonTap(_tournamentTableElementData.tournamentId, _tournamentTableElementData.pokerGameType);
+        Debug.Log("On button Click");
+        //UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.TournamentDetailsId = _tournamentTableElementData.tournamentId;
+        //UIManager.Instance.SoundManager.OnButtonClick();
+        //UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.GetDetailsTournamentButtonTap(_tournamentTableElementData.tournamentId, _tournamentTableElementData.pokerGameType);
     }
 
     private string CheckStringData(string text) 
@@ -62,5 +65,18 @@ public class TournamentTableElement : MonoBehaviour
             return $"---";
         }
         return text;
+    }
+
+    private string ParsingDateTime(string dateTime)
+    {
+        string result = "";
+        string year = "";
+        DateTime dt = DateTime.Parse(dateTime);
+        if (dt.Year != DateTime.Now.Year)
+        {
+            year = $"{dt.Year} ";
+        }
+        result = $"{year}{dt.ToString("MMM dd", CultureInfo.CreateSpecificCulture("en-US"))} / {dt.ToString("HH:mm")}" ;
+        return result;
     }
 }
