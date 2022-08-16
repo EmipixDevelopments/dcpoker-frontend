@@ -123,6 +123,14 @@ public class TournamentTableFilter : MonoBehaviour
             }
         }
 
+        // Price filter
+        /*
+         0 - 10 $ - low leaves
+        10 - 50 $ - medium level
+        50 - endless  - Hight level 
+        freeroll is freeroll
+         */
+
 
         return answer;
     }
