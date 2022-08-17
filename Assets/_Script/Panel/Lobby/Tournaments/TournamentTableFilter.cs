@@ -7,17 +7,19 @@ using UnityEngine.UI;
 
 public class TournamentTableFilter : MonoBehaviour
 {
+    [SerializeField] private PlayerPerTableFilter _playerPerTableFilter;
+    [Space]
     [Header("Game type")]
-    [SerializeField] Button _allTypeButton;
-    [SerializeField] Toggle _texasHoldemToggle;
-    [SerializeField] Toggle _omahaToggle;
-    [SerializeField] Toggle _plo5Toggle;
+    [SerializeField] private Button _allTypeButton;
+    [SerializeField] private Toggle _texasHoldemToggle;
+    [SerializeField] private Toggle _omahaToggle;
+    [SerializeField] private Toggle _plo5Toggle;
     [Header("Price value")]
-    [SerializeField] Button _allPriceButton;
-    [SerializeField] Toggle _lowPriceToggle;
-    [SerializeField] Toggle _mediumPriceToggle;
-    [SerializeField] Toggle _hightPriceToggle;
-    [SerializeField] Toggle _freeRollToggle;
+    [SerializeField] private Button _allPriceButton;
+    [SerializeField] private Toggle _lowPriceToggle;
+    [SerializeField] private Toggle _mediumPriceToggle;
+    [SerializeField] private Toggle _hightPriceToggle;
+    [SerializeField] private Toggle _freeRollToggle;
 
     public Action FilterChanged;
 
@@ -71,36 +73,51 @@ public class TournamentTableFilter : MonoBehaviour
     }
     #endregion
 
-    private void Init() 
+    private void Init()
     {
         Load();
+        ButtonsAndTogglesRemoveAllListeners();
+        ButtonsAndTogglesAddListeners();
 
-        _allTypeButton.onClick.RemoveAllListeners();
-        _texasHoldemToggle.onValueChanged.RemoveAllListeners();
-        _omahaToggle.onValueChanged.RemoveAllListeners();
-        _plo5Toggle.onValueChanged.RemoveAllListeners();
-        _allPriceButton.onClick.RemoveAllListeners();
-        _lowPriceToggle.onValueChanged.RemoveAllListeners();
-        _mediumPriceToggle.onValueChanged.RemoveAllListeners();
-        _hightPriceToggle.onValueChanged.RemoveAllListeners();
-
-        _allTypeButton.onClick.AddListener(AllTypeButton);
-        _texasHoldemToggle.onValueChanged.AddListener(TexasHoldemToggle);
-        _omahaToggle.onValueChanged.AddListener(OmahaToggle);
-        _plo5Toggle.onValueChanged.AddListener(Plo5Toggle);
-        _allPriceButton.onClick.AddListener(AllPriceButton);
-        _lowPriceToggle.onValueChanged.AddListener(LowPriceToggle);
-        _mediumPriceToggle.onValueChanged.AddListener(MediumPriceToggle);
-        _hightPriceToggle.onValueChanged.AddListener(HightPriceToggle);
-        _freeRollToggle.onValueChanged.AddListener(FreeRollToggle);
+        _playerPerTableFilter.FilterChanged = null;
+        _playerPerTableFilter.FilterChanged = () => FilterChanged?.Invoke();
 
         // select all games if none is selected. Required to get data
         if (_texasHoldemToggle.isOn == false
             && _omahaToggle.isOn == false
             && _plo5Toggle.isOn == false)
         {
-            AllTypeButton();
+            AllTypeButtonClick();
         }
+    }
+
+    private void ButtonsAndTogglesRemoveAllListeners()
+    {
+        // Game type
+        _allTypeButton.onClick.RemoveAllListeners();
+        _texasHoldemToggle.onValueChanged.RemoveAllListeners();
+        _omahaToggle.onValueChanged.RemoveAllListeners();
+        _plo5Toggle.onValueChanged.RemoveAllListeners();
+        // Game price
+        _allPriceButton.onClick.RemoveAllListeners();
+        _lowPriceToggle.onValueChanged.RemoveAllListeners();
+        _mediumPriceToggle.onValueChanged.RemoveAllListeners();
+        _hightPriceToggle.onValueChanged.RemoveAllListeners();
+        _freeRollToggle.onValueChanged.RemoveAllListeners();
+    }
+    private void ButtonsAndTogglesAddListeners()
+    {
+        // Game type
+        _allTypeButton.onClick.AddListener(AllTypeButtonClick);
+        _texasHoldemToggle.onValueChanged.AddListener(FilterGameClick);
+        _omahaToggle.onValueChanged.AddListener(FilterGameClick);
+        _plo5Toggle.onValueChanged.AddListener(FilterGameClick);
+        // Game price
+        _allPriceButton.onClick.AddListener(AllPriceButtonClick);
+        _lowPriceToggle.onValueChanged.AddListener(FilterPriceClick);
+        _mediumPriceToggle.onValueChanged.AddListener(FilterPriceClick);
+        _hightPriceToggle.onValueChanged.AddListener(FilterPriceClick);
+        _freeRollToggle.onValueChanged.AddListener(FilterPriceClick);
     }
 
     public List<NormalTournamentDetails.NormalTournamentData> UseFilter(List<NormalTournamentDetails.NormalTournamentData> tableData)
@@ -131,78 +148,65 @@ public class TournamentTableFilter : MonoBehaviour
         freeroll is freeroll
          */
 
+        // playerfilter
+        //List<int> playerFilter = _playerPerTableFilter.GetFilterValue();
+
 
         return answer;
     }
 
 
     #region Buttons and Toggls
-    private void AllTypeButton()
+    private void AllTypeButtonClick()
     {
-        if (_texasHoldemToggle.isOn == true
-         && _omahaToggle.isOn == true
-         && _plo5Toggle.isOn == true)
-        {
-            _texasHoldemToggle.isOn = false;
-            _omahaToggle.isOn = false;
-            _plo5Toggle.isOn = false;
-        }
-        else
-        {
-            _texasHoldemToggle.isOn = true;
-            _omahaToggle.isOn = true;
-            _plo5Toggle.isOn = true;
-        }
-    }
-    private void TexasHoldemToggle(bool value)
-    {
-        FilterChanged?.Invoke();
-    }
-    private void OmahaToggle(bool arg0)
-    {
-        FilterChanged?.Invoke();
-    }
-    private void Plo5Toggle(bool arg0)
-    {
-        FilterChanged?.Invoke();
-    }
-    private void AllPriceButton()
-    {
-        if (_lowPriceToggle.isOn == true
-         && _mediumPriceToggle.isOn == true
-         && _hightPriceToggle.isOn == true
-         && _freeRollToggle.isOn == true)
-        {
-            _lowPriceToggle.isOn = false;
-            _mediumPriceToggle.isOn = false;
-            _hightPriceToggle.isOn = false;
-            _freeRollToggle.isOn = false;
-        }
-        else
-        {
-            _lowPriceToggle.isOn = true;
-            _mediumPriceToggle.isOn = true;
-            _hightPriceToggle.isOn = true;
-            _freeRollToggle.isOn = true;
+        ButtonsAndTogglesRemoveAllListeners();
 
+        _texasHoldemToggle.isOn = true;
+        _omahaToggle.isOn = true;
+        _plo5Toggle.isOn = true;
+
+        FilterChanged?.Invoke();
+        ButtonsAndTogglesAddListeners();
+    }
+    private void FilterGameClick(bool arg0)
+    {
+        if (_texasHoldemToggle.isOn == false
+         && _omahaToggle.isOn == false
+         && _plo5Toggle.isOn == false)
+        {
+            AllTypeButtonClick();
+        }
+        else
+        {
+            FilterChanged?.Invoke();
         }
     }
-    private void LowPriceToggle(bool arg0)
+
+    private void AllPriceButtonClick()
     {
+        ButtonsAndTogglesRemoveAllListeners();
+
+        _lowPriceToggle.isOn = true;
+        _mediumPriceToggle.isOn = true;
+        _hightPriceToggle.isOn = true;
+        _freeRollToggle.isOn = true;
+
         FilterChanged?.Invoke();
+        ButtonsAndTogglesAddListeners();
     }
-    private void MediumPriceToggle(bool arg0)
+    private void FilterPriceClick(bool arg0)
     {
-        FilterChanged?.Invoke();
-    }
-    private void HightPriceToggle(bool arg0)
-    {
-        FilterChanged?.Invoke();
-    }
-    private void FreeRollToggle(bool arg0)
-    {
-        FilterChanged?.Invoke();
+        if (_lowPriceToggle.isOn == false
+         && _mediumPriceToggle.isOn == false
+         && _hightPriceToggle.isOn == false
+         && _freeRollToggle.isOn == false)
+        {
+            AllPriceButtonClick();
+        }
+        else
+        {
+            FilterChanged?.Invoke();
+        }
     }
     #endregion
-
 }

@@ -44,7 +44,6 @@ public class PlayerPerTableFilter : MonoBehaviour
     {
         ButtonsAndTogglesRemoveAllListeners();
         ButtonsAndTogglesAddListeners();
-        FilterChanged = () => UpdateInfoText();
     }
 
     private void ButtonsAndTogglesAddListeners()
@@ -84,6 +83,7 @@ public class PlayerPerTableFilter : MonoBehaviour
         _eightPlayerToggle.isOn = true;
         _ninePlayerToggle.isOn = true;
 
+        UpdateInfoText();
         FilterChanged?.Invoke();
         ButtonsAndTogglesAddListeners();
     }
@@ -99,6 +99,7 @@ public class PlayerPerTableFilter : MonoBehaviour
         }
         else
         {
+            UpdateInfoText();
             FilterChanged?.Invoke();
         }
     }
@@ -106,8 +107,6 @@ public class PlayerPerTableFilter : MonoBehaviour
 
     private void UpdateInfoText()
     {
-        Debug.Log("Invoke");
-
         string selectedFilter = "";
         if (_twoPlayerToggle.isOn) selectedFilter += " "+2;
         if (_sixPlayerToggle.isOn) selectedFilter += " " + 6;
