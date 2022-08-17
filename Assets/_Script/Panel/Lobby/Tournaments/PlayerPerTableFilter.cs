@@ -25,6 +25,50 @@ public class PlayerPerTableFilter : MonoBehaviour
 
     private bool _isShowFilter = false;
 
+
+    private string keyTwoPlayerToggle = "TournamentTableSettings.twoPlayerToggle";
+    private string keySixPlayerToggle = "TournamentTableSettings.sixPlayerToggle";
+    private string keyEightPlayerToggle = "TournamentTableSettings.eightPlayerToggle";
+    private string keyNinePlayerToggle = "TournamentTableSettings.ninePlayerToggle";
+
+
+    private void OnEnable()
+    {
+        Init();
+    }
+    private void OnDisable()
+    {
+        Save();
+    }
+
+    #region Save/Load
+    private void Save()
+    {
+        PlayerPrefs.SetInt(keyTwoPlayerToggle, BoolToInt(_twoPlayerToggle.isOn));
+        PlayerPrefs.SetInt(keySixPlayerToggle, BoolToInt(_sixPlayerToggle.isOn));
+        PlayerPrefs.SetInt(keyEightPlayerToggle, BoolToInt(_eightPlayerToggle.isOn));
+        PlayerPrefs.SetInt(keyNinePlayerToggle, BoolToInt(_ninePlayerToggle.isOn));
+    }
+    private void Load()
+    {
+        _twoPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt(keyTwoPlayerToggle, 1));
+        _sixPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt(keySixPlayerToggle, 1));
+        _eightPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt(keyEightPlayerToggle, 1));
+        _ninePlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt(keyNinePlayerToggle, 1));
+
+    }
+    private int BoolToInt(bool value)
+    {
+        if (value) return 1;
+        else return 0;
+    }
+    private bool IntToBool(int value)
+    {
+        if (value > 0) return true;
+        else return false;
+    }
+    #endregion
+
     private void Start()
     {
         Init();
@@ -42,8 +86,10 @@ public class PlayerPerTableFilter : MonoBehaviour
 
     private void Init()
     {
+        Load();
         ButtonsAndTogglesRemoveAllListeners();
         ButtonsAndTogglesAddListeners();
+        UpdateInfoText();
     }
 
     private void ButtonsAndTogglesAddListeners()
