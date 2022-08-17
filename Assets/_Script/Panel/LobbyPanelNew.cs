@@ -301,7 +301,7 @@ public class LobbyPanelNew : MonoBehaviour
                 }
                 else
                 {
-                    StopCoroutine("LogoutFunction");
+                    StopCoroutine(LogoutFunction(0f));
                     StartCoroutine(LogoutFunction(0f));
                 }
             }
