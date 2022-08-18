@@ -73,8 +73,7 @@ public class TournamentTableFilterPanel : MonoBehaviour
          */
 
         // playerfilter
-        List<int> playerFilter = _playerPerTableFilter.GetFilterValue();
-
+        List<string> playerFilter = _playerPerTableFilter.GetFilterValue();
 
         return answer;
     }

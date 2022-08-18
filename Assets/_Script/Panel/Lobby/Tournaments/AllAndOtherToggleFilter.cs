@@ -68,7 +68,7 @@ public class AllAndOtherToggleFilter : MonoBehaviour
         _allToggle.onValueChanged.AddListener(AllTypeButtonClick);
         foreach (Toggle item in _otherToggle)
         {
-            item.onValueChanged.AddListener(FilterGameClick);
+            item.onValueChanged.AddListener(FilterButtonClick);
         }
     }
 
@@ -123,7 +123,7 @@ public class AllAndOtherToggleFilter : MonoBehaviour
             }
         }
     }
-    private void FilterGameClick(bool value)
+    private void FilterButtonClick(bool value)
     {
         if (AllOtherToggleIsFalse())
         {

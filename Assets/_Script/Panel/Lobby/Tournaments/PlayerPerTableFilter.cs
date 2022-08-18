@@ -14,11 +14,8 @@ public class PlayerPerTableFilter : MonoBehaviour
     [SerializeField] private GameObject _arrowImage;
     [Header("Player Filter Panel")]
     [SerializeField] private GameObject _playerFilterPanel;
-    [SerializeField] private Toggle _allPlayerToggle;
-    [SerializeField] private Toggle _twoPlayerToggle;
-    [SerializeField] private Toggle _sixPlayerToggle;
-    [SerializeField] private Toggle _eightPlayerToggle;
-    [SerializeField] private Toggle _ninePlayerToggle;
+    [SerializeField] private Toggle _allToggle;
+    [SerializeField] private Toggle[] _otherToggle;
 
     public Action FilterChanged;
 
@@ -34,19 +31,19 @@ public class PlayerPerTableFilter : MonoBehaviour
     #region Save/Load
     private void Save()
     {
-        PlayerPrefs.SetInt($"{_key}.{_allPlayerToggle.name}", BoolToInt(_allPlayerToggle.isOn));
-        PlayerPrefs.SetInt($"{_key}.{_twoPlayerToggle.name}", BoolToInt(_twoPlayerToggle.isOn));
-        PlayerPrefs.SetInt($"{_key}.{_sixPlayerToggle.name}", BoolToInt(_sixPlayerToggle.isOn));
-        PlayerPrefs.SetInt($"{_key}.{_eightPlayerToggle.name}", BoolToInt(_eightPlayerToggle.isOn));
-        PlayerPrefs.SetInt($"{_key}.{_ninePlayerToggle.name}", BoolToInt(_ninePlayerToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_allToggle.name}", BoolToInt(_allToggle.isOn));
+        foreach (Toggle item in _otherToggle)
+        {
+            PlayerPrefs.SetInt($"{_key}.{item.name}", BoolToInt(item.isOn));
+        }
     }
     private void Load()
     {
-        _allPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_allPlayerToggle.name}", 1));
-        _twoPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_twoPlayerToggle.name}", 1));
-        _sixPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_sixPlayerToggle.name}", 1));
-        _eightPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_eightPlayerToggle.name}", 1));
-        _ninePlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_ninePlayerToggle.name}", 1));
+        _allToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_allToggle.name}", 1));
+        foreach (Toggle item in _otherToggle)
+        {
+            item.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{item.name}", 0));
+        }
     }
     private int BoolToInt(bool value)
     {
@@ -60,24 +57,33 @@ public class PlayerPerTableFilter : MonoBehaviour
     }
     #endregion
 
-    public List<int> GetFilterValue()
+    public List<string> GetFilterValue()
     {
-        List<int> result = new List<int>();
-        if (_allPlayerToggle.isOn)
+        List<string> answer = new List<string>();
+        if (_allToggle.isOn)
         {
-            result.Add(2);
-            result.Add(6);
-            result.Add(8);
-            result.Add(9);
+            foreach (Toggle item in _otherToggle)
+            {
+                TextMeshProUGUI textUGUI = item.GetComponentInChildren<TextMeshProUGUI>();
+                if (textUGUI)
+                {
+                    answer.Add(textUGUI.text);
+                }
+            }
         }
         else
         {
-            if (_twoPlayerToggle.isOn) result.Add(2);
-            if (_sixPlayerToggle.isOn) result.Add(6);
-            if (_eightPlayerToggle.isOn) result.Add(8);
-            if (_ninePlayerToggle.isOn) result.Add(9);
+            foreach (Toggle item in _otherToggle)
+            {
+                TextMeshProUGUI textUGUI = item.GetComponentInChildren<TextMeshProUGUI>();
+                if (textUGUI)
+                {
+                    if (item.isOn) answer.Add(textUGUI.text);
+                }
+            }
         }
-        return result;
+
+        return answer;
     }
 
     public void Init(string saveLoadKey)
@@ -92,21 +98,21 @@ public class PlayerPerTableFilter : MonoBehaviour
     private void AddListeners()
     {
         _labelPanelButton.onClick.AddListener(LabelPanelClick);
-        _allPlayerToggle.onValueChanged.AddListener(AllFilterClick);
-        _twoPlayerToggle.onValueChanged.AddListener(FilterNumberClick);
-        _sixPlayerToggle.onValueChanged.AddListener(FilterNumberClick);
-        _eightPlayerToggle.onValueChanged.AddListener(FilterNumberClick);
-        _ninePlayerToggle.onValueChanged.AddListener(FilterNumberClick);
+        _allToggle.onValueChanged.AddListener(AllButtonClick);
+        foreach (Toggle item in _otherToggle)
+        {
+            item.onValueChanged.AddListener(NumberClick);
+        }
     }
 
     private void RemoveListeners()
     {
         _labelPanelButton.onClick.RemoveAllListeners();
-        _allPlayerToggle.onValueChanged.RemoveAllListeners();
-        _twoPlayerToggle.onValueChanged.RemoveAllListeners();
-        _sixPlayerToggle.onValueChanged.RemoveAllListeners();
-        _eightPlayerToggle.onValueChanged.RemoveAllListeners();
-        _ninePlayerToggle.onValueChanged.RemoveAllListeners();
+        _allToggle.onValueChanged.RemoveAllListeners();
+        foreach (Toggle item in _otherToggle)
+        {
+            item.onValueChanged.RemoveAllListeners();
+        }
     }
 
     #region Buttons and Toggles
@@ -117,16 +123,16 @@ public class PlayerPerTableFilter : MonoBehaviour
         if (_isShowFilter) _playerFilterPanel.SetActive(true);
         else _playerFilterPanel.SetActive(false);
     }
-    private void AllFilterClick(bool value)
+    private void AllButtonClick(bool value)
     {
         if (value)
         {
             RemoveListeners();
 
-            _twoPlayerToggle.isOn = false;
-            _sixPlayerToggle.isOn = false;
-            _eightPlayerToggle.isOn = false;
-            _ninePlayerToggle.isOn = false;
+            foreach (Toggle item in _otherToggle)
+            {
+                item.isOn = false;
+            }
 
             UpdateInfoText();
             FilterChanged?.Invoke();
@@ -134,36 +140,27 @@ public class PlayerPerTableFilter : MonoBehaviour
         }
         else
         {
-            if (_twoPlayerToggle.isOn == false
-             && _sixPlayerToggle.isOn == false
-             && _eightPlayerToggle.isOn == false
-             && _ninePlayerToggle.isOn == false)
+            if (AllOtherToggleIsFalse())
             {
-                _allPlayerToggle.isOn = true;
+                _allToggle.isOn = true;
             }
             return;
         }
     }
 
-    private void FilterNumberClick(bool arg0)
+    private void NumberClick(bool arg0)
     {
-        if (_twoPlayerToggle.isOn == false
-         && _sixPlayerToggle.isOn == false
-         && _eightPlayerToggle.isOn == false
-         && _ninePlayerToggle.isOn == false)
+        if (AllOtherToggleIsFalse())
         {
-            _allPlayerToggle.isOn = true;
+            _allToggle.isOn = true;
         }
-        else if (_twoPlayerToggle.isOn == true
-         && _sixPlayerToggle.isOn == true
-         && _eightPlayerToggle.isOn == true
-         && _ninePlayerToggle.isOn == true)
+        else if (AllOtherToggleIsTrue())
         {
-            _allPlayerToggle.isOn = true;
+            _allToggle.isOn = true;
         }
         else
         {
-            _allPlayerToggle.isOn = false;
+            _allToggle.isOn = false;
             UpdateInfoText();
             FilterChanged?.Invoke();
         }
@@ -173,13 +170,17 @@ public class PlayerPerTableFilter : MonoBehaviour
     private void UpdateInfoText()
     {
         string selectedFilter = "";
-        if (_allPlayerToggle.isOn) selectedFilter = "ALL";
+        if (_allToggle.isOn) selectedFilter = "ALL";
         else
         {
-            if (_twoPlayerToggle.isOn) selectedFilter += " " + 2;
-            if (_sixPlayerToggle.isOn) selectedFilter += " " + 6;
-            if (_eightPlayerToggle.isOn) selectedFilter += " " + 8;
-            if (_ninePlayerToggle.isOn) selectedFilter += " " + 9;
+            foreach (Toggle item in _otherToggle)
+            {
+                TextMeshProUGUI textUGUI = item.GetComponentInChildren<TextMeshProUGUI>();
+                if (textUGUI)
+                {
+                    if (item.isOn) selectedFilter += $" {textUGUI.text}";
+                }
+            }
         }
         _selectedFilterText.text = selectedFilter;
 
@@ -195,5 +196,27 @@ public class PlayerPerTableFilter : MonoBehaviour
         _labelText.gameObject.SetActive(true);
         _selectedFilterText.gameObject.SetActive(true);
         _arrowImage.SetActive(true);
+    }
+    private bool AllOtherToggleIsTrue()
+    {
+        foreach (Toggle item in _otherToggle)
+        {
+            if (item.isOn == false)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    private bool AllOtherToggleIsFalse()
+    {
+        foreach (Toggle item in _otherToggle)
+        {
+            if (item.isOn == true)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
