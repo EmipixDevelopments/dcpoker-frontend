@@ -538,6 +538,15 @@ namespace Constants
         public static string clubTablesResult = "clubTablesResult";
         public static string TournamentLeaderboard = "TournamentLeaderboard";
     }
+
+    /// <summary>
+    /// keys for save/load data
+    /// </summary>
+    public class PlayerPrefsKeys 
+    {
+        public const string TournamentTableSettings                     = "TournamentTableSettings";
+        public const string TournamentTableSettingsPlayerPerTableFilter = "TournamentTableSettings.PlayerPerTableFilter";
+    }
 }
 
 public enum PokerCardSuit

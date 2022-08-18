@@ -24,7 +24,7 @@ public class PlayerPerTableFilter : MonoBehaviour
 
     private bool _isShowFilter = false;
 
-    private string key = "TournamentTableSettings.PlayerPerTableFilter";
+    private string _key = Constants.PlayerPrefsKeys.TournamentTableSettingsPlayerPerTableFilter;
 
     private void OnEnable()
     {
@@ -38,19 +38,19 @@ public class PlayerPerTableFilter : MonoBehaviour
     #region Save/Load
     private void Save()
     {
-        PlayerPrefs.SetInt($"{key}.{_allPlayerToggle.name}", BoolToInt(_allPlayerToggle.isOn));
-        PlayerPrefs.SetInt($"{key}.{_twoPlayerToggle.name}", BoolToInt(_twoPlayerToggle.isOn));
-        PlayerPrefs.SetInt($"{key}.{_sixPlayerToggle.name}", BoolToInt(_sixPlayerToggle.isOn));
-        PlayerPrefs.SetInt($"{key}.{_eightPlayerToggle.name}", BoolToInt(_eightPlayerToggle.isOn));
-        PlayerPrefs.SetInt($"{key}.{_ninePlayerToggle.name}", BoolToInt(_ninePlayerToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_allPlayerToggle.name}", BoolToInt(_allPlayerToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_twoPlayerToggle.name}", BoolToInt(_twoPlayerToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_sixPlayerToggle.name}", BoolToInt(_sixPlayerToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_eightPlayerToggle.name}", BoolToInt(_eightPlayerToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_ninePlayerToggle.name}", BoolToInt(_ninePlayerToggle.isOn));
     }
     private void Load()
     {
-        _allPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{key}.{_allPlayerToggle.name}", 1));
-        _twoPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{key}.{_twoPlayerToggle.name}", 1));
-        _sixPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{key}.{_sixPlayerToggle.name}", 1));
-        _eightPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{key}.{_eightPlayerToggle.name}", 1));
-        _ninePlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{key}.{_ninePlayerToggle.name}", 1));
+        _allPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_allPlayerToggle.name}", 1));
+        _twoPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_twoPlayerToggle.name}", 1));
+        _sixPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_sixPlayerToggle.name}", 1));
+        _eightPlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_eightPlayerToggle.name}", 1));
+        _ninePlayerToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_ninePlayerToggle.name}", 1));
     }
     private int BoolToInt(bool value)
     {
@@ -125,9 +125,9 @@ public class PlayerPerTableFilter : MonoBehaviour
         if (_isShowFilter) _playerFilterPanel.SetActive(true);
         else _playerFilterPanel.SetActive(false);
     }
-    private void AllFilterClick(bool varlue)
+    private void AllFilterClick(bool value)
     {
-        if (varlue)
+        if (value)
         {
             RemoveListeners();
 
