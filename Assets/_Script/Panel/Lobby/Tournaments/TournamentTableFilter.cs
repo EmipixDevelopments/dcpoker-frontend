@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class TournamentTableFilter : MonoBehaviour
@@ -10,12 +8,12 @@ public class TournamentTableFilter : MonoBehaviour
     [SerializeField] private PlayerPerTableFilter _playerPerTableFilter;
     [Space]
     [Header("Game type")]
-    [SerializeField] private Button _allTypeButton;
+    [SerializeField] private Toggle _allTypeToggle;
     [SerializeField] private Toggle _texasHoldemToggle;
     [SerializeField] private Toggle _omahaToggle;
     [SerializeField] private Toggle _plo5Toggle;
     [Header("Price value")]
-    [SerializeField] private Button _allPriceButton;
+    [SerializeField] private Toggle _allPriceToggle;
     [SerializeField] private Toggle _lowPriceToggle;
     [SerializeField] private Toggle _mediumPriceToggle;
     [SerializeField] private Toggle _hightPriceToggle;
@@ -23,13 +21,7 @@ public class TournamentTableFilter : MonoBehaviour
 
     public Action FilterChanged;
 
-    private string keyTexasHoldemToggle = "TournamentTableSettings.texasHoldemToggle";
-    private string keyOmahaToggle       = "TournamentTableSettings.omahaToggle";
-    private string keyPlo5Toggle        = "TournamentTableSettings.plo5Toggle";
-    private string keyLowPriceToggle    = "TournamentTableSettings.lowPriceToggle";
-    private string keyMediumPriceToggle = "TournamentTableSettings.mediumPriceToggle";
-    private string keyHightPriceToggle  = "TournamentTableSettings.hightPriceToggle";
-    private string keyFreeRollToggle    = "TournamentTableSettings.freeRollToggle";
+    private string _key = Constants.PlayerPrefsKeys.TournamentTableSettings;
 
     private void OnEnable()
     {
@@ -41,27 +33,35 @@ public class TournamentTableFilter : MonoBehaviour
     }
 
     #region Save/Load
-    private void Save() 
+    private void Save()
     {
-        PlayerPrefs.SetInt(keyTexasHoldemToggle, BoolToInt(_texasHoldemToggle.isOn));
-        PlayerPrefs.SetInt(keyOmahaToggle, BoolToInt(_omahaToggle.isOn));
-        PlayerPrefs.SetInt(keyPlo5Toggle, BoolToInt(_plo5Toggle.isOn));
-        PlayerPrefs.SetInt(keyLowPriceToggle, BoolToInt(_lowPriceToggle.isOn));
-        PlayerPrefs.SetInt(keyMediumPriceToggle, BoolToInt(_mediumPriceToggle.isOn));
-        PlayerPrefs.SetInt(keyHightPriceToggle, BoolToInt(_hightPriceToggle.isOn));
-        PlayerPrefs.SetInt(keyFreeRollToggle, BoolToInt(_freeRollToggle.isOn));
+        // Game filter
+        PlayerPrefs.SetInt($"{_key}.{_allTypeToggle.name}", BoolToInt(_allTypeToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_texasHoldemToggle.name}", BoolToInt(_texasHoldemToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_omahaToggle.name}", BoolToInt(_omahaToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_plo5Toggle.name}", BoolToInt(_plo5Toggle.isOn));
+        // Prive filter
+        PlayerPrefs.SetInt($"{_key}.{_allPriceToggle.name}", BoolToInt(_allPriceToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_lowPriceToggle.name}", BoolToInt(_lowPriceToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_mediumPriceToggle.name}", BoolToInt(_mediumPriceToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_hightPriceToggle.name}", BoolToInt(_hightPriceToggle.isOn));
+        PlayerPrefs.SetInt($"{_key}.{_freeRollToggle.name}", BoolToInt(_freeRollToggle.isOn));
     }
-    private void Load() 
+    private void Load()
     {
-        _texasHoldemToggle.isOn = IntToBool(PlayerPrefs.GetInt(keyTexasHoldemToggle,1));
-        _omahaToggle.isOn = IntToBool(PlayerPrefs.GetInt(keyOmahaToggle, 1));
-        _plo5Toggle.isOn = IntToBool(PlayerPrefs.GetInt(keyPlo5Toggle, 1));
-        _lowPriceToggle.isOn = IntToBool(PlayerPrefs.GetInt(keyLowPriceToggle, 1));
-        _mediumPriceToggle.isOn = IntToBool(PlayerPrefs.GetInt(keyMediumPriceToggle, 1));
-        _hightPriceToggle.isOn = IntToBool(PlayerPrefs.GetInt(keyHightPriceToggle, 1));
-        _freeRollToggle.isOn = IntToBool(PlayerPrefs.GetInt(keyFreeRollToggle, 1));
+        // Game filter
+        _allTypeToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_allTypeToggle.name}", 1));
+        _texasHoldemToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_texasHoldemToggle.name}", 1));
+        _omahaToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_omahaToggle.name}", 1));
+        _plo5Toggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_plo5Toggle.name}", 1));
+        // Prive filter
+        _allPriceToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_allPriceToggle.name}", 1));
+        _lowPriceToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_lowPriceToggle.name}", 1));
+        _mediumPriceToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_mediumPriceToggle.name}", 1));
+        _hightPriceToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_hightPriceToggle.name}", 1));
+        _freeRollToggle.isOn = IntToBool(PlayerPrefs.GetInt($"{_key}.{_freeRollToggle.name}", 1));
     }
-    private int BoolToInt(bool value) 
+    private int BoolToInt(bool value)
     {
         if (value) return 1;
         else return 0;
@@ -76,44 +76,44 @@ public class TournamentTableFilter : MonoBehaviour
     private void Init()
     {
         Load();
-        ButtonsAndTogglesRemoveAllListeners();
-        ButtonsAndTogglesAddListeners();
+        RemoveAllListeners();
+        AddListeners();
 
         _playerPerTableFilter.FilterChanged = null;
         _playerPerTableFilter.FilterChanged = () => FilterChanged?.Invoke();
 
         // select all games if none is selected. Required to get data
-        if (_texasHoldemToggle.isOn == false
-            && _omahaToggle.isOn == false
-            && _plo5Toggle.isOn == false)
-        {
-            AllTypeButtonClick();
-        }
+        //if (_texasHoldemToggle.isOn == false
+        //    && _omahaToggle.isOn == false
+        //    && _plo5Toggle.isOn == false)
+        //{
+        //    AllTypeButtonClick();
+        //}
     }
 
-    private void ButtonsAndTogglesRemoveAllListeners()
+    private void RemoveAllListeners()
     {
         // Game type
-        _allTypeButton.onClick.RemoveAllListeners();
+        _allTypeToggle.onValueChanged.RemoveAllListeners();
         _texasHoldemToggle.onValueChanged.RemoveAllListeners();
         _omahaToggle.onValueChanged.RemoveAllListeners();
         _plo5Toggle.onValueChanged.RemoveAllListeners();
         // Game price
-        _allPriceButton.onClick.RemoveAllListeners();
+        _allPriceToggle.onValueChanged.RemoveAllListeners();
         _lowPriceToggle.onValueChanged.RemoveAllListeners();
         _mediumPriceToggle.onValueChanged.RemoveAllListeners();
         _hightPriceToggle.onValueChanged.RemoveAllListeners();
         _freeRollToggle.onValueChanged.RemoveAllListeners();
     }
-    private void ButtonsAndTogglesAddListeners()
+    private void AddListeners()
     {
         // Game type
-        _allTypeButton.onClick.AddListener(AllTypeButtonClick);
+        _allTypeToggle.onValueChanged.AddListener(AllTypeButtonClick);
         _texasHoldemToggle.onValueChanged.AddListener(FilterGameClick);
         _omahaToggle.onValueChanged.AddListener(FilterGameClick);
         _plo5Toggle.onValueChanged.AddListener(FilterGameClick);
         // Game price
-        _allPriceButton.onClick.AddListener(AllPriceButtonClick);
+        _allPriceToggle.onValueChanged.AddListener(AllPriceButtonClick);
         _lowPriceToggle.onValueChanged.AddListener(FilterPriceClick);
         _mediumPriceToggle.onValueChanged.AddListener(FilterPriceClick);
         _hightPriceToggle.onValueChanged.AddListener(FilterPriceClick);
@@ -126,9 +126,18 @@ public class TournamentTableFilter : MonoBehaviour
 
         // game GameType filter
         List<string> gameFilter = new List<string>();
-        if (_texasHoldemToggle.isOn) gameFilter.Add("texas");
-        if (_omahaToggle.isOn) gameFilter.Add("omaha");
-        if (_plo5Toggle.isOn) gameFilter.Add("PLO5");
+        if (_allTypeToggle.isOn)
+        {
+            gameFilter.Add("texas");
+            gameFilter.Add("omaha");
+            gameFilter.Add("PLO5");
+        }
+        else
+        {
+            if (_texasHoldemToggle.isOn) gameFilter.Add("texas");
+            if (_omahaToggle.isOn) gameFilter.Add("omaha");
+            if (_plo5Toggle.isOn) gameFilter.Add("PLO5");
+        }
         foreach (var tableItem in tableData)
         {
             foreach (var game in gameFilter)
@@ -157,34 +166,54 @@ public class TournamentTableFilter : MonoBehaviour
 
 
     #region Buttons and Toggls
-    private void AllTypeButtonClick()
+    private void AllTypeButtonClick(bool value)
     {
-        ButtonsAndTogglesRemoveAllListeners();
+        if (value)
+        {
+            RemoveAllListeners();
 
-        _texasHoldemToggle.isOn = true;
-        _omahaToggle.isOn = true;
-        _plo5Toggle.isOn = true;
+            _texasHoldemToggle.isOn = false;
+            _omahaToggle.isOn = false;
+            _plo5Toggle.isOn = false;
 
-        FilterChanged?.Invoke();
-        ButtonsAndTogglesAddListeners();
+            FilterChanged?.Invoke();
+            AddListeners();
+        }
+        else
+        {
+            if (_texasHoldemToggle.isOn == false
+             && _omahaToggle.isOn == false
+             && _plo5Toggle.isOn == false)
+            {
+                _allTypeToggle.isOn = true;
+            }
+            return;
+        }
     }
-    private void FilterGameClick(bool arg0)
+    private void FilterGameClick(bool value)
     {
         if (_texasHoldemToggle.isOn == false
          && _omahaToggle.isOn == false
          && _plo5Toggle.isOn == false)
         {
-            AllTypeButtonClick();
+            _allTypeToggle.isOn = true;
+        }
+        else if (_texasHoldemToggle.isOn == true
+         && _omahaToggle.isOn == true
+         && _plo5Toggle.isOn == true)
+        {
+            _allTypeToggle.isOn = true;
         }
         else
         {
+            _allTypeToggle.isOn = false;
             FilterChanged?.Invoke();
         }
     }
 
-    private void AllPriceButtonClick()
+    private void AllPriceButtonClick(bool value)
     {
-        ButtonsAndTogglesRemoveAllListeners();
+        RemoveAllListeners();
 
         _lowPriceToggle.isOn = true;
         _mediumPriceToggle.isOn = true;
@@ -192,7 +221,7 @@ public class TournamentTableFilter : MonoBehaviour
         _freeRollToggle.isOn = true;
 
         FilterChanged?.Invoke();
-        ButtonsAndTogglesAddListeners();
+        AddListeners();
     }
     private void FilterPriceClick(bool arg0)
     {
@@ -201,7 +230,7 @@ public class TournamentTableFilter : MonoBehaviour
          && _hightPriceToggle.isOn == false
          && _freeRollToggle.isOn == false)
         {
-            AllPriceButtonClick();
+            _allPriceToggle.isOn = true;
         }
         else
         {
