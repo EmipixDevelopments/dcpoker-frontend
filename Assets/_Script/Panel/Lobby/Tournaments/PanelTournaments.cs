@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class PanelTournaments : MonoBehaviour
 {
-    [SerializeField] private TournamentTableFilter _tournamentTableFilter;
+    [SerializeField] private TournamentTableFilterPanel _tournamentTableFilter;
     [Space]
     [SerializeField] private TournamentTableElement _tournamentTablePrefab;
     [SerializeField] private Transform _content;

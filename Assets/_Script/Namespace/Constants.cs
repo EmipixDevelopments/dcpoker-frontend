@@ -544,8 +544,9 @@ namespace Constants
     /// </summary>
     public class PlayerPrefsKeys 
     {
-        public const string TournamentTableSettings                     = "TournamentTableSettings";
         public const string TournamentTableSettingsPlayerPerTableFilter = "TournamentTableSettings.PlayerPerTableFilter";
+        public const string TournamentTableSettingsGameFilter = "TournamentTableSettings.GameFilter";
+        public const string TournamentTableSettingsPriceFilter = "TournamentTableSettings.PriceFilter";
     }
 }
 

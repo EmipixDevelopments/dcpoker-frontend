@@ -24,12 +24,8 @@ public class PlayerPerTableFilter : MonoBehaviour
 
     private bool _isShowFilter = false;
 
-    private string _key = Constants.PlayerPrefsKeys.TournamentTableSettingsPlayerPerTableFilter;
+    private string _key = "";
 
-    private void OnEnable()
-    {
-        Init();
-    }
     private void OnDisable()
     {
         Save();
@@ -64,11 +60,6 @@ public class PlayerPerTableFilter : MonoBehaviour
     }
     #endregion
 
-    private void Start()
-    {
-        Init();
-    }
-
     public List<int> GetFilterValue()
     {
         List<int> result = new List<int>();
@@ -89,8 +80,9 @@ public class PlayerPerTableFilter : MonoBehaviour
         return result;
     }
 
-    private void Init()
+    public void Init(string saveLoadKey)
     {
+        _key = saveLoadKey;
         Load();
         RemoveListeners();
         AddListeners();
