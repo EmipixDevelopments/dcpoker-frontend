@@ -81,14 +81,6 @@ public class TournamentTableFilter : MonoBehaviour
 
         _playerPerTableFilter.FilterChanged = null;
         _playerPerTableFilter.FilterChanged = () => FilterChanged?.Invoke();
-
-        // select all games if none is selected. Required to get data
-        //if (_texasHoldemToggle.isOn == false
-        //    && _omahaToggle.isOn == false
-        //    && _plo5Toggle.isOn == false)
-        //{
-        //    AllTypeButtonClick();
-        //}
     }
 
     private void RemoveAllListeners()
@@ -213,15 +205,29 @@ public class TournamentTableFilter : MonoBehaviour
 
     private void AllPriceButtonClick(bool value)
     {
-        RemoveAllListeners();
+        if (value)
+        {
+            RemoveAllListeners();
 
-        _lowPriceToggle.isOn = true;
-        _mediumPriceToggle.isOn = true;
-        _hightPriceToggle.isOn = true;
-        _freeRollToggle.isOn = true;
+            _lowPriceToggle.isOn = false;
+            _mediumPriceToggle.isOn = false;
+            _hightPriceToggle.isOn = false;
+            _freeRollToggle.isOn = false;
 
-        FilterChanged?.Invoke();
-        AddListeners();
+            FilterChanged?.Invoke();
+            AddListeners();
+        }
+        else
+        {
+            if (_lowPriceToggle.isOn == false
+             && _mediumPriceToggle.isOn == false
+             && _hightPriceToggle.isOn == false
+             && _freeRollToggle.isOn == false)
+            {
+                _allPriceToggle.isOn = true;
+            }
+            return;
+        }
     }
     private void FilterPriceClick(bool arg0)
     {
@@ -232,8 +238,16 @@ public class TournamentTableFilter : MonoBehaviour
         {
             _allPriceToggle.isOn = true;
         }
+        else if (_lowPriceToggle.isOn == true
+         && _mediumPriceToggle.isOn == true
+         && _hightPriceToggle.isOn == true
+         && _freeRollToggle.isOn == true)
+        {
+            _allPriceToggle.isOn = true;
+        }
         else
         {
+            _allPriceToggle.isOn = false;
             FilterChanged?.Invoke();
         }
     }
