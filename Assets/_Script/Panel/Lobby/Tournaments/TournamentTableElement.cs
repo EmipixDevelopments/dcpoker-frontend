@@ -50,11 +50,9 @@ public class TournamentTableElement : MonoBehaviour
 
     public void OnTournamentTableSelectButtonTap()
     {
-        Debug.Log("On button Click");
-        // need get popup TournamentDetailsScreen from LobbyScreeen (old UI)
-        //UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.TournamentDetailsId = _tournamentTableElementData.tournamentId;
-        //UIManager.Instance.SoundManager.OnButtonClick();
-        //UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.GetDetailsTournamentButtonTap(_tournamentTableElementData.tournamentId, _tournamentTableElementData.pokerGameType);
+        UIManager.Instance.DetailsTournament.TournamentDetailsId = _tournamentTableElementData.tournamentId;
+        UIManager.Instance.SoundManager.OnButtonClick();
+        UIManager.Instance.DetailsTournament.GetDetailsTournamentButtonTap(_tournamentTableElementData.tournamentId, _tournamentTableElementData.pokerGameType);
     }
 
     private string CheckStringData(string text)
