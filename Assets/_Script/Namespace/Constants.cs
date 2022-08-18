@@ -547,6 +547,10 @@ namespace Constants
         public const string TournamentTableSettingsPlayerPerTableFilter = "TournamentTableSettings.PlayerPerTableFilter";
         public const string TournamentTableSettingsGameFilter = "TournamentTableSettings.GameFilter";
         public const string TournamentTableSettingsPriceFilter = "TournamentTableSettings.PriceFilter";
+
+        public const string TaxesHoldemTableSettingsPriceFilter          = "TaxesHoldemTableSettings.PriceFilter";
+        public const string TaxesHoldemTableSettingsPlayerPerTableFilter = "TaxesHoldemTableSettings.PlayerPerTableFilter";
+
     }
 }
 
