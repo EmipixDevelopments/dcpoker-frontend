@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
-using System;
+﻿using System;
 using System.Globalization;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class TournamentTableElement : MonoBehaviour
 {
@@ -33,12 +31,12 @@ public class TournamentTableElement : MonoBehaviour
         }
     }
 
-    public void Init(NormalTournamentDetails.NormalTournamentData data) 
+    public void Init(NormalTournamentDetails.NormalTournamentData data)
     {
         UpdateValue(data);
     }
 
-    public void UpdateValue(NormalTournamentDetails.NormalTournamentData data) 
+    public void UpdateValue(NormalTournamentDetails.NormalTournamentData data)
     {
         _tournamentTableElementData = data;
         _dateTimeText.text = $"{CheckStringData(ParsingDateTime(data.tournamentStartTime))}";
@@ -53,12 +51,13 @@ public class TournamentTableElement : MonoBehaviour
     public void OnTournamentTableSelectButtonTap()
     {
         Debug.Log("On button Click");
+        // need get popup TournamentDetailsScreen from LobbyScreeen (old UI)
         //UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.TournamentDetailsId = _tournamentTableElementData.tournamentId;
         //UIManager.Instance.SoundManager.OnButtonClick();
         //UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.GetDetailsTournamentButtonTap(_tournamentTableElementData.tournamentId, _tournamentTableElementData.pokerGameType);
     }
 
-    private string CheckStringData(string text) 
+    private string CheckStringData(string text)
     {
         if (string.IsNullOrEmpty(text))
         {
@@ -76,7 +75,7 @@ public class TournamentTableElement : MonoBehaviour
         {
             year = $"{dt.Year} ";
         }
-        result = $"{year}{dt.ToString("MMM dd", CultureInfo.CreateSpecificCulture("en-US"))} / {dt.ToString("HH:mm")}" ;
+        result = $"{year}{dt.ToString("MMM dd", CultureInfo.CreateSpecificCulture("en-US"))} / {dt.ToString("HH:mm")}";
         return result;
     }
 }
