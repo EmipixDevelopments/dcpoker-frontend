@@ -4,15 +4,15 @@ using UnityEngine.UI;
 
 public class LobbyPanelNew : MonoBehaviour
 {
-    [Header("Menu toggles")]
+    [Header("Menu")]
     [SerializeField] private Toggle _tournamentsToggle;
     [SerializeField] private Toggle _sitNGoToggle;
     [SerializeField] private Toggle _texasHoldemToggle;
     [SerializeField] private Toggle _omahaToggle;
     [SerializeField] private Toggle _pLO5Toggle;
     [SerializeField] private Toggle _accountInfoInToggle;
-    [Header("Top panel buttons")]
-    [SerializeField] private Button _homeButton;
+    [Header("Top panel")]
+    [SerializeField] private Toggle _homeToggle;
     [SerializeField] private Button _logout;
     [SerializeField] private Button _howToPlayButton;
     [SerializeField] private Button _aboutButton;
@@ -65,7 +65,8 @@ public class LobbyPanelNew : MonoBehaviour
 
     private void OnEnable()
     {
-        SwitchAtlHome();
+        SwitchAtlHome(true);
+        //SwitchAtTournaments(true);
     }
 
     public void UpdatePanel() 
@@ -93,7 +94,7 @@ public class LobbyPanelNew : MonoBehaviour
         _pLO5Toggle.onValueChanged.RemoveAllListeners();
         _accountInfoInToggle.onValueChanged.RemoveAllListeners();
 
-        _homeButton.onClick.RemoveAllListeners();
+        _homeToggle.onValueChanged.RemoveAllListeners();
         _logout.onClick.RemoveAllListeners();
         _howToPlayButton.onClick.RemoveAllListeners();
         _aboutButton.onClick.RemoveAllListeners();
@@ -111,7 +112,7 @@ public class LobbyPanelNew : MonoBehaviour
         _pLO5Toggle.onValueChanged.AddListener(SwitchAtPlo5);
         _accountInfoInToggle.onValueChanged.AddListener(SwitchAtMyAccount);
 
-        _homeButton.onClick.AddListener(SwitchAtlHome);
+        _homeToggle.onValueChanged.AddListener(SwitchAtlHome);
         _logout.onClick.AddListener(OnClickLogoutButton);
         _howToPlayButton.onClick.AddListener(SwitchAtHowToPlay);
         _aboutButton.onClick.AddListener(SwitchAtAbout);
@@ -183,8 +184,9 @@ public class LobbyPanelNew : MonoBehaviour
         _panelBottomMenu.SetActive(true);
     }
 
-    private void SwitchAtlHome()
+    private void SwitchAtlHome(bool run)
     {
+        if (!run) return;
         SwitchPanel(LobbyPanel.Home);
     }
     private void SwitchAtMyAccount(bool run)
@@ -299,7 +301,7 @@ public class LobbyPanelNew : MonoBehaviour
                 }
                 else
                 {
-                    StopCoroutine("LogoutFunction");
+                    StopCoroutine(LogoutFunction(0f));
                     StartCoroutine(LogoutFunction(0f));
                 }
             }

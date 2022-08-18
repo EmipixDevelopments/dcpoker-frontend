@@ -909,13 +909,34 @@ public class NormalTournamentDetails
         public string prize;
         public string buyIn;
         public string status;
-        public int players;
+        public int    players;
         public string dateTime;
         public string pokerGameType = "";
-        public int timerDueSeconds;
-        public int timerDisplayWhen;
+        public int    timerDueSeconds;
+        public string tournamentStartTime;
+        public int    timerDisplayWhen;
         public string displayDateTime;
-        public bool isJoinable = false;
+        public bool   isJoinable = false;
+
+        public bool Compare(NormalTournamentData data) 
+        {
+            bool answer = true;
+            if (type != data.type) answer = false;
+            if (tournamentId != data.tournamentId) answer = false;
+            if (name != data.name) answer = false;
+            if (prize != data.prize) answer = false;
+            if (buyIn != data.buyIn) answer = false;
+            if (status != data.status) answer = false;
+            if (players != data.players) answer = false;
+            if (dateTime != data.dateTime) answer = false;
+            if (pokerGameType != data.pokerGameType) answer = false;
+            if (timerDueSeconds != data.timerDueSeconds) answer = false;
+            if (tournamentStartTime != data.tournamentStartTime) answer = false;
+            if (timerDisplayWhen != data.timerDisplayWhen) answer = false;
+            if (displayDateTime != data.displayDateTime) answer = false;
+            if (isJoinable != data.isJoinable) answer = false;
+            return answer;
+        }
     }
 }
 
