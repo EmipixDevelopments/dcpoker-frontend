@@ -542,15 +542,14 @@ namespace Constants
     /// <summary>
     /// keys for save/load data
     /// </summary>
-    public class PlayerPrefsKeys 
+    public enum PlayerPrefsKeys 
     {
-        public const string TournamentTableSettingsPlayerPerTableFilter = "TournamentTableSettings.PlayerPerTableFilter";
-        public const string TournamentTableSettingsGameFilter = "TournamentTableSettings.GameFilter";
-        public const string TournamentTableSettingsPriceFilter = "TournamentTableSettings.PriceFilter";
+        TournamentTableSettingsPlayerPerTableFilter,
+        TournamentTableSettingsGameFilter,
+        TournamentTableSettingsPriceFilter,
 
-        public const string TaxesHoldemTableSettingsPriceFilter          = "TaxesHoldemTableSettings.PriceFilter";
-        public const string TaxesHoldemTableSettingsPlayerPerTableFilter = "TaxesHoldemTableSettings.PlayerPerTableFilter";
-
+        TaxesHoldemTableSettingsPriceFilter,
+        TaxesHoldemTableSettingsPlayerPerTableFilter
     }
 }
 

@@ -62,13 +62,21 @@ public class PlayerPerTableFilter : MonoBehaviour
         List<string> answer = new List<string>();
         if (_allToggle.isOn)
         {
-            foreach (Toggle item in _otherToggle)
+            // if need sent all avaliable value
+            //foreach (Toggle item in _otherToggle)
+            //{
+            //    TextMeshProUGUI textUGUI = item.GetComponentInChildren<TextMeshProUGUI>();
+            //    if (textUGUI)
+            //    {
+            //        answer.Add(textUGUI.text);
+            //    }
+            //}
+
+            // send "all"
+            TextMeshProUGUI textUGUI = _allToggle.GetComponentInChildren<TextMeshProUGUI>();
+            if (textUGUI)
             {
-                TextMeshProUGUI textUGUI = item.GetComponentInChildren<TextMeshProUGUI>();
-                if (textUGUI)
-                {
-                    answer.Add(textUGUI.text);
-                }
+                answer.Add(textUGUI.text);
             }
         }
         else

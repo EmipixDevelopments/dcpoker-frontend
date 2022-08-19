@@ -82,6 +82,8 @@ public class TableData : MonoBehaviour
         StartCoroutine(NextScreen(0f));
     }
 
+    public void OnlySetDataNotView(RoomsListing.Room data) { this.data = data; }
+
     public void SetData(RoomsListing.Room data, int i)
     {
         this.data = data;

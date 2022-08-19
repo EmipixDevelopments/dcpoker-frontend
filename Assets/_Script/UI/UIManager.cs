@@ -57,6 +57,7 @@ public class UIManager : MonoBehaviour
     public PanelDeleteAccount DeleteAccountPopup;
     public PanelInformationAboutMoneyOnAccountPopup PanelInformationAboutMoneyOnAccountPopup;
     public PanelContactSupportPopup PanelContactSupportPopup;
+    public PrivateTablePasswordPopup PrivateTablePasswordPopup;
 
     [Header("Public Variables")]
     public bool isLogAllEnabled = false;

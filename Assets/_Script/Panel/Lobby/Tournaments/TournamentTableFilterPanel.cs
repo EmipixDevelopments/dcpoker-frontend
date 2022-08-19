@@ -17,15 +17,15 @@ public class TournamentTableFilterPanel : MonoBehaviour
     }
     private void Init()
     {
-        _gameFilter.Init(Constants.PlayerPrefsKeys.TournamentTableSettingsGameFilter);
+        _gameFilter.Init(Constants.PlayerPrefsKeys.TournamentTableSettingsGameFilter.ToString());
         _gameFilter.FilterChanged = null;
         _gameFilter.FilterChanged = () => FilterChanged?.Invoke();
 
-        _priceFilter.Init(Constants.PlayerPrefsKeys.TournamentTableSettingsPriceFilter);
+        _priceFilter.Init(Constants.PlayerPrefsKeys.TournamentTableSettingsPriceFilter.ToString());
         _priceFilter.FilterChanged = null;
         _priceFilter.FilterChanged = () => FilterChanged?.Invoke();
 
-        _playerPerTableFilter.Init(Constants.PlayerPrefsKeys.TournamentTableSettingsPlayerPerTableFilter);
+        _playerPerTableFilter.Init(Constants.PlayerPrefsKeys.TournamentTableSettingsPlayerPerTableFilter.ToString());
         _playerPerTableFilter.FilterChanged = null;
         _playerPerTableFilter.FilterChanged = () => FilterChanged?.Invoke();
     }
