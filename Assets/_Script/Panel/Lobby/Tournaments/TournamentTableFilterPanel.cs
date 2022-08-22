@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -57,24 +58,107 @@ public class TournamentTableFilterPanel : MonoBehaviour
         }
 
         // Price filter
-        List<string> priveValue = _priceFilter.GetFilterValue();
         int lowMin = 0;
         int lowMax = 10;
-        int mediumMin = 10;
+        int mediumMin = 11;
         int mediumMax = 50;
-        int hightMin = 50;
+        int hightMin = 51;
         int hightMax = int.MaxValue;
-        bool freeroll = false; // or true
-        /*
-         0 - 10 $ - low leaves
-        10 - 50 $ - medium level
-        50 - endless  - Hight level 
-        freeroll is freeroll
-         */
 
+        List<string> priceFilterValue = _priceFilter.GetFilterValue();
+        List<NormalTournamentDetails.NormalTournamentData> afterPriceFilter = new List<NormalTournamentDetails.NormalTournamentData>();
+        foreach (var priceFilter in priceFilterValue)
+        {
+            if (priceFilter == "low")
+            {
+                afterPriceFilter.AddRange(GetTableWithInPrice(answer, lowMin, lowMax));
+            }
+            if (priceFilter == "medium")
+            {
+                afterPriceFilter.AddRange(GetTableWithInPrice(answer, mediumMin, mediumMax));
+            }
+            if (priceFilter == "hight")
+            {
+                afterPriceFilter.AddRange(GetTableWithInPrice(answer, hightMin, hightMax));
+            }
+        }
+        afterPriceFilter.OrderBy(sortBy => sortBy.buyIn); // sorting
+        answer.Clear();
+        answer.AddRange(afterPriceFilter);
+        //-----------------------------------------
+
+        /*
         // playerfilter
         List<string> playerFilter = _playerPerTableFilter.GetFilterValue();
-
+        //-----------------------------------------
+        // player per table filter
+        valueAfterPriceFilter.Clear();
+        List<string> playerPerTableValue = _playerPerTableFilter.GetFilterValue();
+        foreach (var playersPerTable in playerPerTableValue)
+        {
+            if (playersPerTable == "all")
+            {
+                valueAfterPriceFilter.AddRange(answer);
+            }
+            if (playersPerTable == "2")
+            {
+                valueAfterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 2));
+            }
+            if (playersPerTable == "6")
+            {
+                valueAfterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 6));
+            }
+            if (playersPerTable == "8")
+            {
+                valueAfterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 8));
+            }
+            if (playersPerTable == "9")
+            {
+                valueAfterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 9));
+            }
+        }
+        valueAfterPriceFilter.OrderBy(sortBy => sortBy.maxPlayers); // sorting
+        answer.Clear();
+        answer.AddRange(valueAfterPriceFilter);
+        //------------------------------------------
+        */
         return answer;
     }
+    private int ParsingByinValue(string value) 
+    {
+        int answer;
+        string[] strArr = value.Split('+');
+        answer =  int.Parse(strArr[0]) + int.Parse(strArr[1]);
+        return answer;
+    }
+
+
+    private List<NormalTournamentDetails.NormalTournamentData> GetTableWithInPrice(List<NormalTournamentDetails.NormalTournamentData> tables, int minValue, int maxValue)
+    {
+        List<NormalTournamentDetails.NormalTournamentData> answer = new List<NormalTournamentDetails.NormalTournamentData>();
+        foreach (var table in tables)
+        {
+            int byInValue = ParsingByinValue(table.buyIn);
+            if (byInValue >= minValue && byInValue <= maxValue)
+            {
+                answer.Add(table);
+            }
+        }
+        return answer;
+    }
+
+    /*
+    private List<NormalTournamentDetails.NormalTournamentData> GetTableWithPlayersPerTable(List<NormalTournamentDetails.NormalTournamentData> tables, int players)
+    {
+        List<NormalTournamentDetails.NormalTournamentData> answer = new List<NormalTournamentDetails.NormalTournamentData>();
+        foreach (var table in tables)
+        {
+            if (table.maxPlayers == players)
+            {
+                answer.Add(table);
+            }
+        }
+        return answer;
+    }
+    */
 }
