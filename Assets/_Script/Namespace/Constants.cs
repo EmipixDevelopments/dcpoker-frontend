@@ -547,9 +547,15 @@ namespace Constants
         TournamentTableSettingsPlayerPerTableFilter,
         TournamentTableSettingsGameFilter,
         TournamentTableSettingsPriceFilter,
-
+        // Taxes holdem
         TaxesHoldemTableSettingsPriceFilter,
-        TaxesHoldemTableSettingsPlayerPerTableFilter
+        TaxesHoldemTableSettingsPlayerPerTableFilter,
+        // Omaha
+        OmahaTableSettingsPriceFilter,
+        OmahaTableSettingsPlayerPerTableFilter,
+        // Plo5
+        Plo5TableSettingsPriceFilter,
+        Plo5TableSettingsPlayerPerTableFilter
     }
 }
 

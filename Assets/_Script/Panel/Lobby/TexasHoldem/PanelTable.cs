@@ -5,7 +5,10 @@ using UnityEngine;
 
 public class PanelTable : MonoBehaviour
 {
+    [Header("Request settings")]
     [SerializeField] private GameType _gameType = GameType.texas;
+    [SerializeField] private PokerGameType _pockerGameType = PokerGameType.all;
+    [SerializeField] private GameType _selectedType = GameType.cash;
     [Space]
     [SerializeField] private TableFilterPanel _filtersPanel;
     [SerializeField] private TableElement _texasHoldemPrefab;
@@ -50,9 +53,9 @@ public class PanelTable : MonoBehaviour
         if (UIManager.Instance)
         {
             UIManager.Instance.gameType = _gameType;
-            UIManager.Instance.selectedGameType = GameType.cash;
+            UIManager.Instance.selectedGameType = _selectedType;
 
-            PokerGameType pokerGameType = PokerGameType.texas;
+            PokerGameType pokerGameType = _pockerGameType;
             bool isLimitSelected = false;
             string gametype = "";
             string selectedLimitType = "all";
