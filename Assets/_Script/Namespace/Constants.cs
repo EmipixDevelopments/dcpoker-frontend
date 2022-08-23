@@ -542,8 +542,9 @@ namespace Constants
     /// <summary>
     /// keys for save/load data
     /// </summary>
-    public enum PlayerPrefsKeys 
+    public enum TablePlayerPrefsKeys 
     {
+        // Regular Tournament
         TournamentTableSettingsPlayerPerTableFilter,
         TournamentTableSettingsGameFilter,
         TournamentTableSettingsPriceFilter,
@@ -555,7 +556,11 @@ namespace Constants
         OmahaTableSettingsPlayerPerTableFilter,
         // Plo5
         Plo5TableSettingsPriceFilter,
-        Plo5TableSettingsPlayerPerTableFilter
+        Plo5TableSettingsPlayerPerTableFilter,
+        // Regular Tournament
+        SitNGoTableSettingsPlayerPerTableFilter,
+        SitNGoTableSettingsGameFilter,
+        SitNGoTableSettingsPriceFilter,
     }
 }
 
