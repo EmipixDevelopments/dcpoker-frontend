@@ -81,8 +81,12 @@ public class TournamentTableFilterPanel : MonoBehaviour
             {
                 afterPriceFilter.AddRange(GetTableWithInPrice(answer, hightMin, hightMax));
             }
+            if (priceFilter == "freeroll")
+            {
+                afterPriceFilter.AddRange(GetIsFreeRoll(answer));
+            }
         }
-        afterPriceFilter.OrderBy(sortBy => sortBy.buyIn); // sorting
+        afterPriceFilter.OrderBy(sortBy => sortBy.buyIn); // sorting by buyIn
         answer.Clear();
         answer.AddRange(afterPriceFilter);
         //-----------------------------------------
@@ -124,6 +128,20 @@ public class TournamentTableFilterPanel : MonoBehaviour
         */
         return answer;
     }
+
+    private List<NormalTournamentDetails.NormalTournamentData> GetIsFreeRoll(List<NormalTournamentDetails.NormalTournamentData> tables)
+    {
+        List<NormalTournamentDetails.NormalTournamentData> answer = new List<NormalTournamentDetails.NormalTournamentData>();
+        foreach (var table in tables)
+        {
+            if (table.isFreeRoll)
+            {
+                answer.Add(table);
+            }
+        }
+        return answer;
+    }
+
     private int ParsingByinValue(string value) 
     {
         int answer;

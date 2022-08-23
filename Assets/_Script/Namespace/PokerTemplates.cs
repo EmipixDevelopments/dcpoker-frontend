@@ -917,6 +917,7 @@ public class NormalTournamentDetails
         public int    timerDisplayWhen;
         public string displayDateTime;
         public bool   isJoinable = false;
+        public bool   isFreeRoll = false;
 
         public bool Compare(NormalTournamentData data) 
         {
@@ -935,6 +936,7 @@ public class NormalTournamentDetails
             if (timerDisplayWhen != data.timerDisplayWhen) answer = false;
             if (displayDateTime != data.displayDateTime) answer = false;
             if (isJoinable != data.isJoinable) answer = false;
+            if (isFreeRoll != data.isFreeRoll) answer = false;
             return answer;
         }
     }
