@@ -1694,6 +1694,21 @@ public class SocketGamemanager : MonoBehaviour
         Debug.Log(Constants.PokerEvents.StaticBanners + " " + Json.Decode(jsonObj.toString()));
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.StaticBanners, action, Json.Decode(jsonObj.toString()));
     }
+
+    public void Banners(SocketIOAckCallback action)
+    {
+        if (!HasInternetConnection())
+            return;
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+        Debug.Log(Constants.PokerEvents.Banners + " " + Json.Decode(jsonObj.toString()));
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.Banners, action, Json.Decode(jsonObj.toString()));
+    }
+
+
     /// <summary>
     /// Reconnect.
     /// </summary>
