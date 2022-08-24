@@ -325,7 +325,7 @@ namespace Constants
         public const string Register = "RegisterPlayer";
         public const string GetStacks = "GetStacks";
         public const string StaticTournament = "StaticTournament";
-        public const string Banners = "Banners";
+        public const string Banner = "Banner";
         public const string StaticBanners = "StaticBanners";
         public const string SearchLobby = "SearchLobby";
         public const string SearchTournamentLobby = "SearchTournamentLobby";
@@ -710,4 +710,9 @@ public enum TournamentGameType
     reg,
     sng,
     PLO5
+}
+
+public enum BannerType
+{
+    tournament
 }

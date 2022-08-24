@@ -838,6 +838,22 @@ public class Profile
     public long mobile;
 }
 
+[Serializable]
+public class BannerDataRequest 
+{
+    public string status;
+    public BannerData result;
+
+    [Serializable]
+    public class BannerData
+    {
+        // public string _id; // not used
+        public string position;
+        public string tournamentId;
+        public string image;
+        // public int __v; // not used
+    }
+}
 
 [Serializable]
 public class TournamentRoomObject
