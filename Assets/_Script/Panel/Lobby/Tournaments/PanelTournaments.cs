@@ -54,7 +54,7 @@ public class PanelTournaments : MonoBehaviour
             string tournamentPokerType = "all";
             string selectedGameSpeed = UIManager.Instance.selectedGameSpeed.ToString();
             bool isLimitSelected = false;
-            string gametype = "Touranment"; // or "sng";
+            string gametype = "Touranment";
             string selectedLimitType = "all";
             string selectedStack = "all";
             string selectedPlayerPerTable = "all";

@@ -926,6 +926,7 @@ public class NormalTournamentDetails
         public string buyIn;
         public string status;
         public int    players;
+        public int    maxPlayersPerTable;
         public string dateTime;
         public string pokerGameType = "";
         public int    timerDueSeconds;
@@ -945,6 +946,7 @@ public class NormalTournamentDetails
             if (buyIn != data.buyIn) answer = false;
             if (status != data.status) answer = false;
             if (players != data.players) answer = false;
+            if (maxPlayersPerTable != data.maxPlayersPerTable) answer = false;
             if (dateTime != data.dateTime) answer = false;
             if (pokerGameType != data.pokerGameType) answer = false;
             if (timerDueSeconds != data.timerDueSeconds) answer = false;

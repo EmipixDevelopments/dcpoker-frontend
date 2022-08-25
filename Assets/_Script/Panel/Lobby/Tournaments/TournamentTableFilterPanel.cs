@@ -35,7 +35,7 @@ public class TournamentTableFilterPanel : MonoBehaviour
     {
         List<NormalTournamentDetails.NormalTournamentData> answer = new List<NormalTournamentDetails.NormalTournamentData>();
 
-        // game GameType filter
+        //--- Game GameType filter ---//
         List<string> gameFilter = _gameFilter.GetFilterValue();
         List<string> gameFilterParser = new List<string>();
         foreach (string item in gameFilter)
@@ -56,8 +56,9 @@ public class TournamentTableFilterPanel : MonoBehaviour
                 }
             }
         }
+        //-----------------------------------------
 
-        // Price filter
+        //--- Price filter ---//
         int lowMin = 0;
         int lowMax = 10;
         int mediumMin = 11;
@@ -71,15 +72,15 @@ public class TournamentTableFilterPanel : MonoBehaviour
         {
             if (priceFilter == "low")
             {
-                afterPriceFilter.AddRange(GetTableWithInPrice(answer, lowMin, lowMax));
+                afterPriceFilter.AddRange(GetTournaryWithInPrice(answer, lowMin, lowMax));
             }
             if (priceFilter == "medium")
             {
-                afterPriceFilter.AddRange(GetTableWithInPrice(answer, mediumMin, mediumMax));
+                afterPriceFilter.AddRange(GetTournaryWithInPrice(answer, mediumMin, mediumMax));
             }
             if (priceFilter == "hight")
             {
-                afterPriceFilter.AddRange(GetTableWithInPrice(answer, hightMin, hightMax));
+                afterPriceFilter.AddRange(GetTournaryWithInPrice(answer, hightMin, hightMax));
             }
             if (priceFilter == "freeroll")
             {
@@ -91,52 +92,64 @@ public class TournamentTableFilterPanel : MonoBehaviour
         answer.AddRange(afterPriceFilter);
         //-----------------------------------------
 
-        /*
-        // playerfilter
-        List<string> playerFilter = _playerPerTableFilter.GetFilterValue();
-        //-----------------------------------------
-        // player per table filter
-        valueAfterPriceFilter.Clear();
+        //--- Max players per table filter ---//
+        afterPriceFilter.Clear();
         List<string> playerPerTableValue = _playerPerTableFilter.GetFilterValue();
         foreach (var playersPerTable in playerPerTableValue)
         {
             if (playersPerTable == "all")
             {
-                valueAfterPriceFilter.AddRange(answer);
+                afterPriceFilter.AddRange(answer);
             }
             if (playersPerTable == "2")
             {
-                valueAfterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 2));
+                afterPriceFilter.AddRange(GetTournaryWithPlayersPerTable(answer, 2));
             }
             if (playersPerTable == "6")
             {
-                valueAfterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 6));
+                afterPriceFilter.AddRange(GetTournaryWithPlayersPerTable(answer, 6));
             }
             if (playersPerTable == "8")
             {
-                valueAfterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 8));
+                afterPriceFilter.AddRange(GetTournaryWithPlayersPerTable(answer, 8));
             }
             if (playersPerTable == "9")
             {
-                valueAfterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 9));
+                afterPriceFilter.AddRange(GetTournaryWithPlayersPerTable(answer, 9));
             }
         }
-        valueAfterPriceFilter.OrderBy(sortBy => sortBy.maxPlayers); // sorting
+        afterPriceFilter.OrderBy(sortBy => sortBy.maxPlayersPerTable); // sorting
         answer.Clear();
-        answer.AddRange(valueAfterPriceFilter);
+        answer.AddRange(afterPriceFilter);
         //------------------------------------------
-        */
+
+        // This is a simple solution to the problem. I don't understand why duplicates are being created.
+        answer = RemoveDuplicate(answer);
+
         return answer;
     }
 
-    private List<NormalTournamentDetails.NormalTournamentData> GetIsFreeRoll(List<NormalTournamentDetails.NormalTournamentData> tables)
+    private List<NormalTournamentDetails.NormalTournamentData> RemoveDuplicate(List<NormalTournamentDetails.NormalTournamentData> data)
     {
         List<NormalTournamentDetails.NormalTournamentData> answer = new List<NormalTournamentDetails.NormalTournamentData>();
-        foreach (var table in tables)
+        foreach (var item in data)
         {
-            if (table.isFreeRoll)
+            if (!answer.Contains(item))
             {
-                answer.Add(table);
+                answer.Add(item);
+            }
+        }
+        return answer;
+    }
+
+    private List<NormalTournamentDetails.NormalTournamentData> GetIsFreeRoll(List<NormalTournamentDetails.NormalTournamentData> tournarys)
+    {
+        List<NormalTournamentDetails.NormalTournamentData> answer = new List<NormalTournamentDetails.NormalTournamentData>();
+        foreach (var tournary in tournarys)
+        {
+            if (tournary.isFreeRoll && !answer.Contains(tournary))
+            {
+                answer.Add(tournary);
             }
         }
         return answer;
@@ -151,32 +164,31 @@ public class TournamentTableFilterPanel : MonoBehaviour
     }
 
 
-    private List<NormalTournamentDetails.NormalTournamentData> GetTableWithInPrice(List<NormalTournamentDetails.NormalTournamentData> tables, int minValue, int maxValue)
+    private List<NormalTournamentDetails.NormalTournamentData> GetTournaryWithInPrice(List<NormalTournamentDetails.NormalTournamentData> tournarys, int minValue, int maxValue)
     {
         List<NormalTournamentDetails.NormalTournamentData> answer = new List<NormalTournamentDetails.NormalTournamentData>();
-        foreach (var table in tables)
+        foreach (var tournary in tournarys)
         {
-            int byInValue = ParsingByinValue(table.buyIn);
-            if (byInValue >= minValue && byInValue <= maxValue)
+            int byInValue = ParsingByinValue(tournary.buyIn);
+            if (byInValue >= minValue && byInValue <= maxValue
+                && !answer.Contains(tournary))
             {
-                answer.Add(table);
+                answer.Add(tournary);
             }
         }
         return answer;
     }
 
-    /*
-    private List<NormalTournamentDetails.NormalTournamentData> GetTableWithPlayersPerTable(List<NormalTournamentDetails.NormalTournamentData> tables, int players)
+    private List<NormalTournamentDetails.NormalTournamentData> GetTournaryWithPlayersPerTable(List<NormalTournamentDetails.NormalTournamentData> tournarys, int players)
     {
         List<NormalTournamentDetails.NormalTournamentData> answer = new List<NormalTournamentDetails.NormalTournamentData>();
-        foreach (var table in tables)
+        foreach (var tournary in tournarys)
         {
-            if (table.maxPlayers == players)
+            if (tournary.maxPlayersPerTable == players && !answer.Contains(tournary))
             {
-                answer.Add(table);
+                answer.Add(tournary);
             }
         }
         return answer;
     }
-    */
 }
