@@ -31,7 +31,7 @@ public class TournamentTableFilterPanel : MonoBehaviour
         _playerPerTableFilter.FilterChanged = () => FilterChanged?.Invoke();
     }
 
-    public List<NormalTournamentDetails.NormalTournamentData> UseFilter(List<NormalTournamentDetails.NormalTournamentData> tableData)
+    public List<NormalTournamentDetails.NormalTournamentData> UseFilter(List<NormalTournamentDetails.NormalTournamentData> tournamentData)
     {
         List<NormalTournamentDetails.NormalTournamentData> answer = new List<NormalTournamentDetails.NormalTournamentData>();
 
@@ -46,13 +46,13 @@ public class TournamentTableFilterPanel : MonoBehaviour
         }
         gameFilter = new List<string>(gameFilterParser);
         // use game filter
-        foreach (var tableItem in tableData)
+        foreach (var tournament in tournamentData)
         {
             foreach (var game in gameFilter)
             {
-                if (tableItem.pokerGameType == game)
+                if (tournament.pokerGameType == game)
                 {
-                    answer.Add(tableItem);
+                    answer.Add(tournament);
                 }
             }
         }
@@ -94,8 +94,8 @@ public class TournamentTableFilterPanel : MonoBehaviour
 
         //--- Max players per table filter ---//
         afterPriceFilter.Clear();
-        List<string> playerPerTableValue = _playerPerTableFilter.GetFilterValue();
-        foreach (var playersPerTable in playerPerTableValue)
+        List<string> playerPerTableFilterValue = _playerPerTableFilter.GetFilterValue();
+        foreach (var playersPerTable in playerPerTableFilterValue)
         {
             if (playersPerTable == "all")
             {

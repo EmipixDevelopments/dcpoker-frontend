@@ -879,6 +879,7 @@ public class TournamentRoomObject
 		public int maxPlayers;
 		public string status;*/
         public string id;
+        public string tournamentId;
         public string roomId = "";
         public string type;
         public string name;

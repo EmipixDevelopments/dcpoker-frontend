@@ -86,43 +86,42 @@ public class SitNGoTableFilterPanel : MonoBehaviour
         answer.AddRange(afterPriceFilter);
         //-----------------------------------------
 
-        /*
-        // playerfilter
-        List<string> playerFilter = _playerPerTableFilter.GetFilterValue();
-        //-----------------------------------------
-        // player per table filter
-        valueAfterPriceFilter.Clear();
+
+        // Player per table filter
+        afterPriceFilter.Clear();
         List<string> playerPerTableValue = _playerPerTableFilter.GetFilterValue();
         foreach (var playersPerTable in playerPerTableValue)
         {
             if (playersPerTable == "all")
             {
-                valueAfterPriceFilter.AddRange(answer);
+                afterPriceFilter.AddRange(answer);
             }
             if (playersPerTable == "2")
             {
-                valueAfterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 2));
+                afterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 2));
             }
             if (playersPerTable == "6")
             {
-                valueAfterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 6));
+                afterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 6));
             }
             if (playersPerTable == "8")
             {
-                valueAfterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 8));
+                afterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 8));
             }
             if (playersPerTable == "9")
             {
-                valueAfterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 9));
+                afterPriceFilter.AddRange(GetTableWithPlayersPerTable(answer, 9));
             }
         }
-        valueAfterPriceFilter.OrderBy(sortBy => sortBy.maxPlayers); // sorting
+        afterPriceFilter.OrderBy(sortBy => GetMaxPlayersPerTable(sortBy.seat)); // sorting
         answer.Clear();
-        answer.AddRange(valueAfterPriceFilter);
+        answer.AddRange(afterPriceFilter);
         //------------------------------------------
-        */
+
+        answer = RemoveDuplicate(answer);
         return answer;
     }
+
     private List<TournamentRoomObject.TournamentRoom> GetTableWithInPrice(List<TournamentRoomObject.TournamentRoom> tables, int minValue, int maxValue)
     {
         List<TournamentRoomObject.TournamentRoom> answer = new List<TournamentRoomObject.TournamentRoom>();
@@ -141,6 +140,38 @@ public class SitNGoTableFilterPanel : MonoBehaviour
         int answer;
         string[] strArr = value.Split('+');
         answer = int.Parse(strArr[0]) + int.Parse(strArr[1]);
+        return answer;
+    }
+
+    private List<TournamentRoomObject.TournamentRoom> GetTableWithPlayersPerTable(List<TournamentRoomObject.TournamentRoom> data, int value)
+    {
+        List<TournamentRoomObject.TournamentRoom> answer = new List<TournamentRoomObject.TournamentRoom>();
+        foreach (var table in data)
+        {
+            int byInValue = GetMaxPlayersPerTable(table.seat);
+            if (byInValue == value)
+            {
+                answer.Add(table);
+            }
+        }
+        return answer;
+    }
+    private int GetMaxPlayersPerTable(string value)
+    {
+        string[] strArr = value.Split('/');
+        return int.Parse(strArr[1]);
+    }
+
+    private List<TournamentRoomObject.TournamentRoom> RemoveDuplicate(List<TournamentRoomObject.TournamentRoom> data)
+    {
+        List<TournamentRoomObject.TournamentRoom> answer = new List<TournamentRoomObject.TournamentRoom>();
+        foreach (var item in data)
+        {
+            if (!answer.Contains(item))
+            {
+                answer.Add(item);
+            }
+        }
         return answer;
     }
 }

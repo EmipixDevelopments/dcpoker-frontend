@@ -7,11 +7,11 @@ public class PanelSitNGo : MonoBehaviour
 {
     [SerializeField] private SitNGoTableFilterPanel _sitNGoTableFilter;
     [Space]
-    [SerializeField] private TournamentTableElement _tournamentTablePrefab;
+    [SerializeField] private SitNGoTableElement _sitNGoTablePrefab;
     [SerializeField] private Transform _content;
 
     private int _updatePanelAfterSecconds = 8;
-    private List<TournamentTableElement> _tableElements = new List<TournamentTableElement>();
+    private List<SitNGoTableElement> _tableElements = new List<SitNGoTableElement>();
 
     private void Start()
     {
@@ -55,7 +55,7 @@ public class PanelSitNGo : MonoBehaviour
             string tournamentPokerType = "all";
             GameSpeed selectedGameSpeed = UIManager.Instance.selectedGameSpeed;
             bool isLimitSelected = false;
-            string gametype = "sng";
+            string gametype = "sng"; //"Touranment";
             string selectedLimitType = "all";
             string selectedStack = "all";
             string selectedPlayerPerTable = "all";
@@ -86,7 +86,7 @@ public class PanelSitNGo : MonoBehaviour
         }
 
         List<TournamentRoomObject.TournamentRoom> tableData = roomsResp.result;
-        /*
+
         if (tableData != null)
         {
             // used filter
@@ -109,7 +109,7 @@ public class PanelSitNGo : MonoBehaviour
                     // create new row
                     foreach (var item in tableData)
                     {
-                        TournamentTableElement row = Instantiate(_tournamentTablePrefab, _content);
+                        SitNGoTableElement row = Instantiate(_sitNGoTablePrefab, _content);
                          row.Init(item);
                         _tableElements.Add(row);
                     }
@@ -118,6 +118,5 @@ public class PanelSitNGo : MonoBehaviour
                 }
             }
         }
-        */
     }
 }
