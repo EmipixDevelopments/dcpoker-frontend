@@ -143,6 +143,7 @@ public class RegisterPanel : MonoBehaviour
                         {
                             this.Close();
                             UIManager.Instance.HidePopup();
+                            UIManager.Instance.MainHomeScreen.LoginScreen.Open();
                         });
                     }
                     else if (registrationResp.message == "Username already taken.")
