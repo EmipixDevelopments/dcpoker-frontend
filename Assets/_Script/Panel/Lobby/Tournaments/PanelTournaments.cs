@@ -54,7 +54,7 @@ public class PanelTournaments : MonoBehaviour
             string tournamentPokerType = "all";
             string selectedGameSpeed = UIManager.Instance.selectedGameSpeed.ToString();
             bool isLimitSelected = false;
-            string gametype = "Touranment"; // or "sng";
+            string gametype = "Touranment";
             string selectedLimitType = "all";
             string selectedStack = "all";
             string selectedPlayerPerTable = "all";
@@ -78,15 +78,15 @@ public class PanelTournaments : MonoBehaviour
 
         JSONArray arr = new JSONArray(packet.ToString());
         string Source = arr.getString(arr.length() - 1);
-        NormalTournamentDetails touramentDetail = JsonUtility.FromJson<NormalTournamentDetails>(Source);
+        NormalTournamentDetails touramentsDetail = JsonUtility.FromJson<NormalTournamentDetails>(Source);
 
-        if (!touramentDetail.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+        if (!touramentsDetail.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
         {
-            UIManager.Instance.DisplayMessagePanel(touramentDetail.message, null);
+            UIManager.Instance.DisplayMessagePanel(touramentsDetail.message, null);
             return;
         }
 
-        List<NormalTournamentDetails.NormalTournamentData> tableData = touramentDetail.result;
+        List<NormalTournamentDetails.NormalTournamentData> tableData = touramentsDetail.result;
         // used filter
         tableData = _tournamentTableFilter.UseFilter(tableData);
 

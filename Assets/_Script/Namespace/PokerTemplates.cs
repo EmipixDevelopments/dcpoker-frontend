@@ -838,6 +838,22 @@ public class Profile
     public long mobile;
 }
 
+[Serializable]
+public class BannerDataRequest 
+{
+    public string status;
+    public BannerData result;
+
+    [Serializable]
+    public class BannerData
+    {
+        // public string _id; // not used
+        public string position;
+        public string tournamentId;
+        public string image;
+        // public int __v; // not used
+    }
+}
 
 [Serializable]
 public class TournamentRoomObject
@@ -863,6 +879,7 @@ public class TournamentRoomObject
 		public int maxPlayers;
 		public string status;*/
         public string id;
+        public string tournamentId;
         public string roomId = "";
         public string type;
         public string name;
@@ -910,6 +927,7 @@ public class NormalTournamentDetails
         public string buyIn;
         public string status;
         public int    players;
+        public int    maxPlayersPerTable;
         public string dateTime;
         public string pokerGameType = "";
         public int    timerDueSeconds;
@@ -917,6 +935,7 @@ public class NormalTournamentDetails
         public int    timerDisplayWhen;
         public string displayDateTime;
         public bool   isJoinable = false;
+        public bool   isFreeRoll = false;
 
         public bool Compare(NormalTournamentData data) 
         {
@@ -928,6 +947,7 @@ public class NormalTournamentDetails
             if (buyIn != data.buyIn) answer = false;
             if (status != data.status) answer = false;
             if (players != data.players) answer = false;
+            if (maxPlayersPerTable != data.maxPlayersPerTable) answer = false;
             if (dateTime != data.dateTime) answer = false;
             if (pokerGameType != data.pokerGameType) answer = false;
             if (timerDueSeconds != data.timerDueSeconds) answer = false;
@@ -935,6 +955,7 @@ public class NormalTournamentDetails
             if (timerDisplayWhen != data.timerDisplayWhen) answer = false;
             if (displayDateTime != data.displayDateTime) answer = false;
             if (isJoinable != data.isJoinable) answer = false;
+            if (isFreeRoll != data.isFreeRoll) answer = false;
             return answer;
         }
     }

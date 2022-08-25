@@ -325,6 +325,7 @@ namespace Constants
         public const string Register = "RegisterPlayer";
         public const string GetStacks = "GetStacks";
         public const string StaticTournament = "StaticTournament";
+        public const string Banner = "Banner";
         public const string StaticBanners = "StaticBanners";
         public const string SearchLobby = "SearchLobby";
         public const string SearchTournamentLobby = "SearchTournamentLobby";
@@ -542,8 +543,9 @@ namespace Constants
     /// <summary>
     /// keys for save/load data
     /// </summary>
-    public enum PlayerPrefsKeys 
+    public enum TablePlayerPrefsKeys 
     {
+        // Regular Tournament
         TournamentTableSettingsPlayerPerTableFilter,
         TournamentTableSettingsGameFilter,
         TournamentTableSettingsPriceFilter,
@@ -555,7 +557,11 @@ namespace Constants
         OmahaTableSettingsPlayerPerTableFilter,
         // Plo5
         Plo5TableSettingsPriceFilter,
-        Plo5TableSettingsPlayerPerTableFilter
+        Plo5TableSettingsPlayerPerTableFilter,
+        // Regular Tournament
+        SitNGoTableSettingsPlayerPerTableFilter,
+        SitNGoTableSettingsGameFilter,
+        SitNGoTableSettingsPriceFilter,
     }
 }
 
@@ -704,4 +710,9 @@ public enum TournamentGameType
     reg,
     sng,
     PLO5
+}
+
+public enum BannerType
+{
+    tournament
 }

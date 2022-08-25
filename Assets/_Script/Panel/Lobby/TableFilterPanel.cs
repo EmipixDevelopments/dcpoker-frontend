@@ -9,8 +9,8 @@ public class TableFilterPanel : MonoBehaviour
     [SerializeField] private AllAndOtherToggleFilter _priceFilter;
     [SerializeField] private PlayerPerTableFilter _playerPerTableFilter;
     [Header("Save Keys")]
-    [SerializeField] private Constants.PlayerPrefsKeys keyForPriceFilter;
-    [SerializeField] private Constants.PlayerPrefsKeys keyForPlayerPerTableFilter;
+    [SerializeField] private Constants.TablePlayerPrefsKeys keyForPriceFilter;
+    [SerializeField] private Constants.TablePlayerPrefsKeys keyForPlayerPerTableFilter;
 
     public Action FilterChanged;
 
