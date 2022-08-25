@@ -32,7 +32,6 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private GameObject _panelPlo5;
     [SerializeField] private GameObject _panelHowToPlay;
     [SerializeField] private GameObject _panelAbout;
-    [SerializeField] private GameObject _panelSupport;
     [SerializeField] private GameObject _panelTermsOfService;
     [SerializeField] private GameObject _panelPrivacyPolicy;
     [SerializeField] private GameObject _panelResponsibleGaming;
@@ -50,7 +49,6 @@ public class LobbyPanelNew : MonoBehaviour
         Plo5,
         HowToPlay,
         About,
-        Support,
         TermsOfService,
         PrivacyPolicy,
         ResponsibleGaming
@@ -66,7 +64,6 @@ public class LobbyPanelNew : MonoBehaviour
     private void OnEnable()
     {
         SwitchAtlHome(true);
-        //SwitchAtTournaments(true);
     }
 
     public void UpdatePanel() 
@@ -157,9 +154,6 @@ public class LobbyPanelNew : MonoBehaviour
             case LobbyPanel.About:
                 _panelAbout.SetActive(true);
                 break;
-            case LobbyPanel.Support:
-                _panelSupport.SetActive(true);
-                break;
             case LobbyPanel.TermsOfService:
                 _panelTermsOfService.SetActive(true);
                 break;
@@ -229,7 +223,7 @@ public class LobbyPanelNew : MonoBehaviour
     }
     private void SwitchAtSupport()
     {
-        SwitchPanel(LobbyPanel.Support);
+        UIManager.Instance.PanelContactSupportPopup.Open();
     }
     private void SwitchAtTermsOfService()
     {
@@ -255,7 +249,6 @@ public class LobbyPanelNew : MonoBehaviour
         _panelPlo5.SetActive(false);
         _panelHowToPlay.SetActive(false);
         _panelAbout.SetActive(false);
-        _panelSupport.SetActive(false);
         _panelTermsOfService.SetActive(false);
         _panelPrivacyPolicy.SetActive(false);
         _panelResponsibleGaming.SetActive(false);
