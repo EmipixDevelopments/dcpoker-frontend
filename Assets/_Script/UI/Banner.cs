@@ -15,7 +15,6 @@ public class Banner : MonoBehaviour
     [SerializeField] private BannerType _bannerType;
     
     private Action _onButtonClick;
-    private bool _firstStart = false;
     private BannerDataRequest.BannerData _bannerData;
 
     private void Start()
@@ -62,7 +61,6 @@ public class Banner : MonoBehaviour
 
     IEnumerator DownloadAndShowImage(string mediaUrl)
     {
-        Debug.Log("--- mediaUrl" + mediaUrl);
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(mediaUrl);
         yield return request.SendWebRequest();
         if (request.isNetworkError || request.isHttpError)
