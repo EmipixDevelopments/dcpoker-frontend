@@ -5,10 +5,15 @@ using TMPro;
 public class AccountInfoInLobby : MonoBehaviour
 {
     [SerializeField] private Image _avatarImage;
-    [SerializeField] private TextMeshProUGUI _chip;
+    [SerializeField] private Image _ammountImage;
+    [SerializeField] private TextMeshProUGUI _ammountText;
     [SerializeField] private TextMeshProUGUI _myAccount;
+    [Space]
+    [SerializeField] private Sprite _cashSprite;
+    [SerializeField] private Sprite _chipsSprite;
 
     private int _avatarImageIndex = -1;
+    private double _ammount = 0;
 
     void OnEnable()
     {
@@ -18,7 +23,7 @@ public class AccountInfoInLobby : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         UpdateAvatarImage();
     }
@@ -29,6 +34,24 @@ public class AccountInfoInLobby : MonoBehaviour
         {
             _avatarImageIndex = UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar;
             _avatarImage.sprite = UIManager.Instance.assetOfGame.profileAvatarList.profileAvatarSprite[_avatarImageIndex];
+        }
+        if (UIManager.Instance.assetOfGame.SavedLoginData.isCash)
+        {
+            if (_ammount != UIManager.Instance.assetOfGame.SavedLoginData.cash)
+            {
+                _ammount = UIManager.Instance.assetOfGame.SavedLoginData.cash;
+                _ammountText.text = _ammount.ToString();
+            }
+            _ammountImage.sprite = _cashSprite;
+        }
+        else
+        {
+            if (_ammount != UIManager.Instance.assetOfGame.SavedLoginData.chips)
+            {
+                _ammount = UIManager.Instance.assetOfGame.SavedLoginData.chips;
+                _ammountText.text = _ammount.ToString();
+            }
+            _ammountImage.sprite = _chipsSprite;
         }
     }
 
@@ -50,8 +73,7 @@ public class AccountInfoInLobby : MonoBehaviour
             {
                 _avatarImage.sprite = UIManager.Instance.assetOfGame.profileAvatarList.profileAvatarSprite[resp.result.profilePic];
                 UIManager.Instance.assetOfGame.SavedLoginData.chips = resp.result.chips;
-                _chip.text = UIManager.Instance.assetOfGame.SavedLoginData.chips.ToString();
-
+                UIManager.Instance.assetOfGame.SavedLoginData.cash = resp.result.cash;
             }
             else
             {

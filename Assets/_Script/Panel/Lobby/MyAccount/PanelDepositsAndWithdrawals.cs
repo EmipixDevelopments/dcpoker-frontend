@@ -13,6 +13,7 @@ public class PanelDepositsAndWithdrawals : MonoBehaviour
     [SerializeField] private Toggle _depositToggle;
     [SerializeField] private Toggle _withdrawToggle;
     [SerializeField] private Button _creditCardButton;
+    [SerializeField] private Button _transferToOtherPlayerButton;
     [Header("Panels")]
     [SerializeField] private GameObject _depositStartPanel;
     [SerializeField] private GameObject _cardPanel;
@@ -48,6 +49,9 @@ public class PanelDepositsAndWithdrawals : MonoBehaviour
 
         _depositToggle.onValueChanged.AddListener(OpenDepositStartPanel);
         _creditCardButton.onClick.AddListener(OpenCardPanel);
+
+        _transferToOtherPlayerButton.onClick.RemoveAllListeners();
+        _transferToOtherPlayerButton.onClick.AddListener(()=>UIManager.Instance.PanelTransferToOtherPlayerPopup.Open());
     }
 
     private void SwitchPanel(DepositsAndWithdrawalsPanels currentPanel)

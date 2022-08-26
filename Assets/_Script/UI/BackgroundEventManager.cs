@@ -39,6 +39,7 @@ public class BackgroundEventManager : MonoBehaviour
             if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
             {
                 UIManager.Instance.assetOfGame.SavedLoginData.chips = resp.result.chips;
+                UIManager.Instance.assetOfGame.SavedLoginData.cash = resp.result.cash;
                 UIManager.Instance.LobbyScreeen.Chips = resp.result.chips;
                 UIManager.Instance.LobbyScreeen.ProfileScreen.PanelMyAccount.ProfilePanel.Chips = resp.result.chips;
                 UIManager.Instance.GameScreeen.Chips = resp.result.chips;

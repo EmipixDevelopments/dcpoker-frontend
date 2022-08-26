@@ -835,6 +835,7 @@ public class Profile
     public string username;
     public int avatar;
     public double chips;
+    public double cash;
     public long mobile;
 }
 

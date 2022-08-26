@@ -103,7 +103,7 @@ public class PanelProfileNew : MonoBehaviour
             Debug.Log("UpdateIsCashe Response  : " + Source);
             if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
             {
-
+                UIManager.Instance.assetOfGame.SavedLoginData.isCash = isCashe;
             }
             else
             {

@@ -835,12 +835,12 @@ public class SocketGamemanager : MonoBehaviour
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.playerChangePassword, action, Json.Decode(jsonObj.toString()));
     }
 
-    public void TransferChips(string userId, double chips, string password, SocketIOAckCallback action)
+    public void TransferChips(string userName, double chips, string password, SocketIOAckCallback action)
     {
         JSON_Object jsonObj = new JSON_Object();
         jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
         jsonObj.put("password", password);
-        jsonObj.put("receiver", userId);
+        jsonObj.put("receiver", userName);
         jsonObj.put("chips", chips);
         jsonObj.put("authToken", UIManager.Instance.tokenHack());
         jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
@@ -848,6 +848,21 @@ public class SocketGamemanager : MonoBehaviour
         print(Constants.PokerEvents.TransferChips + " - " + jsonObj.toString());
 
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.TransferChips, action, Json.Decode(jsonObj.toString()));
+    }
+
+    public void TransferCash(string userName, double cash, string password, SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("password", password);
+        jsonObj.put("receiver", userName);
+        jsonObj.put("cash", cash);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+        print(Constants.PokerEvents.TransferCash + " - " + jsonObj.toString());
+
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.TransferCash, action, Json.Decode(jsonObj.toString()));
     }
 
     public void ChangeUserName(string newUsername, SocketIOAckCallback action)

@@ -58,6 +58,7 @@ public class UIManager : MonoBehaviour
     public PanelInformationAboutMoneyOnAccountPopup PanelInformationAboutMoneyOnAccountPopup;
     public PanelContactSupportPopup PanelContactSupportPopup;
     public PrivateTablePasswordPopup PrivateTablePasswordPopup;
+    public PanelTransferToOtherPlayerPopup PanelTransferToOtherPlayerPopup;
 
     [Header("Public Variables")]
     public bool isLogAllEnabled = false;
