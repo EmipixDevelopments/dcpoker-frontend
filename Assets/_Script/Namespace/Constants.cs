@@ -712,8 +712,3 @@ public enum TournamentGameType
     sng,
     PLO5
 }
-
-public enum BannerType
-{
-    tournament
-}

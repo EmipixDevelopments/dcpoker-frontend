@@ -12,7 +12,7 @@ public class Banner : MonoBehaviour
     [SerializeField] private Image _image;
     [SerializeField] private Button _button;
     [Space]
-    [SerializeField] private BannerType _bannerType;
+    [SerializeField] private string _bannerPosition;
     
     private Action _onButtonClick;
     private BannerDataRequest.BannerData _bannerData;
@@ -44,16 +44,18 @@ public class Banner : MonoBehaviour
 
     private void UpdateBanner()
     {
-        UIManager.Instance.SocketGameManager.Banner(_bannerType.ToString(), (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.Banner(_bannerPosition.ToString(), (socket, packet, args) =>
         {
             print("Banners: " + packet.ToString());
             JSONArray arr = new JSONArray(packet.ToString());
             var resp = arr.getString(arr.length() - 1);
             BannerDataRequest bannerDataRequest = JsonUtility.FromJson<BannerDataRequest>(resp);
             _bannerData = bannerDataRequest.result;
- 
-            if (_bannerData.position == "tournament") TournamentBannerLogic(_bannerData);
- 
+
+            // The banner type feature has been removed. All banners open the tournament
+            //if (_bannerData.position == "tournament") TournamentBannerLogic(_bannerData);
+            TournamentBannerLogic(_bannerData);
+
             string url = PokerAPI.BaseUrl + _bannerData.image;
             StartCoroutine(DownloadAndShowImage(url));
         });
