@@ -15,9 +15,9 @@ public class UtilityMessagePanel : MonoBehaviour
     public Button btnOK;
 
     [Header("Button Texts")]
-    public Text txtAffirmativeButton;
-    public Text txtNegativeButton;
-    public Text txtOKButton;
+    public TextMeshProUGUI txtAffirmativeButton;
+    public TextMeshProUGUI txtNegativeButton;
+    public TextMeshProUGUI txtOKButton;
     public Image MainImage;
     public Sprite[] Options;
     #endregion
