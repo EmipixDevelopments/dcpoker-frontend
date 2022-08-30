@@ -50,8 +50,9 @@ public class TournamentTableElement : MonoBehaviour
 
     public void OnTournamentTableSelectButtonTap()
     {
-        UIManager.Instance.DetailsTournament.TournamentDetailsId = _tournamentTableElementData.tournamentId;
         UIManager.Instance.SoundManager.OnButtonClick();
+        
+        UIManager.Instance.gameType = GameType.Touranment;
         UIManager.Instance.DetailsTournament.GetDetailsTournamentButtonTap(_tournamentTableElementData.tournamentId, _tournamentTableElementData.pokerGameType);
     }
 

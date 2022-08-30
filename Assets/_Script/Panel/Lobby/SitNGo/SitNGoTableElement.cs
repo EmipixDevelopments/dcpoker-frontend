@@ -50,8 +50,8 @@ public class SitNGoTableElement : MonoBehaviour
 
     public void OnTournamentTableSelectButtonTap()
     {
-        UIManager.Instance.DetailsTournament.TournamentDetailsId = _data.tournamentId;
         UIManager.Instance.SoundManager.OnButtonClick();
+        UIManager.Instance.gameType = GameType.sng;
         UIManager.Instance.DetailsTournament.GetDetailsTournamentButtonTap(_data.tournamentId, _data.pokerGameType);
     }
 
