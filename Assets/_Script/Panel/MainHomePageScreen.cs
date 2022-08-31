@@ -189,9 +189,11 @@ public class MainHomePageScreen : MonoBehaviour
     // PanelTopButtons
     public void OnClickMacauGoldLogo() 
     {
-        UIManager.Instance.SoundManager.OnButtonClick();
-        CloseAllWindow();
-        PanelTournamentUnlogin.SetActive(true);
+        OnClickloginButton();
+        
+        //UIManager.Instance.SoundManager.OnButtonClick();
+        //CloseAllWindow();
+        //PanelTournamentUnlogin.SetActive(true);
     }
 
     public void OnClickHowToPlayButton()
@@ -221,8 +223,11 @@ public class MainHomePageScreen : MonoBehaviour
     public void OnClickBanner() 
     {
         //StartCoroutine(GetBannerUrl("https://httpbin.org/ip"));
-        Utility.Instance.OpenLink("https://google.com");
+        //Utility.Instance.OpenLink("https://google.com");
+        OnClickloginButton();
     }
+    
+    //Old
     IEnumerator GetBannerUrl(string url) 
     {
         UnityWebRequest infoRequest = UnityWebRequest.Get(url);
