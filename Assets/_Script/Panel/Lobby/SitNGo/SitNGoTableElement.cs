@@ -52,7 +52,7 @@ public class SitNGoTableElement : MonoBehaviour
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         UIManager.Instance.gameType = GameType.sng;
-        UIManager.Instance.DetailsTournament.GetDetailsTournamentButtonTap(_data.tournamentId, _data.pokerGameType);
+        UIManager.Instance.DetailsTournament.GetDetailsTournamentButtonTap(_data.id, _data.pokerGameType);
     }
 
     private string CheckStringData(string text)
