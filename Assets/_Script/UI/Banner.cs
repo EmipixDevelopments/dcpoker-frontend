@@ -120,7 +120,6 @@ public class Banner : MonoBehaviour
             if (tournament.tournamentId == _bannerData.tournamentId)
             {
                 UIManager.Instance.SoundManager.OnButtonClick();
-                UIManager.Instance.DetailsTournament.TournamentDetailsId = _bannerData.tournamentId;
                 UIManager.Instance.DetailsTournament.GetDetailsTournamentButtonTap(_bannerData.tournamentId, tournament.pokerGameType);
             }
         }

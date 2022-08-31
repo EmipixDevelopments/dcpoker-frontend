@@ -33,7 +33,7 @@ public class UIManager : MonoBehaviour
     public WebGLAffiliatePanel webGLAffiliatePanel;
     public LobbyPanel LobbyScreeen; // not need used
     public LobbyPanelNew LobbyPanelNew;
-    public DetailsTournament DetailsTournament;
+    public DetailsTournamentNew DetailsTournament;
     public GamePanel GameScreeen;
     public TournamentWinnerPanel TournamentWinnerPanel;
     public HistoryPanel historyPanel;
