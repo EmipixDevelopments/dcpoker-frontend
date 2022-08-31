@@ -202,7 +202,6 @@ public class DetailsTournamentNew : MonoBehaviour
             });
         }
     }
-
     private void SngTournamentEventCall()
     {
         if (_tournamentDetailsId != "")
