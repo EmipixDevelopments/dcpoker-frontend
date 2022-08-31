@@ -15,10 +15,10 @@ public class DetailsTournamentNewLeftPanel : MonoBehaviour
     [SerializeField] private Toggle _blindsToggle;
 
     [Header("Panels")]
-    [SerializeField] private GameObject _playersPanel;
-    [SerializeField] private GameObject _tablesPanel;
-    [SerializeField] private GameObject _playoutsPanel;
-    [SerializeField] private GameObject _blindsPanel;
+    [SerializeField] private PlayerDetailsTorunament _playersPanel;
+    [SerializeField] private TableDetails _tablesPanel;
+    [SerializeField] private payoutDetails _playoutsPanel;
+    [SerializeField] private BlindDetails _blindsPanel;
 
     private void Start()
     {
@@ -38,32 +38,36 @@ public class DetailsTournamentNewLeftPanel : MonoBehaviour
     {
         if (arg0 == false) return;
         CloseAll();
-        _playersPanel.SetActive(true);
+        _playersPanel.TournamentDetailsId = _detailsTournamentNew.TournamentDetailsId;
+        _playersPanel.gameObject.SetActive(true);
     }
     private void OnCahangeTablesToggle(bool arg0)
     {
         if (arg0 == false) return;
         CloseAll();
-        _tablesPanel.SetActive(true);
+        _tablesPanel.TournamentDetailsId = _detailsTournamentNew.TournamentDetailsId;
+        _tablesPanel.gameObject.SetActive(true);
     }
     private void OnCahangePlayoutsToggle(bool arg0)
     {
         if (arg0 == false) return;
         CloseAll();
-        _playoutsPanel.SetActive(true);
+        _playoutsPanel.TournamentDetailsId = _detailsTournamentNew.TournamentDetailsId;
+        _playoutsPanel.gameObject.SetActive(true);
     }
     private void OnCahangeBlindsToggle(bool arg0)
     {
         if (arg0 == false) return;
         CloseAll();
-        _blindsPanel.SetActive(true);
+        _blindsPanel.TournamentDetailsId = _detailsTournamentNew.TournamentDetailsId;
+        _blindsPanel.gameObject.SetActive(true);
     }
 
     private void CloseAll() 
     {
-        _playersPanel.SetActive(false);
-        _tablesPanel.SetActive(false);
-        _playoutsPanel.SetActive(false);
-        _blindsPanel.SetActive(false);
+        _playersPanel.gameObject.SetActive(false);
+        _tablesPanel.gameObject.SetActive(false);
+        _playoutsPanel.gameObject.SetActive(false);
+        _blindsPanel.gameObject.SetActive(false);
     }
 }

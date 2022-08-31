@@ -8,7 +8,8 @@ using System;
 public class DetailsTournamentNew : MonoBehaviour
 {
     [Header("Right panel")]
-    [SerializeField] private Button _summaryButton;
+    [SerializeField] private Toggle _summaryToggle;
+    [SerializeField] private TextMeshProUGUI _summaryToggleText;
     [SerializeField] private TextMeshProUGUI _tournamentNameText;
     [SerializeField] private TextMeshProUGUI _statusText;
     [SerializeField] private TextMeshProUGUI _blindTimeText;
@@ -32,9 +33,9 @@ public class DetailsTournamentNew : MonoBehaviour
     [Header("Left panel")]
     [SerializeField] private GameObject _leftPanel;
 
+    public string TournamentDetailsId = "";
 
     private int    _selectedTab = 0;
-    private string _tournamentDetailsId = "";
     private string _pokerGameType = "";
     private string _TID = "";
     private string _nameSpaceStr = "";
@@ -43,13 +44,28 @@ public class DetailsTournamentNew : MonoBehaviour
 
     private void Start()
     {
+        _summaryToggle.onValueChanged.RemoveAllListeners();
         _reBuyButton.onClick.RemoveAllListeners();
         _registerButton.onClick.RemoveAllListeners();
         _unRegisterButton.onClick.RemoveAllListeners();
 
+        _summaryToggle.onValueChanged.AddListener(OpenOrCloseLeftPanel);
         _reBuyButton.onClick.AddListener(RebuyButtonaTap);
         _registerButton.onClick.AddListener(RegisterButtonTap);
         _unRegisterButton.onClick.AddListener(UnRegisterButtonTap);
+    }
+
+    private void OpenOrCloseLeftPanel(bool value)
+    {
+        if (value)
+        {
+            _summaryToggleText.text = "Close Summary";
+        }
+        else
+        {
+            _summaryToggleText.text = "Open Summary";
+        }
+        _leftPanel.SetActive(value);
     }
 
     void OnEnable()
@@ -84,9 +100,9 @@ public class DetailsTournamentNew : MonoBehaviour
     public void GetDetailsTournamentButtonTap(string TournamentId, string pokerGameType)
     {
         this.Close();
-        _tournamentDetailsId = TournamentId;
+        TournamentDetailsId = TournamentId;
         _pokerGameType = pokerGameType;
-        Constants.Poker.TournamentId = _tournamentDetailsId;
+        Constants.Poker.TournamentId = TournamentDetailsId;
         this.Open();
     }
 
@@ -104,7 +120,7 @@ public class DetailsTournamentNew : MonoBehaviour
     private void TournamentEventCall()
     {
         CancelInvoke();
-        if (_tournamentDetailsId != "")
+        if (TournamentDetailsId != "")
         {
             if (UIManager.Instance.gameType == GameType.Touranment)
             {
@@ -118,9 +134,9 @@ public class DetailsTournamentNew : MonoBehaviour
     }
     private void RegularTournamentEventCall()
     {
-        if (_tournamentDetailsId != "")
+        if (TournamentDetailsId != "")
         {
-            UIManager.Instance.SocketGameManager.getTournamentInfo(_tournamentDetailsId, _pokerGameType, (socket, packet, args) =>
+            UIManager.Instance.SocketGameManager.getTournamentInfo(TournamentDetailsId, _pokerGameType, (socket, packet, args) =>
             {
 
                 Debug.Log("getTournamentInfo  : " + packet.ToString());
@@ -145,31 +161,8 @@ public class DetailsTournamentNew : MonoBehaviour
                     _TID = resp.result.id;
                     _rebuyAmount = resp.result.rebuyAmount;
 
-                    DateTime dateTime = DateTime.Parse(resp.result.dateTime);
-                    if (dateTime > DateTime.Now)
-                    {
-                        _registerButtonText.text = "late register";
-                        _registerButtonSprite.sprite = _greenSprite;
-
-                        _startInText.gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        _registerButtonText.text = "register";
-                        _registerButtonSprite.sprite = _orangeSprite;
-
-                        _startInText.gameObject.SetActive(true);
-
-                    if (resp.result.players <= resp.result.max_players && resp.result.status.ToLower() != "cancel")
-                        {
-                            _startInText.text = $"Will start when <b>{resp.result.max_players - resp.result.players} playeres will join</b>";
-                        }
-                        else
-                        {
-                            TimeSpan divDataTime = DateTime.Now.Subtract(dateTime);
-                            _startInText.text = $"Will start in <b>{divDataTime.Days} Days : {divDataTime.Hours} Hours : {divDataTime.Minutes} Minutes</b>";
-                        }
-                    }
+                    ChangeTextAndColorButton(resp);
+                    ChangeInfoText(resp);
 
                     if (resp.result.allowRebuy)
                     {
@@ -204,9 +197,9 @@ public class DetailsTournamentNew : MonoBehaviour
     }
     private void SngTournamentEventCall()
     {
-        if (_tournamentDetailsId != "")
+        if (TournamentDetailsId != "")
         {
-            UIManager.Instance.SocketGameManager.getSngTournamentInfo(_tournamentDetailsId, _pokerGameType, (socket, packet, args) =>
+            UIManager.Instance.SocketGameManager.getSngTournamentInfo(TournamentDetailsId, _pokerGameType, (socket, packet, args) =>
             {
                 Debug.Log("getSngTournamentInfo  : " + packet.ToString());
                 UIManager.Instance.HideLoader();
@@ -229,33 +222,8 @@ public class DetailsTournamentNew : MonoBehaviour
                     _TID = resp.result.id;
                     _rebuyAmount = resp.result.rebuyAmount;
 
-
-                    DateTime dateTime = DateTime.Parse(resp.result.dateTime);
-                    if (dateTime > DateTime.Now)
-                    {
-                        _registerButtonText.text = "late register";
-                        _registerButtonSprite.sprite = _greenSprite;
-
-                        _startInText.gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        _registerButtonText.text = "register";
-                        _registerButtonSprite.sprite = _orangeSprite;
-
-                        _startInText.gameObject.SetActive(true);
-
-                        if (resp.result.players <= resp.result.max_players && resp.result.status.ToLower() != "cancel")
-                        {
-                            _startInText.text = $"Will start when <b>{resp.result.max_players - resp.result.players} playeres will join</b>";
-                        }
-                        else
-                        {
-                            TimeSpan divDataTime = DateTime.Now.Subtract(dateTime);
-                            _startInText.text = $"Will start in <b>{divDataTime.Days} Days : {divDataTime.Hours} Hours : {divDataTime.Minutes} Minutes</b>";
-                        }
-                    }
-
+                    ChangeTextAndColorButton(resp);
+                    ChangeInfoText(resp);
 
                     if (resp.result.allowRebuy)
                     {
@@ -285,6 +253,47 @@ public class DetailsTournamentNew : MonoBehaviour
                     UIManager.Instance.DisplayMessagePanel(resp.message);
                 }
             });
+        }
+    }
+
+    private void ChangeTextAndColorButton(PokerEventResponse<getTournamentInfoData> resp)
+    {
+        _registerButtonSprite.sprite = _orangeSprite;
+        if (!string.IsNullOrEmpty(resp.result.dateTime))
+        {
+            DateTime dateTime = DateTime.Parse(resp.result.dateTime);
+            int lastTileForRegister = resp.result.lateRegistrationLevel * resp.result.bindLevelRizeTime;
+            if (dateTime < DateTime.Now && dateTime.AddMinutes(lastTileForRegister) > DateTime.Now)
+            {
+                _registerButtonText.text = "late register";
+                _registerButtonSprite.sprite = _greenSprite;
+            }
+        }
+    }
+
+    private void ChangeInfoText(PokerEventResponse<getTournamentInfoData> resp)
+    {
+        _startInText.gameObject.SetActive(true);
+        if (string.IsNullOrEmpty(resp.result.dateTime))
+        {
+            // 3. Турнир не начался из за того, что нет минимального количества игроков (время пустое)
+            _startInText.text = $"Will start when <b>{resp.result.min_players - resp.result.players} playeres will join</b>";
+        }
+        else
+        {
+            DateTime dateTime = DateTime.Parse(resp.result.dateTime);
+            int lastTileForRegister = resp.result.lateRegistrationLevel * resp.result.bindLevelRizeTime;
+            // 2. Турнир не начался по времени (время есть)
+            if (dateTime > DateTime.Now)
+            {
+                TimeSpan lastTime = dateTime.Subtract(DateTime.Now);
+                _startInText.text = $"Will start in <b>{lastTime.Days} Days : {lastTime.Hours} Hours : {lastTime.Minutes} Minutes</b>";
+            }
+            // 1. Турнир начался, и не прошло разрешенное время
+            else if (dateTime.AddMinutes(lastTileForRegister) > DateTime.Now)
+            {
+                _startInText.gameObject.SetActive(false);
+            }
         }
     }
 
@@ -334,7 +343,7 @@ public class DetailsTournamentNew : MonoBehaviour
         UIManager.Instance.SoundManager.OnButtonClick();
         if (UIManager.Instance.gameType == GameType.Touranment)
         {
-            UIManager.Instance.SocketGameManager.getRegisterTournament(_tournamentDetailsId, _pokerGameType, (socket, packet, args) =>
+            UIManager.Instance.SocketGameManager.getRegisterTournament(TournamentDetailsId, _pokerGameType, (socket, packet, args) =>
             {
 
                 Debug.Log("getRegisterTournament  : " + packet.ToString());
@@ -361,7 +370,7 @@ public class DetailsTournamentNew : MonoBehaviour
         }
         if (UIManager.Instance.gameType == GameType.sng)
         {
-            UIManager.Instance.SocketGameManager.getRegisterSngTournament(_tournamentDetailsId, _pokerGameType, (socket, packet, args) =>
+            UIManager.Instance.SocketGameManager.getRegisterSngTournament(TournamentDetailsId, _pokerGameType, (socket, packet, args) =>
             {
                 Debug.Log("RegisterSngTournament  : " + packet.ToString());
 
@@ -394,7 +403,7 @@ public class DetailsTournamentNew : MonoBehaviour
         UIManager.Instance.SoundManager.OnButtonClick();
         if (UIManager.Instance.gameType == GameType.Touranment)
         {
-            UIManager.Instance.SocketGameManager.getUnRegisterTournament(_tournamentDetailsId, _pokerGameType, (socket, packet, args) =>
+            UIManager.Instance.SocketGameManager.getUnRegisterTournament(TournamentDetailsId, _pokerGameType, (socket, packet, args) =>
             {
 
                 Debug.Log("getRegisterTournament  : " + packet.ToString());
@@ -422,7 +431,7 @@ public class DetailsTournamentNew : MonoBehaviour
         }
         if (UIManager.Instance.gameType == GameType.sng)
         {
-            UIManager.Instance.SocketGameManager.getUnRegisterSngTournament(_tournamentDetailsId, _pokerGameType, (socket, packet, args) =>
+            UIManager.Instance.SocketGameManager.getUnRegisterSngTournament(TournamentDetailsId, _pokerGameType, (socket, packet, args) =>
             {
                 Debug.Log("getUnRegisterSngTournament  : " + packet.ToString());
                 UIManager.Instance.HideLoader();

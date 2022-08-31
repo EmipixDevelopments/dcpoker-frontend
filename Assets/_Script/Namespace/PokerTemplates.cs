@@ -1030,6 +1030,8 @@ public class getTournamentInfoData
     public bool allowRebuy = false;
     public int remainRebuySec = 0;
     public long rebuyAmount;
+    internal int lateRegistrationLevel;
+    internal int bindLevelRizeTime;
 }
 
 [Serializable]
