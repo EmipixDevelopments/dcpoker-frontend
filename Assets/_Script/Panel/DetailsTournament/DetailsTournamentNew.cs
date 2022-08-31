@@ -16,10 +16,18 @@ public class DetailsTournamentNew : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _limitText;
     [SerializeField] private TextMeshProUGUI _buyInText;
     [SerializeField] private TextMeshProUGUI _playersText;
-    [SerializeField] private TextMeshProUGUI _startInInfoText;
-    [SerializeField] private Button RegisterButton;
-    [SerializeField] private Button UnRegisterButton;
-    [SerializeField] private Button ReBuyButton;
+    [SerializeField] private TextMeshProUGUI _startInText;
+    [SerializeField] private Button _registerButton;
+    [SerializeField] private Button _unRegisterButton;
+    [SerializeField] private Button _reBuyButton;
+    [Space]
+    [SerializeField] private Image _registerButtonSprite;
+    [SerializeField] private Image _unRegisterButtonSprite;
+    [SerializeField] private Image _reBuyButtonSprite;
+    [SerializeField] private Sprite _greenSprite;
+    [SerializeField] private Sprite _orangeSprite;
+    [Space]
+    [SerializeField] private TextMeshProUGUI _registerButtonText;
 
     [Header("Left panel")]
     [SerializeField] private GameObject _leftPanel;
@@ -35,13 +43,13 @@ public class DetailsTournamentNew : MonoBehaviour
 
     private void Start()
     {
-        ReBuyButton.onClick.RemoveAllListeners();
-        RegisterButton.onClick.RemoveAllListeners();
-        UnRegisterButton.onClick.RemoveAllListeners();
+        _reBuyButton.onClick.RemoveAllListeners();
+        _registerButton.onClick.RemoveAllListeners();
+        _unRegisterButton.onClick.RemoveAllListeners();
 
-        ReBuyButton.onClick.AddListener(RebuyButtonaTap);
-        RegisterButton.onClick.AddListener(RegisterButtonTap);
-        UnRegisterButton.onClick.AddListener(UnRegisterButtonTap);
+        _reBuyButton.onClick.AddListener(RebuyButtonaTap);
+        _registerButton.onClick.AddListener(RegisterButtonTap);
+        _unRegisterButton.onClick.AddListener(UnRegisterButtonTap);
     }
 
     void OnEnable()
@@ -90,7 +98,7 @@ public class DetailsTournamentNew : MonoBehaviour
         _limitText.text = "";
         _buyInText.text = "";
         _playersText.text = "";
-        _startInInfoText.text = "";
+        _startInText.text = "";
     }
 
     private void TournamentEventCall()
@@ -137,27 +145,53 @@ public class DetailsTournamentNew : MonoBehaviour
                     _TID = resp.result.id;
                     _rebuyAmount = resp.result.rebuyAmount;
 
+                    DateTime dateTime = DateTime.Parse(resp.result.dateTime);
+                    if (dateTime > DateTime.Now)
+                    {
+                        _registerButtonText.text = "late register";
+                        _registerButtonSprite.sprite = _greenSprite;
+
+                        _startInText.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        _registerButtonText.text = "register";
+                        _registerButtonSprite.sprite = _orangeSprite;
+
+                        _startInText.gameObject.SetActive(true);
+
+                    if (resp.result.players <= resp.result.max_players && resp.result.status.ToLower() != "cancel")
+                        {
+                            _startInText.text = $"Will start when <b>{resp.result.max_players - resp.result.players} playeres will join</b>";
+                        }
+                        else
+                        {
+                            TimeSpan divDataTime = DateTime.Now.Subtract(dateTime);
+                            _startInText.text = $"Will start in <b>{divDataTime.Days} Days : {divDataTime.Hours} Hours : {divDataTime.Minutes} Minutes</b>";
+                        }
+                    }
+
                     if (resp.result.allowRebuy)
                     {
-                        RegisterButton.gameObject.SetActive(false);
-                        UnRegisterButton.gameObject.SetActive(false);
-                        ReBuyButton.Open();
+                        _registerButton.gameObject.SetActive(false);
+                        _unRegisterButton.gameObject.SetActive(false);
+                        _reBuyButton.Open();
                         totalSeconds = resp.result.remainRebuySec;
                     }
                     else
                     {
-                        RegisterButton.gameObject.SetActive(!resp.result.isRegistered);
-                        UnRegisterButton.gameObject.SetActive(resp.result.isRegistered);
-                        ReBuyButton.Close();
+                        _registerButton.gameObject.SetActive(!resp.result.isRegistered);
+                        _unRegisterButton.gameObject.SetActive(resp.result.isRegistered);
+                        _reBuyButton.Close();
                     }
                     if (resp.result.registrationStatus.Equals("open") || resp.result.registrationStatus.Equals("Open"))
                     {
-                        RegisterButton.interactable = true;
+                        _registerButton.interactable = true;
                     }
                     else
                     {
-                        RegisterButton.interactable = false;
-                        UnRegisterButton.interactable = false;
+                        _registerButton.interactable = false;
+                        _unRegisterButton.interactable = false;
                     }
                     Invoke("RegularTournamentEventCall", 5);
                 }
@@ -195,26 +229,55 @@ public class DetailsTournamentNew : MonoBehaviour
                     _nameSpaceStr = resp.result.namespaceString;
                     _TID = resp.result.id;
                     _rebuyAmount = resp.result.rebuyAmount;
+
+
+                    DateTime dateTime = DateTime.Parse(resp.result.dateTime);
+                    if (dateTime > DateTime.Now)
+                    {
+                        _registerButtonText.text = "late register";
+                        _registerButtonSprite.sprite = _greenSprite;
+
+                        _startInText.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        _registerButtonText.text = "register";
+                        _registerButtonSprite.sprite = _orangeSprite;
+
+                        _startInText.gameObject.SetActive(true);
+
+                        if (resp.result.players <= resp.result.max_players && resp.result.status.ToLower() != "cancel")
+                        {
+                            _startInText.text = $"Will start when <b>{resp.result.max_players - resp.result.players} playeres will join</b>";
+                        }
+                        else
+                        {
+                            TimeSpan divDataTime = DateTime.Now.Subtract(dateTime);
+                            _startInText.text = $"Will start in <b>{divDataTime.Days} Days : {divDataTime.Hours} Hours : {divDataTime.Minutes} Minutes</b>";
+                        }
+                    }
+
+
                     if (resp.result.allowRebuy)
                     {
-                        RegisterButton.gameObject.SetActive(false);
-                        UnRegisterButton.gameObject.SetActive(false);
-                        ReBuyButton.Open();
+                        _registerButton.gameObject.SetActive(false);
+                        _unRegisterButton.gameObject.SetActive(false);
+                        _reBuyButton.Open();
                         totalSeconds = resp.result.remainRebuySec;
                     }
                     else
                     {
-                        RegisterButton.gameObject.SetActive(!resp.result.isRegistered);
-                        UnRegisterButton.gameObject.SetActive(resp.result.isRegistered);
-                        ReBuyButton.Close();
+                        _registerButton.gameObject.SetActive(!resp.result.isRegistered);
+                        _unRegisterButton.gameObject.SetActive(resp.result.isRegistered);
+                        _reBuyButton.Close();
                     }
                     if (resp.result.registrationStatus.Equals("open") || resp.result.registrationStatus.Equals("Open"))
                     {
-                        RegisterButton.interactable = true;
+                        _registerButton.interactable = true;
                     }
                     else
                     {
-                        RegisterButton.interactable = false;
+                        _registerButton.interactable = false;
                     }
                     Invoke("SngTournamentEventCall", 5);
                 }
@@ -288,8 +351,8 @@ public class DetailsTournamentNew : MonoBehaviour
                 if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
                 {
                     UIManager.Instance.DisplayMessagePanel(resp.message);
-                    RegisterButton.gameObject.SetActive(false);
-                    UnRegisterButton.gameObject.SetActive(true);
+                    _registerButton.gameObject.SetActive(false);
+                    _unRegisterButton.gameObject.SetActive(true);
                 }
                 else
                 {
@@ -316,8 +379,8 @@ public class DetailsTournamentNew : MonoBehaviour
                 if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
                 {
                     UIManager.Instance.DisplayMessagePanel(resp.message);
-                    RegisterButton.gameObject.SetActive(false);
-                    UnRegisterButton.gameObject.SetActive(true);
+                    _registerButton.gameObject.SetActive(false);
+                    _unRegisterButton.gameObject.SetActive(true);
                 }
                 else
                 {
@@ -349,8 +412,8 @@ public class DetailsTournamentNew : MonoBehaviour
                 if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
                 {
                     UIManager.Instance.DisplayMessagePanel(resp.message);
-                    RegisterButton.gameObject.SetActive(true);
-                    UnRegisterButton.gameObject.SetActive(false);
+                    _registerButton.gameObject.SetActive(true);
+                    _unRegisterButton.gameObject.SetActive(false);
                 }
                 else
                 {
@@ -373,8 +436,8 @@ public class DetailsTournamentNew : MonoBehaviour
                 if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
                 {
                     UIManager.Instance.DisplayMessagePanel(resp.message);
-                    RegisterButton.gameObject.SetActive(true);
-                    UnRegisterButton.gameObject.SetActive(false);
+                    _registerButton.gameObject.SetActive(true);
+                    _unRegisterButton.gameObject.SetActive(false);
                 }
                 else
                 {
