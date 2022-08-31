@@ -28,9 +28,9 @@ public class DetailsTournamentNew : MonoBehaviour
     private int    _selectedTab = 0;
     private string _tournamentDetailsId = "";
     private string _pokerGameType = "";
-    private string TID = "";
-    private string nameSpaceStr = "";
-    private long   RebuyAmount;
+    private string _TID = "";
+    private string _nameSpaceStr = "";
+    private long   _rebuyAmount;
     private double totalSeconds;
 
     private void Start()
@@ -77,8 +77,8 @@ public class DetailsTournamentNew : MonoBehaviour
     {
         this.Close();
         _tournamentDetailsId = TournamentId;
-        Constants.Poker.TournamentId = _tournamentDetailsId;
         _pokerGameType = pokerGameType;
+        Constants.Poker.TournamentId = _tournamentDetailsId;
         this.Open();
     }
 
@@ -133,9 +133,9 @@ public class DetailsTournamentNew : MonoBehaviour
                     _prizePoolText.text = resp.result.prizePool.ConvertToCommaSeparatedValue();
 
                     _tournamentNameText.text = resp.result.name;
-                    nameSpaceStr = resp.result.namespaceString;
-                    TID = resp.result.id;
-                    RebuyAmount = resp.result.rebuyAmount;
+                    _nameSpaceStr = resp.result.namespaceString;
+                    _TID = resp.result.id;
+                    _rebuyAmount = resp.result.rebuyAmount;
 
                     if (resp.result.allowRebuy)
                     {
@@ -181,7 +181,6 @@ public class DetailsTournamentNew : MonoBehaviour
                 string Source;
                 Source = arr.getString(arr.length() - 1);
                 var resp1 = Source;
-                JSON_Object TournamentEventObj = new JSON_Object(resp1.ToString());
                 PokerEventResponse<getTournamentInfoData> resp = JsonUtility.FromJson<PokerEventResponse<getTournamentInfoData>>(resp1);
 
                 if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
@@ -193,9 +192,9 @@ public class DetailsTournamentNew : MonoBehaviour
                     _prizePoolText.text = resp.result.prizePool.ConvertToCommaSeparatedValue();
                     _tournamentNameText.text = resp.result.name;
 
-                    nameSpaceStr = resp.result.namespaceString;
-                    TID = resp.result.id;
-                    RebuyAmount = resp.result.rebuyAmount;
+                    _nameSpaceStr = resp.result.namespaceString;
+                    _TID = resp.result.id;
+                    _rebuyAmount = resp.result.rebuyAmount;
                     if (resp.result.allowRebuy)
                     {
                         RegisterButton.gameObject.SetActive(false);
@@ -217,7 +216,7 @@ public class DetailsTournamentNew : MonoBehaviour
                     {
                         RegisterButton.interactable = false;
                     }
-                    //Invoke("SngTournamentEventCall", 5);
+                    Invoke("SngTournamentEventCall", 5);
                 }
                 else
                 {
@@ -229,14 +228,14 @@ public class DetailsTournamentNew : MonoBehaviour
 
     public void RebuyButtonaTap()
     {
-        Game.Lobby.SetSocketNamespace = nameSpaceStr;
+        Game.Lobby.SetSocketNamespace = _nameSpaceStr;
         UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.DisplayRebuyinConfirmationPanel("Do you want to Rebuy " /*+ response.result.buyInChips + " from " */+ RebuyAmount + " chips?", "Rebuy", "Cancel", () =>
+        UIManager.Instance.DisplayRebuyinConfirmationPanel("Do you want to Rebuy " /*+ response.result.buyInChips + " from " */+ _rebuyAmount + " chips?", "Rebuy", "Cancel", () =>
         {
             UIManager.Instance.DisplayLoader("Please wait...");
             UIManager.Instance.RebuyInMessagePanel.btnAffirmativeAction.interactable = false;
             UIManager.Instance.SoundManager.OnButtonClick();
-            UIManager.Instance.SocketGameManager.PlayerReBuyIn("", TID, (socket, packet, args) =>
+            UIManager.Instance.SocketGameManager.PlayerReBuyIn("", _TID, (socket, packet, args) =>
             {
                 Debug.Log(Constants.PokerEvents.PlayerReBuyIn + " Response : " + packet.ToString());
                 UIManager.Instance.HidePopup();
@@ -260,7 +259,7 @@ public class DetailsTournamentNew : MonoBehaviour
         }, () =>
         {
             UIManager.Instance.SoundManager.OnButtonClick();
-            UIManager.Instance.SocketGameManager.DeclinedReBuyIn("", TID, (socket, packet, args) =>
+            UIManager.Instance.SocketGameManager.DeclinedReBuyIn("", _TID, (socket, packet, args) =>
             {
                 Debug.Log(Constants.PokerEvents.DeclinedReBuyIn + " Response : " + packet.ToString());
                 UIManager.Instance.HidePopup();
