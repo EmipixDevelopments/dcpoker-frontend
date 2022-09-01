@@ -12,9 +12,21 @@ public class PanelSitNGo : MonoBehaviour
 
     private int _updatePanelAfterSecconds = 8;
     private List<SitNGoTableElement> _tableElements = new List<SitNGoTableElement>();
+    
+    [Space] 
+    [SerializeField] private GameObject _emptyTableElement;
+    private List<GameObject> _tableEmptyElements = new List<GameObject>();
+    private float _sizeTableElement;
+
+    private RectTransform _canvasRectTransform;
+    
+    private int _sizeHeaderBottom = 123 + 109 + 117 + 135 + 50; // Size header + bottom + margin bottom 
 
     private void Start()
     {
+        _canvasRectTransform = GetRootCanvas(_content.GetComponent<RectTransform>()).GetComponent<RectTransform>();
+        _sizeTableElement = _emptyTableElement.GetComponent<RectTransform>().rect.height;
+        
         _sitNGoTableFilter.FilterChanged = OnEnable;
     }
     private void OnDestroy()
@@ -118,5 +130,48 @@ public class PanelSitNGo : MonoBehaviour
                 }
             }
         }
+        
+        SetEmptyTableElements();
+    }
+    
+    private void SetEmptyTableElements()
+    {
+        var size = _canvasRectTransform.rect.height - _sizeHeaderBottom;
+        var amount = (int)(size / _sizeTableElement);
+        amount -= _tableElements.Count + 1;
+
+        if (amount <= _tableEmptyElements.Count)
+        {
+            Debug.Log(_tableEmptyElements.Count + " " + (amount));
+            if (_tableEmptyElements.Count > amount)
+            {
+                RemoveEmptyAtRange(amount);
+                UIManager.Instance.LobbyPanelNew.UpdatePanel(); 
+            }
+            return;
+        }
+        
+        for (var i = 0; i < amount; i++)
+        {
+            var tableElement = Instantiate(_emptyTableElement, _content);
+            _tableEmptyElements.Add(tableElement);
+        }
+        UIManager.Instance.LobbyPanelNew.UpdatePanel(); 
+    }
+
+    private void RemoveEmptyAtRange(int index)
+    {
+        for (var i = index; i < _tableEmptyElements.Count; i++)
+        {
+            var element = _tableEmptyElements[i];
+            _tableEmptyElements.RemoveAt(i);
+            Destroy(element);
+        }
+    }
+    
+    private Canvas GetRootCanvas(RectTransform rectTransform)
+    {
+        Canvas canvas = rectTransform.GetComponentInParent<Canvas>();
+        return canvas.isRootCanvas ? canvas : canvas.rootCanvas;
     }
 }
