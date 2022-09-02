@@ -154,7 +154,7 @@ public class PanelTable : MonoBehaviour
         if (amount <= _tableEmptyElements.Count)
         {
             Debug.Log(_tableEmptyElements.Count + " " + (amount));
-            if (_tableEmptyElements.Count > amount)
+            if (_tableEmptyElements.Count > amount && amount > 0)
             {
                 RemoveEmptyAtRange(amount);
                 UIManager.Instance.LobbyPanelNew.UpdatePanel(); 
