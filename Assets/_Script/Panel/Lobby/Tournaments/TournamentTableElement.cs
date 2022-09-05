@@ -12,6 +12,8 @@ public class TournamentTableElement : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _playersText;
     [SerializeField] private TextMeshProUGUI _buyInText;
     [SerializeField] private TextMeshProUGUI _statusInText;
+    [Space]
+    [SerializeField] private TableListColors _tableListColors;
 
     private Button _button;
     NormalTournamentDetails.NormalTournamentData _tournamentTableElementData;
@@ -45,7 +47,21 @@ public class TournamentTableElement : MonoBehaviour
         _playersText.text = $"{data.players}";
         _buyInText.text = $"{CheckStringData(data.buyIn)}";
         _statusInText.text = $"{CheckStringData(data.status)}";
+        
+        var textColor = _tableListColors.GetColorByName(data.colorOfCapture);
+        SetColorText(textColor);
     }
+
+    private void SetColorText(Color color)
+    {
+        _dateTimeText.color = color;
+        _nameText.color = color;
+        _typeText.color = color;
+        _playersText.color = color;
+        _buyInText.color = color;
+        _statusInText.color = color;
+    }
+
     public NormalTournamentDetails.NormalTournamentData GetData() { return _tournamentTableElementData; }
 
     public void OnTournamentTableSelectButtonTap()

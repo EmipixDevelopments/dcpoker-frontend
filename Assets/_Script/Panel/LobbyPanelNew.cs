@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,6 +38,7 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private GameObject _panelResponsibleGaming;
     [SerializeField] private GameObject _panelBottomMenu;
 
+    [Space] public Messages Messages;
 
     private enum LobbyPanel
     {
