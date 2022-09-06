@@ -389,7 +389,7 @@ namespace Constants
         public const string PrivateRoomLogin = "PrivateRoomLogin";
 
         public const string UpdateIsCash = "updateIsCash";
-        public const string СontactUs = "contactUs";
+        //public const string СontactUs = "contactUs";
 
         public const string DeletePlayerSendCode = "deletePlayerSendCode";
         public const string DeletePlayerConfirmCode = "deletePlayerConfirmCode";
@@ -444,6 +444,10 @@ namespace Constants
         public const string ShowCardResult = "ShowCardResult";
         public const string WaitForBigBlind = "WaitForBigBlind";
         public const string GamePopupNotification = "GamePopupNotification";
+        
+        public const string SendContactUs = "sendContactUs";
+        public const string ContactUs = "contactUs";
+        public const string ReadContactUs = "readContactUs";
 
         public const string RoundStarted = "NewRoundStarted";
         public const string GameStarted = "GameStarted";

@@ -10,7 +10,7 @@ public class TableListColors : ScriptableObject
     [SerializeField]private Color Magenta;
     [SerializeField]private Color Red;
     [SerializeField]private Color Yellow;
-    [SerializeField]private Color Black;
+    [SerializeField]private Color Orange;
     [SerializeField]private Color White;
     [SerializeField]private Color Green;
     [SerializeField]private Color Blue;
@@ -22,14 +22,14 @@ public class TableListColors : ScriptableObject
         switch (color)
         {
             case null: return None;
-            case "cyan": return Clear;
-            case "clear": return Grey;
+            case "cyan": return Cyan;
+            case "clear": return Clear;
             case "grey": return Grey;
             case "gray": return Gray;
             case "magenta": return Magenta;
             case "red": return Red;
             case "yellow": return Yellow;
-            case "black": return Black;
+            case "orange": return Orange;
             case "white": return White;
             case "green": return Green;
             case "blue": return Blue;

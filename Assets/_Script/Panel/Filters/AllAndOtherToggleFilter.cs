@@ -13,6 +13,8 @@ public class AllAndOtherToggleFilter : MonoBehaviour
 
     private string _key = "";
 
+    public bool IsAllOn() => _allToggle.isOn;
+
     private void OnDisable()
     {
         Save();

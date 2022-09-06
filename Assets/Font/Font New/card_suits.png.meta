@@ -125,12 +125,12 @@ TextureImporter:
       name: card_suits_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 85.33333
-        width: 42.666668
-        height: 42.666668
+        x: 7
+        y: 90
+        width: 31
+        height: 31
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -146,12 +146,12 @@ TextureImporter:
       name: card_suits_1
       rect:
         serializedVersion: 2
-        x: 42
-        y: 85.33333
-        width: 42.666668
-        height: 42.666668
+        x: 44
+        y: 91
+        width: 31
+        height: 31
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -167,12 +167,12 @@ TextureImporter:
       name: card_suits_2
       rect:
         serializedVersion: 2
-        x: 84
-        y: 85.33333
-        width: 42.666668
-        height: 42.666668
+        x: 88
+        y: 87
+        width: 31
+        height: 31
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -188,12 +188,12 @@ TextureImporter:
       name: card_suits_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 43.333332
-        width: 42.666668
-        height: 42.666668
+        x: 7
+        y: 51
+        width: 31
+        height: 31
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

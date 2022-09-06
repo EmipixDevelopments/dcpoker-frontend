@@ -75,7 +75,7 @@ public class PanelTournaments : MonoBehaviour
     private void OnRegularTableListReceived(Socket socket, BestHTTP.SocketIO.Packet packet, params object[] args)
     {
         Debug.Log("OnRegularTableListReceived : " + packet.ToString());
-
+        
         JSONArray arr = new JSONArray(packet.ToString());
         string Source = arr.getString(arr.length() - 1);
         NormalTournamentDetails touramentsDetail = JsonUtility.FromJson<NormalTournamentDetails>(Source);

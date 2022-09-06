@@ -198,7 +198,7 @@ public class SocketGamemanager : MonoBehaviour
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.SearchLobby, action, Json.Decode(jsonObj.toString()));
     }
 
-    public void СontactUs(string message, SocketIOAckCallback action)
+    public void SendContactUs(string message, SocketIOAckCallback action)
     {
         JSON_Object jsonObj = new JSON_Object();
         jsonObj.put("message", message);
@@ -207,8 +207,33 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
         jsonObj.put("productName", Application.productName);
 
-        print(Constants.PokerEvents.СontactUs + " - " + jsonObj.toString());
-        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.СontactUs, action, Json.Decode(jsonObj.toString()));
+        print(Constants.PokerEvents.SendContactUs + " - " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.SendContactUs, action, Json.Decode(jsonObj.toString()));
+    }
+    
+    public void ContactUs( SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+
+        print(Constants.PokerEvents.ContactUs + " - " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.ContactUs, action, Json.Decode(jsonObj.toString()));
+    }
+
+    public void ReadContactUs(string messageId, SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("messageId", messageId);
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+
+        print(Constants.PokerEvents.ReadContactUs + " - " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.ReadContactUs, action, Json.Decode(jsonObj.toString()));
     }
 
     /// <summary>
@@ -1863,6 +1888,7 @@ public class SocketGamemanager : MonoBehaviour
         print("RulesofPlay: " + jsonObj.toString());
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.RulesofPlay, action, Json.Decode(jsonObj.toString()));
     }
+
     #endregion
     #region DELEGATE_CALLBACKS
 

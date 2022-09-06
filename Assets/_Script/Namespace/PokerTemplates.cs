@@ -907,6 +907,128 @@ public class RunItTwiceRoundCompleteResponse
 }
 
 [Serializable]
+public class MessagesDetails
+{
+    public MessagesDetails()
+    {
+        result = new List<Result>();
+    }
+
+    public string status;
+    public List<Result> result;
+    public string message;
+
+    [Serializable]
+    public class Result
+    {
+        public bool read;
+        public string _id;
+        public string message;
+    }
+}
+
+/* All info MessagesDetails
+ 
+ [Serializable]
+public class MessagesDetails
+{
+    public MessagesDetails()
+    {
+        result = new List<Result>();
+    }
+
+    public string status;
+    public List<Result> result;
+    public string message;
+
+    [Serializable]
+    public class Result
+    {
+
+        public bool read;
+        public string _id;
+        public string message;
+        public UserId userId;
+        public string updatedAt;
+        public string createdAt;
+
+        [Serializable]
+        public class UserId
+        {
+            public UserId()
+            {
+                statistics = new Statistics();
+            }
+            
+            public string appid;
+            public int latitude;
+            public int longitude;
+            public string username;
+            public string firstname;
+            public string lastname;
+            public int profilePic;
+            public bool isFb;
+            public int profilePicId;
+            public string fbProfileUrl;
+            public string email;
+            public string password;
+            public int mobile;
+            public string gender;
+            public string activationCode;
+            public string status;
+            public string sessionId;
+            public string socketId;
+            public int rating;
+            public bool isBot;
+            public int cash;
+            public bool isCash;
+            public string agentName;
+            public string isLatest;
+            public string platform_os;
+            public string accountNumber;
+            public string HTMLToken;
+            public string loginToken;
+            public string identifiertoken;
+            public bool isSuperPlayer;
+            public bool muck;
+            public bool deleted;
+            public string _id;
+            public string device_id;
+            public string uniqId;
+            public int chips;
+            public Statistics statistics;
+            public string updatedAt;
+            public string createdAt;
+            public string fcmId;
+            
+            [Serializable]
+            public class Statistics
+            {
+                public Statistics()
+                {
+                    cashgame = new Info();
+                    sng = new Info();
+                    tournament = new Info();
+                }
+                public Info cashgame;
+                public Info sng;
+                public Info tournament;
+            
+                [Serializable]
+                public class Info
+                {
+                    public int noOfPlayedGames;
+                    public int totalWonGame;
+                    public int totalLoseGame;
+                }
+            }
+        }
+    }
+}
+ */
+
+
+[Serializable]
 public class NormalTournamentDetails
 {
     public NormalTournamentDetails()
@@ -937,6 +1059,7 @@ public class NormalTournamentDetails
         public string displayDateTime;
         public bool   isJoinable = false;
         public bool   isFreeRoll = false;
+        public string colorOfCapture = "";
 
         public bool Compare(NormalTournamentData data) 
         {
@@ -957,6 +1080,7 @@ public class NormalTournamentDetails
             if (displayDateTime != data.displayDateTime) answer = false;
             if (isJoinable != data.isJoinable) answer = false;
             if (isFreeRoll != data.isFreeRoll) answer = false;
+            if (colorOfCapture != data.colorOfCapture) answer = false;
             return answer;
         }
     }

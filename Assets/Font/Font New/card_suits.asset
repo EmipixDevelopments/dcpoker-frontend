@@ -102,14 +102,14 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 42.666668
       m_Height: 42.666668
-      m_HorizontalBearingX: -21.333334
-      m_HorizontalBearingY: 21.333334
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 36
       m_HorizontalAdvance: 42.666668
     m_GlyphRect:
-      m_X: 0
-      m_Y: 85
-      m_Width: 42
-      m_Height: 42
+      m_X: 7
+      m_Y: 90
+      m_Width: 31
+      m_Height: 31
     m_Scale: 1
     m_AtlasIndex: 0
     sprite: {fileID: 8698584618323259830, guid: b70bf6d42a72543b5acc33c52e3787f4,
@@ -118,14 +118,14 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 42.666668
       m_Height: 42.666668
-      m_HorizontalBearingX: -21.333334
-      m_HorizontalBearingY: 21.333334
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 36
       m_HorizontalAdvance: 42.666668
     m_GlyphRect:
-      m_X: 42
-      m_Y: 85
-      m_Width: 42
-      m_Height: 42
+      m_X: 44
+      m_Y: 91
+      m_Width: 31
+      m_Height: 31
     m_Scale: 1
     m_AtlasIndex: 0
     sprite: {fileID: -9188316455491984918, guid: b70bf6d42a72543b5acc33c52e3787f4,
@@ -134,14 +134,14 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 42.666668
       m_Height: 42.666668
-      m_HorizontalBearingX: -21.333334
-      m_HorizontalBearingY: 21.333334
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 36
       m_HorizontalAdvance: 42.666668
     m_GlyphRect:
-      m_X: 84
-      m_Y: 85
-      m_Width: 42
-      m_Height: 42
+      m_X: 88
+      m_Y: 87
+      m_Width: 31
+      m_Height: 31
     m_Scale: 1
     m_AtlasIndex: 0
     sprite: {fileID: 2306996137514160689, guid: b70bf6d42a72543b5acc33c52e3787f4,
@@ -150,14 +150,14 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 42.666668
       m_Height: 42.666668
-      m_HorizontalBearingX: -21.333334
-      m_HorizontalBearingY: 21.333334
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 36
       m_HorizontalAdvance: 42.666668
     m_GlyphRect:
-      m_X: 0
-      m_Y: 43
-      m_Width: 42
-      m_Height: 42
+      m_X: 7
+      m_Y: 51
+      m_Width: 31
+      m_Height: 31
     m_Scale: 1
     m_AtlasIndex: 0
     sprite: {fileID: -3021527625277913284, guid: b70bf6d42a72543b5acc33c52e3787f4,

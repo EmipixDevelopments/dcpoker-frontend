@@ -59,6 +59,7 @@ public class UIManager : MonoBehaviour
     public PanelContactSupportPopup PanelContactSupportPopup;
     public PrivateTablePasswordPopup PrivateTablePasswordPopup;
     public PanelTransferToOtherPlayerPopup PanelTransferToOtherPlayerPopup;
+    public PanelMessageContactSupport PanelMessageContactSupport;
 
     [Header("Public Variables")]
     public bool isLogAllEnabled = false;
