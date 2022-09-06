@@ -261,14 +261,21 @@ public class DetailsTournamentNew : MonoBehaviour
         _registerButtonSprite.sprite = _orangeSprite;
         if (!string.IsNullOrEmpty(resp.result.dateTime))
         {
-            DateTime dateTime = DateTime.Parse(resp.result.dateTime);
+            Debug.LogError(resp.result.dateTime);
+            var dateTime = ParseDateTime(resp.result.dateTime);
             int lastTileForRegister = resp.result.lateRegistrationLevel * resp.result.bindLevelRizeTime;
-            if (dateTime < DateTime.Now && dateTime.AddMinutes(lastTileForRegister) > DateTime.Now)
+            if (dateTime < DateTime.UtcNow && dateTime.AddMinutes(lastTileForRegister) > DateTime.UtcNow)
             {
                 _registerButtonText.text = "late register";
                 _registerButtonSprite.sprite = _greenSprite;
             }
         }
+    }
+
+    private DateTime ParseDateTime(string dateTime)
+    {
+        var timeString = dateTime.Substring(0, dateTime.Length - 5);
+        return DateTime.ParseExact(timeString, "dd-MM-yyyy H:mm:ss tt ",null);
     }
 
     private void ChangeInfoText(PokerEventResponse<getTournamentInfoData> resp)
@@ -281,16 +288,16 @@ public class DetailsTournamentNew : MonoBehaviour
         }
         else
         {
-            DateTime dateTime = DateTime.Parse(resp.result.dateTime);
+            DateTime dateTime = ParseDateTime(resp.result.dateTime);
             int lastTileForRegister = resp.result.lateRegistrationLevel * resp.result.bindLevelRizeTime;
             // 2. Турнир не начался по времени (время есть)
             if (dateTime > DateTime.Now)
             {
-                TimeSpan lastTime = dateTime.Subtract(DateTime.Now);
+                TimeSpan lastTime = dateTime.Subtract(DateTime.UtcNow);
                 _startInText.text = $"Will start in <b>{lastTime.Days} Days : {lastTime.Hours} Hours : {lastTime.Minutes} Minutes</b>";
             }
             // 1. Турнир начался, и не прошло разрешенное время
-            else if (dateTime.AddMinutes(lastTileForRegister) > DateTime.Now)
+            else if (dateTime.AddMinutes(lastTileForRegister) > DateTime.UtcNow)
             {
                 _startInText.gameObject.SetActive(false);
             }
