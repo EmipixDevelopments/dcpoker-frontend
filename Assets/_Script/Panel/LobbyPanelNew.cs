@@ -36,7 +36,7 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private GameObject _panelTermsOfService;
     [SerializeField] private GameObject _panelPrivacyPolicy;
     [SerializeField] private GameObject _panelResponsibleGaming;
-    [SerializeField] private GameObject _panelBottomMenu;
+    [SerializeField] private PanelBottom _panelBottomMenu;
 
     [Space] public Messages Messages;
 
@@ -180,7 +180,10 @@ public class LobbyPanelNew : MonoBehaviour
     IEnumerator ShowBottomMenu()
     {
         yield return new WaitForEndOfFrame();
-        _panelBottomMenu.SetActive(true);
+        
+        //todo move to false always
+        _panelBottomMenu.SetBackgroundAlpha( _currentPanel == LobbyPanel.Home );
+        _panelBottomMenu.gameObject.SetActive(true);
     }
 
     private void SwitchAtlHome(bool run)
@@ -257,7 +260,7 @@ public class LobbyPanelNew : MonoBehaviour
         _panelTermsOfService.SetActive(false);
         _panelPrivacyPolicy.SetActive(false);
         _panelResponsibleGaming.SetActive(false);
-        _panelBottomMenu.SetActive(false);
+        _panelBottomMenu.gameObject.SetActive(false);
     }
     #endregion
 
