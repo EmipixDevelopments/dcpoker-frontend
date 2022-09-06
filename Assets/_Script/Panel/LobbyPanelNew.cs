@@ -65,7 +65,8 @@ public class LobbyPanelNew : MonoBehaviour
 
     private void OnEnable()
     {
-        SwitchAtlHome(true);
+        SwitchPanel(_currentPanel);
+        //SwitchAtlHome(true);
     }
 
     public void UpdatePanel() 
