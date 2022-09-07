@@ -39,6 +39,7 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private PanelBottom _panelBottomMenu;
 
     [Space] public Messages Messages;
+    [SerializeField] private Background Background;
 
     private enum LobbyPanel
     {
@@ -182,7 +183,11 @@ public class LobbyPanelNew : MonoBehaviour
         yield return new WaitForEndOfFrame();
         
         //todo move to false always
-        _panelBottomMenu.SetBackgroundAlpha( _currentPanel == LobbyPanel.Home );
+        var isHomePage = _currentPanel == LobbyPanel.Home;
+        _panelBottomMenu.SetBackgroundAlpha( isHomePage );
+        Background.SetActiveBackgroundPanel( !isHomePage );
+        Background.SetActiveChipsBottomImage(isHomePage || (int)_currentPanel > 6 );
+        
         _panelBottomMenu.gameObject.SetActive(true);
     }
 
