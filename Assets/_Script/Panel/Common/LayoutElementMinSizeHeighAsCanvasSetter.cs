@@ -16,7 +16,10 @@ public class LayoutElementMinSizeHeighAsCanvasSetter : LayoutElement
         if (canvas.gameObject.TryGetComponent(out _onChangeCanvasEvent))
         {
             _onChangeCanvasEvent.AddListener(out _rectTransform,OnChangeRectTransformCanvas);
-            minHeight = _rectTransform.rect.height;
+            
+            if(_rectTransform != null)
+                minHeight = _rectTransform.rect.height;
+            
             return;
         }
         

@@ -184,9 +184,8 @@ public class LobbyPanelNew : MonoBehaviour
         
         //todo move to false always
         var isHomePage = _currentPanel == LobbyPanel.Home;
-        _panelBottomMenu.SetBackgroundAlpha( isHomePage );
         Background.SetActiveBackgroundPanel( !isHomePage );
-        Background.SetActiveChipsBottomImage(isHomePage || (int)_currentPanel > 6 );
+        Background.SetActiveChipsBottomImage( isHomePage || (int)_currentPanel > 6 );
         
         _panelBottomMenu.gameObject.SetActive(true);
     }
