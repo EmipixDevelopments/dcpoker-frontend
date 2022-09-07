@@ -924,6 +924,13 @@ public class MessagesDetails
         public bool read;
         public string _id;
         public string message;
+        public UserId userId;
+
+        [Serializable]
+        public class UserId
+        {
+            public string username;
+        }
     }
 }
 

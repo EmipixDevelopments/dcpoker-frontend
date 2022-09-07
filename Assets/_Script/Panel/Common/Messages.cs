@@ -55,7 +55,8 @@ public class Messages : MonoBehaviour
         if(_messagesDetails == null)
             return;
         
-        var amount = _messagesDetails.result.Count(result => !result.read && (_messagesReadId == null || !_messagesReadId.Contains(result._id)));
+        var amount = _messagesDetails.result.Count(result => !result.read && (_messagesReadId == null || !_messagesReadId.Contains(result._id))
+        && result.userId != null);
         var isNeedUpdate = amount > 0;
         
         _notificationBubbleGameObject.SetActive(isNeedUpdate);
