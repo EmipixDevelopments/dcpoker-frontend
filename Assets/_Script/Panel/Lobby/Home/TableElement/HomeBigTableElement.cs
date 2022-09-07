@@ -13,7 +13,7 @@ public class HomeBigTableElement : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _status;
     [SerializeField] private Button _button;
 
-    private HomeBigElementData _data;
+    private NormalTournamentDetails.NormalTournamentData _data;
     
     private void OnEnable()
     {
@@ -25,16 +25,16 @@ public class HomeBigTableElement : MonoBehaviour
         _button.onClick.RemoveListener(OnButtonClick);
     }
 
-    public void SetInfo(HomeBigElementData data)
+    public void SetInfo(NormalTournamentDetails.NormalTournamentData data)
     {
         _data = data;
         
-        _dateText.text = data.Data;
-        _nameText.text = data.Name;
-        _typeText.text = $"{data.Type}";
-        _playersText.text = $"{data.Players}";
-        _buyInText.text = $"{data.BuyIn}";
-        _status.text = data.Status;
+        _dateText.text = data.dateTime;
+        _nameText.text = data.name;
+        _typeText.text = $"{data.type}";
+        _playersText.text = $"{data.players}";
+        _buyInText.text = $"{data.buyIn}";
+        _status.text = data.status;
     }
 
     private void OnButtonClick()
