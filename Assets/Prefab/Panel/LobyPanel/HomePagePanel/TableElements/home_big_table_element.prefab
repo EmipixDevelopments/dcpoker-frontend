@@ -263,6 +263,7 @@ MonoBehaviour:
   _buyInText: {fileID: 7702558611488410486}
   _status: {fileID: 6352989891092796613}
   _button: {fileID: 6923559540584838613}
+  _tableListColors: {fileID: 11400000, guid: bc52573c72ea1464db073e0183dfa2d8, type: 2}
 --- !u!1001 &535118739082090136
 PrefabInstance:
   m_ObjectHideFlags: 0

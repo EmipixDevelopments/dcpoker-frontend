@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,8 @@ public class HomeBigTableElement : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _buyInText;
     [SerializeField] private TextMeshProUGUI _status;
     [SerializeField] private Button _button;
+    [Space]
+    [SerializeField] private TableListColors _tableListColors;
 
     private NormalTournamentDetails.NormalTournamentData _data;
     
@@ -29,16 +32,51 @@ public class HomeBigTableElement : MonoBehaviour
     {
         _data = data;
         
-        _dateText.text = data.dateTime;
-        _nameText.text = data.name;
-        _typeText.text = $"{data.type}";
+        _dateText.text = $"{CheckStringData(ParsingDateTime(data.tournamentStartTime))}";
+        _nameText.text = $"{CheckStringData(data.name)}";
+        _typeText.text = $"{CheckStringData(data.type)}";
         _playersText.text = $"{data.players}";
-        _buyInText.text = $"{data.buyIn}";
-        _status.text = data.status;
+        _buyInText.text = $"{CheckStringData(data.buyIn)}";
+        _status.text = $"{CheckStringData(data.status)}";
+
+        var textColor = _tableListColors.GetColorByName(data.colorOfCapture);
+        SetColorText(textColor);
+    }
+
+    private void SetColorText(Color color)
+    {
+        _dateText.color = color;
+        _nameText.color = color;
+        _typeText.color = color;
+        _playersText.color = color;
+        _buyInText.color = color;
+        _status.color = color;
     }
 
     private void OnButtonClick()
     {
         
+    }
+    
+    private string CheckStringData(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return $"---";
+        }
+        return text;
+    }
+
+    private string ParsingDateTime(string dateTime)
+    {
+        string result = "";
+        string year = "";
+        DateTime dt = DateTime.Parse(dateTime);
+        if (dt.Year != DateTime.Now.Year)
+        {
+            year = $"{dt.Year} ";
+        }
+        result = $"{year}{dt.ToString("MMM dd", CultureInfo.CreateSpecificCulture("en-US"))} / {dt.ToString("HH:mm")}";
+        return result;
     }
 }

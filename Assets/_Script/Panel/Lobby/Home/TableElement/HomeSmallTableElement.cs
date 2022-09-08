@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,10 +30,26 @@ public class HomeSmallTableElement : MonoBehaviour
     {
         _data = data;
         
-        _limitText.text = data.gameLimit;
+        _limitText.text = CheckStringData(ParsingLimit(data.gameLimit));
         _seatsText.text = $"{data.playerCount}/{data.maxPlayers}";
         _blindsText.text = $"{data.smallBlind}/{data.bigBlind}";
         _buyInText.text = $"{data.maxBuyIn}";
+    }
+    private string CheckStringData(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return $"---";
+        }
+        return text;
+    }
+    
+    private string ParsingLimit(string limit)
+    {
+        var result = limit.Replace('_', ' ');
+        var textInfo = new CultureInfo("en-US").TextInfo;
+
+        return textInfo.ToTitleCase(textInfo.ToLower(result));
     }
 
     public void OnButtonClick()

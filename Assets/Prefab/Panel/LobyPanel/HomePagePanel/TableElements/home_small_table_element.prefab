@@ -906,6 +906,11 @@ PrefabInstance:
       propertyPath: m_VerticalAlignment
       value: 512
       objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 4058bb4798e854be8af3256574e47566,
+        type: 3}
+      propertyPath: m_fontStyle
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8398427878544311797, guid: 4058bb4798e854be8af3256574e47566,
         type: 3}
       propertyPath: m_LocalPosition.x

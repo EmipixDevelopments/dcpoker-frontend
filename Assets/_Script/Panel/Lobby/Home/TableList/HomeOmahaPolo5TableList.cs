@@ -7,8 +7,9 @@ public class HomeOmahaPolo5TableList : MonoBehaviour
 {
     [SerializeField] private HomeSmallTableElement _prefab;
     
-    private HomeSmallTableElement[] _homeSmallTableElements = new HomeSmallTableElement[5];
+    private int _amountOmaha = 3;
     private int _amountElements = 5;
+    private HomeSmallTableElement[] _homeSmallTableElements;
 
     private List<RoomsListing.Room> _roomsOmaha;
     private List<RoomsListing.Room> _roomsPolo5;
@@ -16,6 +17,7 @@ public class HomeOmahaPolo5TableList : MonoBehaviour
 
     private void Start()
     {
+        _homeSmallTableElements = new HomeSmallTableElement[_amountElements];
         Init();
     }
 
@@ -107,21 +109,25 @@ public class HomeOmahaPolo5TableList : MonoBehaviour
 
     private void UpdateUiData()
     {
-        var rooms = new List<RoomsListing.Room>();
+        var omahaRoomAmount = Math.Min(_amountOmaha, _roomsOmaha.Count);
+        var polo5RoomAmount = Math.Min(_amountElements - omahaRoomAmount, _roomsPolo5.Count);
         
-        rooms.AddRange(_roomsOmaha);
-        rooms.AddRange(_roomsPolo5);
-        
-        for (var i = 0; i < 5; i++)
+        for (var i = 0; i < omahaRoomAmount; i++)
         {
-            if ( i < rooms.Count)
-            {
-                _homeSmallTableElements[i].SetInfo(rooms[i]);
-            }
-            else
-            {
-                _homeSmallTableElements[i].gameObject.SetActive(false);
-            }
+            _homeSmallTableElements[i].SetInfo(_roomsOmaha[i]);
+        }
+        for (var i = 0; i < polo5RoomAmount; i++)
+        {
+            _homeSmallTableElements[i+omahaRoomAmount].SetInfo(_roomsPolo5[i]);
+        }
+
+        var amountRoom = omahaRoomAmount + polo5RoomAmount;
+        if(amountRoom >= _amountElements )
+            return;
+        
+        for(var i = amountRoom; i < _amountElements; i++)
+        {
+            _homeSmallTableElements[i].gameObject.SetActive(false);
         }
     }
 }
