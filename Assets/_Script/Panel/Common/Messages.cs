@@ -42,7 +42,14 @@ public class Messages : MonoBehaviour
         var source = arr.getString(arr.length() - 1);
         
         _messagesDetails = JsonUtility.FromJson<MessagesDetails>(source);
-        UpdateMessageInfo();
+        if(_messagesDetails.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+        {
+            UpdateMessageInfo();
+        }
+        else
+        {
+            UIManager.Instance.DisplayMessagePanel(_messagesDetails.message);
+        }
     }
 
     public void SetMessagesReadId(List<string> messagesReadId)

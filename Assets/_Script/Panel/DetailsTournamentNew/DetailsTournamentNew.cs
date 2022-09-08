@@ -96,7 +96,8 @@ public class DetailsTournamentNew : MonoBehaviour
     //        //txtDailyBonus.text = "Bonus Ready!";
     //    }
     //}
-
+    
+    //todo: not need get Tournament Data again
     public void GetDetailsTournamentButtonTap(string TournamentId, string pokerGameType)
     {
         this.Close();
@@ -274,6 +275,7 @@ public class DetailsTournamentNew : MonoBehaviour
 
     private DateTime ParseDateTime(string dateTime)
     {
+        Debug.LogError(dateTime);
         var timeString = dateTime.Substring(0, dateTime.Length - 5);
         return DateTime.ParseExact(timeString, "dd-MM-yyyy H:mm:ss tt ",null);
     }

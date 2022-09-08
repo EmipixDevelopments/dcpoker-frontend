@@ -69,6 +69,9 @@ public class HomeBigTableElement : MonoBehaviour
 
     private string ParsingDateTime(string dateTime)
     {
+        if (string.IsNullOrEmpty(dateTime))
+            return null;
+        
         string result = "";
         string year = "";
         DateTime dt = DateTime.Parse(dateTime);

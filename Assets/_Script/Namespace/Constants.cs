@@ -568,6 +568,7 @@ namespace Constants
         SitNGoTableSettingsGameFilter,
         SitNGoTableSettingsPriceFilter,
     }
+    
 }
 
 public enum PokerCardSuit
