@@ -1,0 +1,522 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2423824685064409868
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2423824685064409871}
+  - component: {fileID: 2423824685064409870}
+  - component: {fileID: 5667534622926449747}
+  m_Layer: 5
+  m_Name: panel_privacy_policy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2423824685064409871
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2423824685064409868}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 7300694707511611129}
+  - {fileID: 2686100290543116846}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 949.0499, y: -2388.4}
+  m_SizeDelta: {x: 1898.1, y: 4320}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &2423824685064409870
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2423824685064409868}
+  m_CullTransparentMesh: 0
+--- !u!114 &5667534622926449747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2423824685064409868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 4320
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
+--- !u!1001 &1287029554083449612
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2423824685064409871}
+    m_Modifications:
+    - target: {fileID: 5428961556799149578, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_Name
+      value: info_text
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_text
+      value: Privacy Policy
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_margin.x
+      value: 66
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_margin.y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 126
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1041d1785ac014454b7d5e39f52e2db3, type: 3}
+--- !u!224 &7300694707511611129 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+    type: 3}
+  m_PrefabInstance: {fileID: 1287029554083449612}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5894020398990387163
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2423824685064409871}
+    m_Modifications:
+    - target: {fileID: 5428961556799149578, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_Name
+      value: text_white_monserat_26
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: df7d6e736329944ba9793975d9fcb5d1,
+        type: 2}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_text
+      value: "<b>Privacy Policy</b>\nThis Privacy Policy applies when your personal
+        information is processed as part of our Services (described below). It will
+        tell you how we process, use and maintain your personal information when providing
+        our Services to you. This Privacy Policy is not, however, a contract and does
+        not create any legal rights or obligations.\nBy accessing \"Macau-gold \"
+        (\"Platform\") you are hereby indicating your agreement to be bound by this
+        Privacy Policy. If you do not agree to the terms of this Policy, we request
+        that you disconnect from the Platform immediately and refrain from any further
+        use. \nIf you have questions, comments, or concerns regarding our Privacy
+        Policy or practices, please Contact Us at macaugold2022@gmail.com\n\L\n<b>
+        Information We Collect and How We Collect It</b>\nWe will process any personal
+        information that you provide to us, including when you create your account
+        or a player profile, including but not limited to:\nInformation about you
+        that you share with us directly - When you use our Services, you may give
+        us personal information directly, including but not limited to, your first
+        and last name, your game username or alias, your gender, your age, birthday
+        or age range, your email address, your profile photo and/or avatar, your approximate
+        location, your contact details including phone number and address, your password,
+        etc., and we will store that personal information on our systems and process
+        it for the purposes described in this Privacy Policy.\n<b>NOTE:</b> While
+        we typically do not request sensitive or special categories of personal information
+        you may choose to provide this information to us. The meaning of sensitive
+        or special categories of personal information changes from region to region
+        but could include information about your health, lifestyle or, in certain
+        places, types of financial or precise location information. For some Services,
+        we may also ask you to voluntarily provide information about any accessibility
+        requirements you may have to better understand the needs of players and to
+        improve the accessibility of our Services.\nInformation you generate using
+        our services \u2013 We may collect personal information about the ways you
+        use and interact with our Services, such as when and for how long you play
+        our games, which game features and other users you interact with, any purchases
+        you make, what progress or levels you achieve, and other gameplay activities
+        in which you participate as well as data about you interaction with other
+        users including chats, posts and any user content. \nWe may keep use this
+        information to protect the safety and well-being of our users; to protect
+        Company\u2019s rights and property in connection with our Services; to conduct
+        research; to operate, improve, personalize, and optimize our Services and
+        our users\u2019 experiences, including through the use of analytics; and to
+        manage and deliver advertising. Where required by law, we will seek your consent
+        for this.\nPayment information - If you make any purchase on our platform,
+        our third-party payment processor will collect the billing and financial information
+        it needs to process your charges. This may include your postal address, email
+        address, and financial information. Where we use payment processors, they
+        do not share your financial information, like credit card numbers, but they
+        may share non-financial information with us related to your purchases, like
+        your name, billing address, and the items purchased.\nInformation from connected
+        third-party platforms \u2013 We may collect personal information from other
+        companies, including social networks, if you access our platform through your
+        accounts with those companies or you choose to connect through those accounts
+        to our games. This information may include: your first and last name, your
+        profile picture or its URL, your user identification number (like your Facebook
+        ID number), which may be linked to publicly-available information like your
+        name and profile photo, the email address you provided to that third-party
+        platform, your approximate physical location and that of the devices you use
+        to access our Services, your gender, your birthday, age, and/or age range,
+        etc. \nCookies and other automated information collection \u2013 We may collect
+        information about your device and how you use our Services, including through
+        the use of cookies and similar technologies. \nOther sources - We may collect
+        or receive information about you from other sources like third-party information
+        providers. We use this information along with information you provide us directly,
+        for example, to help you connect or to serve you advertising more tailored
+        to your interests.\n Why We Process Your Information and our Legal Grounds\nWe
+        process your personal information for a number of reasons, including to provide
+        and improve our Services; protect you and others from any illegal or un-ethical
+        action; for marketing and advertising our, and our third-party partners\u2019,
+        products and services; for business continuity reasons; and to comply with
+        legal rights and obligations.\nWe also process you information for the purpose
+        of Improving, optimizing and personalizing our Services and our players\u2019
+        experiences, Communicating with our users about the Services you are using
+        or we think you will like, including updates, new Services, pre-registrations
+        and promotional marketing offers, protecting the safety and well-being of
+        our users and others, preventing fraud or potentially illegal activities,
+        and to enforce our Terms of Service\nWhile we typically do not collect sensitive
+        or special category personal information, where we do this it will be on the
+        ground of consent or other applicable lawful basis\nIf you have questions,
+        need further information about the legal grounds for processing your personal
+        information, or want to withdraw your consent please see the Contact Us section
+        below.\n How We Share Information\nWe may share your information with our
+        affiliates, people you know, and certain other third parties when you use
+        our Services, including: sharing your information with people you know and
+        other users for the purpose of the Services, Sharing information with our
+        affiliates, Sharing information with third-party advertisers or sharing information
+        for the purpose of compliance with the law or for security reasons.  \nWe
+        may also share your information with the third-party service providers, business
+        partners and subcontractors that we work with to bring you our Services and
+        that support us with our business.\nYour Rights\nAs per applicable law, you
+        have certain legal rights in connection with your personal information. These
+        rights apply to information about you, and their scope and applicability can
+        vary across different regions. \nSubject to certain exemptions, you have the
+        right to:\nRequest a copy of your personal information (known as \u2018accessing
+        your data\u2019).\nDelete your information. When you ask us to delete your
+        personal information please remember that there may be lawful limitations
+        on this right. \nCorrect or update your personal information where it is inaccurate.
+        \nOpt-out of marketing communications we send you.\nWhere applicable, withdraw
+        your consent at any time directly in the Service or by contacting us. Withdrawing
+        your consent will not affect the processing already undertaken before your
+        withdrawal. Also, it will not affect processing of your personal information
+        under other lawful grounds.\nObject to processing of your personal information,
+        ask us to restrict processing of your personal information or request portability
+        of your personal information.\nYou can exercise these rights by submitting
+        a request to the email macaugold2022@gmail.com\n\L Our Policies Concerning
+        Children\nWe seek to ensure that we do not collect information from children.\nOur
+        Services are not marketed to, or intended for, children. Company strives to
+        follow the different minimum age guidelines set by the laws of individual
+        regions when determining the age that children can access certain features
+        of our Services.\nChildren are not permitted to use these Services, and we
+        do not knowingly collect any personal information from children. Though our
+        Services are not intended for children as the primary audience, we may collect
+        age information before allowing a user to proceed for certain Services. For
+        users who identify themselves as children in our age-gate on such Services,
+        if we allow children to use the Services, we will either provide a version
+        of that Service that does not collect, use, or disclose \u201Cpersonal information\u201D
+        (as defined in the Children\u2019s Online Privacy Protection Act (\u201CCOPPA\u201D)),
+        except as permitted by COPPA or other privacy laws (where applicable), or
+        obtain legally valid parental consent.\nIf we learn that we have inadvertently
+        gathered personal information about a child that is not subject to an exemption
+        under COPPA or another applicable privacy law, we will take measures to promptly
+        remove that information from our records.\n International Operations and Transfers\nWhen
+        you use our Services, your personal information may be processed in the several
+        countries around the world. We store personal information about you on servers
+        located in the  Virginia USA or any other place we engage to maintain our
+        services.\nHow Long We Keep Your Information\nWe\u2019ll keep your information
+        for as long as necessary to provide you with the Services, fulfil our legal
+        obligations, and/or exercise, defend or establish our rights.\n\nHow long
+        we retain your personal information depends on why we collected it and how
+        we use it, but we will not retain your personal information for longer than
+        is necessary for to provide you with the Services or for our legal requirements.\nWe
+        will retain personal information that is connected with your account and/or
+        the Services you use from us for as long as you have an active account with
+        us. We will take measures to delete this personal information if you delete
+        your account. However, you acknowledge that we may retain some information
+        after you have closed, or we have deleted, your account with us where necessary
+        to enable us to meet our legal obligations or to exercise, defend, or establish
+        our rights.\n Security of Your Information\nWe implement reasonable and appropriate
+        security measures to help protect the security of your information both online
+        and offline and to ensure that your data is treated securely and in accordance
+        with this Privacy Policy. These measures vary based upon the sensitivity of
+        your information.\nWhile we take precautions against possible security breaches
+        of our Services and our customer databases and records, no website or Internet
+        transmission is completely secure. We cannot guarantee that unauthorized access,
+        hacking, data loss, or other breaches will never occur, and we cannot guarantee
+        the security of your information while it is being transmitted to our Service.
+        Any transmission is at your own risk.\n Changes to Our Privacy Policy\nWe
+        may update our Privacy Policy from time to time. We encourage you to periodically
+        check https://macau-gold.com/  and this Privacy Policy for updates. If you
+        would like a copy of earlier policies, please get in touch using the Contact
+        Us information below.\n Contact Us\nYou can contact us with your questions,
+        comments, or concerns at https://macau-gold.com/ \n\n"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_margin.x
+      value: 76
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_margin.y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_margin.z
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_fontColorGradient.bottomRight.r
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_fontColorGradient.bottomRight.g
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_fontColorGradient.bottomRight.b
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -126
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 3904.7002
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 010e9abd2c6394852bdcc16a48dc7932, type: 3}
+--- !u!224 &2686100290543116846 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+    type: 3}
+  m_PrefabInstance: {fileID: 5894020398990387163}
+  m_PrefabAsset: {fileID: 0}

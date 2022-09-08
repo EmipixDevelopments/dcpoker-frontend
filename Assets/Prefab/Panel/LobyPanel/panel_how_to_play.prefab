@@ -1,196 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &655500069355216013
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 655500069355216012}
-  - component: {fileID: 655500069355216001}
-  - component: {fileID: 655500069355216014}
-  m_Layer: 5
-  m_Name: text
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &655500069355216012
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 655500069355216013}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 655500069622354358}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1898.1, y: 0}
-  m_Pivot: {x: 0, y: 1}
---- !u!222 &655500069355216001
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 655500069355216013}
-  m_CullTransparentMesh: 0
---- !u!114 &655500069355216014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 655500069355216013}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: "<b>Texas Hold'em</b>\n\nHands ranked from lowest to highest\n\nHigh Card\n(no
-    pair) No two cards have the same rank, the five cards are not in sequence, and
-    the five cards are not all the same suit. When comparing the same types of hands,
-    the higher-ranking card defeats the lower-ranking card.\nEx. K<sprite=2> J<sprite=0>
-    8<sprite=0> 7<sprite=1> 3<sprite=2> (\u201CKing High\u201D)\n\nOne Pair\nTwo cards
-    of the same rank, plus three other unmatched cards. When comparing the same types
-    of hands, the higher-ranking pairs defeat the lower-ranking pairs.\nEx. 4<sprite=2>
-    4<sprite=3> K<sprite=3> 10<sprite=2> 5<sprite=3> (Pair of Fours)\n\nTwo Pair\nTwo
-    cards of the same rank, plus two cards of another rank (that match each other,
-    but not the first pair), plus one unmatched card. When comparing same types of
-    hands, Higher ranking pair of the two defeats lower ranking pair.\nEx. J<sprite=2>
-    J<sprite=0> 4<sprite=0> 4<sprite=3> 9<sprite=2> (\u201CJacks over Fours\u201D)\n\nThree
-    of a Kind\nThree cards of the same rank, plus two unmatched cards. When comparing
-    the same types of hands, the higher-value three of a kind defeats the lower-value
-    three of a kind.\nEx. 2<sprite=1> 2<sprite=3> 2<sprite=0> K<sprite=3> 6<sprite=2>\n\nStraight\nContains
-    five cards of sequential rank but in more than one suit. Two straights are ranked
-    by comparing the highest card of each. Two straights with the same high card are
-    of equal value.\nEx. Q<sprite=0> J<sprite=3> 10<sprite=3> 9<sprite=2> 8<sprite=2>
-    (\u201CQueen-High Straight\u201D)\n\nFlush\nContains five cards of the same suit,
-    not in rank or sequence. When comparing the same types of hands, the highest-ranking
-    card wins.\nEx. Q<sprite=0> 10<sprite=0> 7<sprite=0> 6<sprite=0> 4<sprite=0> (\u201CQueen-High
-    Flush)\n\nFull House\nContains three matching cards of one rank and two matching
-    cards of another rank. When comparing the same types of hands, the higher-ranking
-    set of three wins.\nEx. 3<sprite=0> 3<sprite=3> 3<sprite=1> 6<sprite=0> 6<sprite=2>
-    (\u201CThrees over Sixes\u201D)\n\nFour of a Kind\nContains four cards of one
-    rank and an unmatched card of another rank. When comparing the same types of hands,
-    higher-ranking quads defeat lower-ranking ones.\nEx. 4<sprite=0> 4<sprite=3> 4<sprite=1>
-    4<sprite=2> 6<sprite=0>\n\nStraight Flush\nContains five cards in sequence, all
-    of the same suit (therefore, both a straight and a flush). Compare hands by looking
-    at their highest card. Two identical straight flushes tie since suits have no
-    value.\nEx. Q<sprite=0> J<sprite=0> 10<sprite=0> 9<sprite=0> 8<sprite=0>\n\nRoyal
-    Flush\nThe highest poker hand, containing an Ace, King, Queen, Jack, and a 10,
-    all of the same suit.\nEx. 10<sprite=2> J<sprite=2> Q<sprite=2> K<sprite=2> A<sprite=2>\n\n\n<b>Omaha
-    4 or 5 cards</b>\n\nOmaha has a well-deserved reputation for being a game for
-    action players. Pot-sizes tend to get large as players liberally splash chips
-    around the table, where multi-way pots and frequent raising make the game very
-    exciting.\nIn Omaha, players are dealt four or five face-down cards (Depends on
-    the game choosen). Afterwards, each player gets a chance to exercise his betting
-    options. Next, three cards are dealt simultaneously on the table for all players
-    to share. This is called the flop, and it is followed by another round of betting.
-    A fourth card, called the turn, is then dealt, and it too is followed by a round
-    of betting. One final community card called the river is dealt followed by a final
-    round of betting. When all bets have concluded, there is a showdown, in which
-    the highest ranking hand in play wins the pot. players must use exactly two of
-    their four/five down cards and three of the five community cards to form their
-    hand. It is easy for new players to get confused, and even world-class players
-    have been known to misread their hands in Omaha. For example, if you were dealt
-    four aces in the hole, you wouldn't have quads because only two of the aces would
-    count toward the final hand! The remaining three cards would have to come from
-    the board.\n\n\n<b>Sit and Go's tournaments</b>\nSit and Go tournaments are an
-    exciting format of poker than has become very popular. Sit and Go's offer the
-    thrill of a regular multi-table tournament but every game is like you've reached
-    the final table.\nOne of the other attractive features of Sit and Go's, and where
-    the name originates, is that they can be offered 24 hours a day with no set schedule.
-    As soon as enough players have registered, the tournament begins.\nTime is another
-    factor. While many multi-table tournaments can last many hours, even a 9-handed
-    Sit and Go will normally be finished in less than an hour making it easy for players
-    to get in the action without a long time commitment.\n\n\n\n\n\n\n\n\n\n\n\n\n"
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: e42e4ad61f6234dbbbd149d119cea562, type: 2}
-  m_sharedMaterial: {fileID: 7903009000636447737, guid: e42e4ad61f6234dbbbd149d119cea562,
-    type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: df7d6e736329944ba9793975d9fcb5d1, type: 2}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
-  m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
-  m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
-  m_lineSpacing: 0
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 0
-  m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 1
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: 0
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 76, y: 30, z: 50, w: 0}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_Maskable: 1
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &655500069622354359
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 655500069622354358}
   - component: {fileID: 655500069622354345}
-  - component: {fileID: 7333756971939851916}
+  - component: {fileID: 4247063133944679361}
   m_Layer: 5
   m_Name: panel_how_to_play
   m_TagString: Untagged
@@ -221,15 +30,14 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3364687721728647652}
-  - {fileID: 655500069778327356}
-  - {fileID: 655500069355216012}
+  - {fileID: 3554718534049003764}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1898.1001, y: 2733}
+  m_SizeDelta: {x: 1890, y: 2886}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &655500069622354345
 CanvasRenderer:
@@ -239,7 +47,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 655500069622354359}
   m_CullTransparentMesh: 0
---- !u!114 &7333756971939851916
+--- !u!114 &4247063133944679361
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -248,155 +56,263 @@ MonoBehaviour:
   m_GameObject: {fileID: 655500069622354359}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 0
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 1
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
---- !u!1 &655500069778327357
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 655500069778327356}
-  - component: {fileID: 655500069778327358}
-  - component: {fileID: 655500069778327359}
-  m_Layer: 5
-  m_Name: InfoText (TMP)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &655500069778327356
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 655500069778327357}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 655500069622354358}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 949.05005, y: -73.20001}
-  m_SizeDelta: {x: 1898.1, y: 146.4}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &655500069778327358
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 655500069778327357}
-  m_CullTransparentMesh: 0
---- !u!114 &655500069778327359
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 2886
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
+--- !u!114 &8111604012384636060
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 655500069778327357}
+  m_GameObject: {fileID: 1255233032724279835}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: How To Play
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 1
-  m_colorMode: 2
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    bottomRight: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 82
-  m_fontSizeBase: 82
-  m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 17
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 1024
-  m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
-  m_lineSpacing: 0
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 0
-  m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 1
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: 0
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_Maskable: 1
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 126
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
+--- !u!1001 &5033282778157022465
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 655500069622354358}
+    m_Modifications:
+    - target: {fileID: 5428961556799149578, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_Name
+      value: text_white_monserat_26
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: df7d6e736329944ba9793975d9fcb5d1,
+        type: 2}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_text
+      value: "<b>Texas Hold'em</b>\n\nHands ranked from lowest to highest\n\nHigh
+        Card\n(no pair) No two cards have the same rank, the five cards are not in
+        sequence, and the five cards are not all the same suit. When comparing the
+        same types of hands, the higher-ranking card defeats the lower-ranking card.\nEx.
+        K<sprite=2> J<sprite=0> 8<sprite=0> 7<sprite=1> 3<sprite=2> (\u201CKing High\u201D)\n\nOne
+        Pair\nTwo cards of the same rank, plus three other unmatched cards. When comparing
+        the same types of hands, the higher-ranking pairs defeat the lower-ranking
+        pairs.\nEx. 4<sprite=2> 4<sprite=3> K<sprite=3> 10<sprite=2> 5<sprite=3> (Pair
+        of Fours)\n\nTwo Pair\nTwo cards of the same rank, plus two cards of another
+        rank (that match each other, but not the first pair), plus one unmatched card.
+        When comparing same types of hands, Higher ranking pair of the two defeats
+        lower ranking pair.\nEx. J<sprite=2> J<sprite=0> 4<sprite=0> 4<sprite=3> 9<sprite=2>
+        (\u201CJacks over Fours\u201D)\n\nThree of a Kind\nThree cards of the same
+        rank, plus two unmatched cards. When comparing the same types of hands, the
+        higher-value three of a kind defeats the lower-value three of a kind.\nEx.
+        2<sprite=1> 2<sprite=3> 2<sprite=0> K<sprite=3> 6<sprite=2>\n\nStraight\nContains
+        five cards of sequential rank but in more than one suit. Two straights are
+        ranked by comparing the highest card of each. Two straights with the same
+        high card are of equal value.\nEx. Q<sprite=0> J<sprite=3> 10<sprite=3> 9<sprite=2>
+        8<sprite=2> (\u201CQueen-High Straight\u201D)\n\nFlush\nContains five cards
+        of the same suit, not in rank or sequence. When comparing the same types of
+        hands, the highest-ranking card wins.\nEx. Q<sprite=0> 10<sprite=0> 7<sprite=0>
+        6<sprite=0> 4<sprite=0> (\u201CQueen-High Flush)\n\nFull House\nContains three
+        matching cards of one rank and two matching cards of another rank. When comparing
+        the same types of hands, the higher-ranking set of three wins.\nEx. 3<sprite=0>
+        3<sprite=3> 3<sprite=1> 6<sprite=0> 6<sprite=2> (\u201CThrees over Sixes\u201D)\n\nFour
+        of a Kind\nContains four cards of one rank and an unmatched card of another
+        rank. When comparing the same types of hands, higher-ranking quads defeat
+        lower-ranking ones.\nEx. 4<sprite=0> 4<sprite=3> 4<sprite=1> 4<sprite=2> 6<sprite=0>\n\nStraight
+        Flush\nContains five cards in sequence, all of the same suit (therefore, both
+        a straight and a flush). Compare hands by looking at their highest card. Two
+        identical straight flushes tie since suits have no value.\nEx. Q<sprite=0>
+        J<sprite=0> 10<sprite=0> 9<sprite=0> 8<sprite=0>\n\nRoyal Flush\nThe highest
+        poker hand, containing an Ace, King, Queen, Jack, and a 10, all of the same
+        suit.\nEx. 10<sprite=2> J<sprite=2> Q<sprite=2> K<sprite=2> A<sprite=2>\n\n\n<b>Omaha
+        4 or 5 cards</b>\n\nOmaha has a well-deserved reputation for being a game
+        for action players. Pot-sizes tend to get large as players liberally splash
+        chips around the table, where multi-way pots and frequent raising make the
+        game very exciting.\nIn Omaha, players are dealt four or five face-down cards
+        (Depends on the game choosen). Afterwards, each player gets a chance to exercise
+        his betting options. Next, three cards are dealt simultaneously on the table
+        for all players to share. This is called the flop, and it is followed by another
+        round of betting. A fourth card, called the turn, is then dealt, and it too
+        is followed by a round of betting. One final community card called the river
+        is dealt followed by a final round of betting. When all bets have concluded,
+        there is a showdown, in which the highest ranking hand in play wins the pot.
+        players must use exactly two of their four/five down cards and three of the
+        five community cards to form their hand. It is easy for new players to get
+        confused, and even world-class players have been known to misread their hands
+        in Omaha. For example, if you were dealt four aces in the hole, you wouldn't
+        have quads because only two of the aces would count toward the final hand!
+        The remaining three cards would have to come from the board.\n\n\n<b>Sit and
+        Go's tournaments</b>\nSit and Go tournaments are an exciting format of poker
+        than has become very popular. Sit and Go's offer the thrill of a regular multi-table
+        tournament but every game is like you've reached the final table.\nOne of
+        the other attractive features of Sit and Go's, and where the name originates,
+        is that they can be offered 24 hours a day with no set schedule. As soon as
+        enough players have registered, the tournament begins.\nTime is another factor.
+        While many multi-table tournaments can last many hours, even a 9-handed Sit
+        and Go will normally be finished in less than an hour making it easy for players
+        to get in the action without a long time commitment.\n\n\n\n\n\n\n\n\n\n\n\n\n"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_margin.x
+      value: 76
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_margin.y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_margin.z
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_fontColorGradient.bottomRight.r
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_fontColorGradient.bottomRight.g
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_fontColorGradient.bottomRight.b
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -126
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 2479.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 010e9abd2c6394852bdcc16a48dc7932, type: 3}
+--- !u!224 &3554718534049003764 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+    type: 3}
+  m_PrefabInstance: {fileID: 5033282778157022465}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6502335910667756561
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -492,12 +408,12 @@ PrefabInstance:
     - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 764
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 126
       objectReference: {fileID: 0}
     - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
         type: 3}
@@ -507,17 +423,17 @@ PrefabInstance:
     - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
         type: 3}
@@ -527,10 +443,16 @@ PrefabInstance:
     - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
         type: 3}
       propertyPath: m_Pivot.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1041d1785ac014454b7d5e39f52e2db3, type: 3}
+--- !u!1 &1255233032724279835 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5428961556799149578, guid: 1041d1785ac014454b7d5e39f52e2db3,
+    type: 3}
+  m_PrefabInstance: {fileID: 6502335910667756561}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &3364687721728647652 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
