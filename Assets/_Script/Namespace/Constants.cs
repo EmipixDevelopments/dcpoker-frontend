@@ -543,7 +543,10 @@ namespace Constants
         public static string InGamePlayerGameHistory = "InGamePlayerGameHistory";
         public static string clubTablesResult = "clubTablesResult";
         public static string TournamentLeaderboard = "TournamentLeaderboard";
+
+        public static string Transactions = "transactions";
     }
+    
 
     /// <summary>
     /// keys for save/load data

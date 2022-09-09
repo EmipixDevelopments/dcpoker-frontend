@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using BestHTTP.SocketIO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -101,8 +102,6 @@ public class TournamentTableElement : MonoBehaviour
     
     private void OnOpenTournamentRoom()
     {
-        Debug.LogError(_data.tournamentId);
-        Debug.LogError(_tournamentData.id);
         UIManager.Instance.SocketGameManager.JoinTournamentRoom(_tournamentData.id, (socket, packet, args) =>
         {
             print("JoinTournamentRoom response: " + packet.ToString());
@@ -113,24 +112,9 @@ public class TournamentTableElement : MonoBehaviour
             var resp1 = Source;
 
             PokerEventResponse<RoomsListing.Room> JoinTournamentRoomResp = JsonUtility.FromJson<PokerEventResponse<RoomsListing.Room>>(resp1);
+            Debug.LogError(JoinTournamentRoomResp.ToString());
             if (JoinTournamentRoomResp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
             {
-                /*if (!UIManager.Instance.tableManager.IsMiniTableTournamentExisted(JoinTournamentRoomResp.result.tournamentId))
-                    UIManager.Instance.LobbyScreeen.GetRunningGameList();
-
-                if (UIManager.Instance.IsMultipleTableAllowed && !UIManager.Instance.tableManager.playingTableList.Contains(JoinTournamentRoomResp.result.roomId))
-                {
-                    UIManager.Instance.tableManager.DeselectAllTableSelection();
-                    UIManager.Instance.tableManager.AddMiniTable(JoinTournamentRoomResp.result);
-                }
-                UIManager.Instance.tableManager.DeselectAllTableSelection();
-
-                MiniTable miniTable = UIManager.Instance.tableManager.GetMiniTable(JoinTournamentRoomResp.result.roomId);
-                if (miniTable != null)
-                {
-                    UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.Close();
-                    miniTable.MiniTableButtonTap();
-                }*/
                 var room = JoinTournamentRoomResp.result;
                 Constants.Poker.TableId = room.roomId;
                 UIManager.Instance.GameScreeen.SetRoomDataAndPlay(room);
@@ -138,7 +122,7 @@ public class TournamentTableElement : MonoBehaviour
                 UIManager.Instance.DisplayLoader("");
                 UIManager.Instance.LobbyPanelNew.Close();
                 UIManager.Instance.GameScreeen.Open();
-
+                
             }
             else
             {
@@ -182,9 +166,7 @@ public class TournamentTableElement : MonoBehaviour
         
         if(_tournamentData == null)
             return;
-        
-        if(_tournamentData.isRegistered)
-        //move text from here
+
         if (_data.status == "Running")
         {
             if (_tournamentData.isRegistered)
@@ -193,15 +175,19 @@ public class TournamentTableElement : MonoBehaviour
                 _rightButton.onClick.AddListener(OnOpenTournamentRoom);
                 return;
             }
-            
+
             if (IsLateRegister())
             {
+                _rightButton.onClick.AddListener(OnRegisterButton);
                 _lateRegisterButtonGameObject.gameObject.SetActive(true);
-                return;
             }
         }
-
-        _registerButtonGameObject.gameObject.SetActive(true);
+        
+        if(_tournamentData.isRegistered)
+        {
+            _registerButtonGameObject.gameObject.SetActive(true);
+            _rightButton.onClick.AddListener(OnRegisterButton);
+        }
     }
 
     private bool IsLateRegister()
@@ -226,4 +212,16 @@ public class TournamentTableElement : MonoBehaviour
         return DateTime.ParseExact(timeString, "dd-MM-yyyy H:mm:ss tt ",null);
     }
 
+    private void OnRegisterButton()
+    {
+        var socketGameManager = UIManager.Instance.SocketGameManager;
+        
+        socketGameManager.getRegisterTournament(_tournamentData.id,GameType.Touranment.ToString(),RegisterTournamentResponse);
+    }
+
+    private void RegisterTournamentResponse(Socket socket, Packet packet, object[] args)
+    {
+        Debug.LogError("Register"+packet.ToString());
+        
+    }
 }

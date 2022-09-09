@@ -55,7 +55,7 @@ public class PanelSitNGo : MonoBehaviour
             string tournamentPokerType = "all";
             GameSpeed selectedGameSpeed = UIManager.Instance.selectedGameSpeed;
             bool isLimitSelected = false;
-            string gametype = "sng"; //"Touranment";
+            string gametype = "all"; //"Touranment";
             string selectedLimitType = "all";
             string selectedStack = "all";
             string selectedPlayerPerTable = "all";

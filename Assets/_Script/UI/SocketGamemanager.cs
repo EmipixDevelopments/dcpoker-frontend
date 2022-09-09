@@ -1889,6 +1889,20 @@ public class SocketGamemanager : MonoBehaviour
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.RulesofPlay, action, Json.Decode(jsonObj.toString()));
     }
 
+    public void Transactions(SocketIOAckCallback action)
+    {
+        if (!HasInternetConnection())
+            return;
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+        
+        print("RulesofPlay: " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.Transactions, action, Json.Decode(jsonObj.toString()));
+    }
+
     #endregion
     #region DELEGATE_CALLBACKS
 

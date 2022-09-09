@@ -930,6 +930,7 @@ public class MessagesDetails
         public class UserId
         {
             public string username;
+            public string _id;
         }
     }
 }
@@ -1782,4 +1783,26 @@ public class TableBalanceNoticeResp
 public class AuthTokenFromJSON
 {
     public string authToken = "";
+}
+
+[Serializable]
+public class Transaction
+{
+    public string message;
+    public string createdAt;
+    public string type;
+    public string chips;
+    public string cash;
+    /*
+    "beforeBalance"
+    "afterBalance"
+    */
+}
+
+[Serializable]
+public class StatusStandard<T>
+{
+    public string status;
+    public List<T> result;
+    public int statusCode;
 }

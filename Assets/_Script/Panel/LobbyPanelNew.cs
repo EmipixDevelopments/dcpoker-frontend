@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using BestHTTP.SocketIO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -64,7 +65,6 @@ public class LobbyPanelNew : MonoBehaviour
     {
         InitButtonsAndToggles();
     }
-
 
     private void OnEnable()
     {

@@ -24,10 +24,11 @@ public class PanelProfileNew : MonoBehaviour
     [SerializeField] private GameObject _panelChangePassword;
     [SerializeField] private GameObject _panelInformationAboutMoneyOnAccountPopup;
     [Space] 
-    [SerializeField] private MessageBubble _messageBubble;
+    [SerializeField] private MessageBubble _messageBubbleElement;
     [SerializeField] private Transform _infoListTransform;
     
-    private List<MessageBubble> _messageBubbles;
+    //private List<MessageBubble> _messageBubbles;
+    private TableContainer<MessageBubble> _messageBubbleTableContainer;
     private List<string> _massagesReadId;
     private bool _isNeedMessageUpdate = true;
     private RectTransform _rectTransform;
@@ -35,7 +36,8 @@ public class PanelProfileNew : MonoBehaviour
     private void Start()
     {
         _rectTransform = gameObject.GetComponent<RectTransform>();
-        _messageBubbles = new List<MessageBubble>();
+        //_messageBubbles = new List<MessageBubble>();
+        _messageBubbleTableContainer = new TableContainer<MessageBubble>(_infoListTransform,_messageBubbleElement);
         _massagesReadId = new List<string>();
         UpdateMessages();
         
@@ -147,60 +149,78 @@ public class PanelProfileNew : MonoBehaviour
     public void UpdateMessages()
     {
         var uiManager = UIManager.Instance;
-        if(_messageBubbles == null)
+        if (_messageBubbleTableContainer == null)
             return;
 
         var messages = uiManager.LobbyPanelNew.Messages;
         messages.CheckMessage();
-        
+
         var messagesDetails = messages.GetMessagesDetails();
+        var messagesResult = messagesDetails.result;
+
         var amount = 0;
-        
-        foreach (var result in messagesDetails.result)
+        foreach (var t in messagesResult)
         {
-            if (result.read || _massagesReadId.Contains(result._id)) 
+            if (t.read || _massagesReadId.Contains(t._id) || t.userId == null/* && t.userId._id != UIManager.Instance.assetOfGame.SavedLoginData.PlayerId*/) 
                 continue;
             
-            if (_messageBubbles.Count - 1 < amount)
-                CreateNewBubble();
-
-            _messageBubbles[amount].SetData(result);
-            _messageBubbles[amount].gameObject.SetActive(true);
-            
+            _messageBubbleTableContainer.GetElement(amount).SetData(t);
             amount++;
         }
-        foreach (var messageBubble in _messageBubbles)
-        {
-            var equalMessage = _messageBubbles.Find(result => result.IsEqual(messageBubble) && result != messageBubble);
-            if (equalMessage != null)
-            {
-                equalMessage.SetData(null);
-                equalMessage.gameObject.SetActive(false);
-            }
-
-            if (_massagesReadId.Contains(messageBubble.GetMessageId()) || messageBubble.IsRead())
-            {
-                messageBubble.gameObject.SetActive(false);
-            }
-        }
+        _messageBubbleTableContainer.HideFromIndex(amount);
         
-        //update ui 
-        _isNeedMessageUpdate = false;
         LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
+        _isNeedMessageUpdate = false;
         uiManager.LobbyPanelNew.UpdatePanel();
     }
 
+    /*var amount = 0;
+    
+    foreach (var result in messagesDetails.result)
+    {
+        if (result.read || _massagesReadId.Contains(result._id)) 
+            continue;
+        
+        if (_messageBubbles.Count - 1 < amount)
+            CreateNewBubble();
+
+        _messageBubbles[amount].SetData(result);
+        _messageBubbles[amount].gameObject.SetActive(true);
+     
+        amount++;
+    }
+    foreach (var messageBubble in _messageBubbles)
+    {
+        var equalMessage = _messageBubbles.Find(result => result.IsEqual(messageBubble) && result != messageBubble);
+        if (equalMessage != null)
+        {
+            equalMessage.SetData(null);
+            equalMessage.gameObject.SetActive(false);
+        }
+
+        if (_massagesReadId.Contains(messageBubble.GetMessageId()) || messageBubble.IsRead())
+        {
+            messageBubble.gameObject.SetActive(false);
+        }
+    }
+    
+    //update ui 
+    _isNeedMessageUpdate = false;
+    LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
+    uiManager.LobbyPanelNew.UpdatePanel();
+}
+*/
     public void AddMessageToRead(string _id)
     {
         _massagesReadId.Add(_id);
         var messages = UIManager.Instance.LobbyPanelNew.Messages;
         messages.SetMessagesReadId(_massagesReadId);
     }
-    
+    /*
     private void CreateNewBubble()
     {
-        var messageBubble = Instantiate(_messageBubble, _infoListTransform);
+        var messageBubble = Instantiate(_messageBubbleElement, _infoListTransform);
         messageBubble.Init(this);
         _messageBubbles.Add(messageBubble);
-    }
+    }*/
 }

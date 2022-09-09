@@ -46,10 +46,6 @@ public class Messages : MonoBehaviour
         {
             UpdateMessageInfo();
         }
-        else
-        {
-            UIManager.Instance.DisplayMessagePanel(_messagesDetails.message);
-        }
     }
 
     public void SetMessagesReadId(List<string> messagesReadId)
@@ -62,8 +58,7 @@ public class Messages : MonoBehaviour
         if(_messagesDetails == null)
             return;
         
-        var amount = _messagesDetails.result.Count(result => !result.read && (_messagesReadId == null || !_messagesReadId.Contains(result._id))
-        && result.userId != null);
+        var amount = _messagesDetails.result.Count(result => !result.read && (_messagesReadId == null || !_messagesReadId.Contains(result._id)));
         var isNeedUpdate = amount > 0;
         
         _notificationBubbleGameObject.SetActive(isNeedUpdate);

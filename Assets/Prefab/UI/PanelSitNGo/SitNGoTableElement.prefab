@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1062270444486952676}
   - component: {fileID: 1055373773517984946}
+  - component: {fileID: 2627220656998408015}
+  - component: {fileID: 3644082942838462794}
   m_Layer: 5
   m_Name: button
   m_TagString: Untagged
@@ -82,6 +84,42 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!222 &2627220656998408015
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753566232782807332}
+  m_CullTransparentMesh: 0
+--- !u!114 &3644082942838462794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753566232782807332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &4667368862952024803
 GameObject:
   m_ObjectHideFlags: 0
@@ -681,6 +719,10 @@ MonoBehaviour:
   _blindsText: {fileID: 4667368863816311040}
   _buyInText: {fileID: 4667368862952024801}
   _statusText: {fileID: 4667368863272657695}
+  _registerButtonGameObject: {fileID: 3722805425486914023}
+  _lateRegisterButtonGameObject: {fileID: 5122147932973388602}
+  _openButtonGameObject: {fileID: 4022518572336389908}
+  _rightButton: {fileID: 1055373773517984946}
 --- !u!114 &4667368864315322261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1290,8 +1332,15 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4841557796724486827, guid: 47c79e110a8c04960bd9d63c979deff5, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 47c79e110a8c04960bd9d63c979deff5, type: 3}
+--- !u!1 &3722805425486914023 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3600170689330017804, guid: 47c79e110a8c04960bd9d63c979deff5,
+    type: 3}
+  m_PrefabInstance: {fileID: 170133918329247723}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6291939449927116128 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6128583745981035147, guid: 47c79e110a8c04960bd9d63c979deff5,
@@ -1559,8 +1608,15 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4841557796724486827, guid: 47c79e110a8c04960bd9d63c979deff5, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 47c79e110a8c04960bd9d63c979deff5, type: 3}
+--- !u!1 &4022518572336389908 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3600170689330017804, guid: 47c79e110a8c04960bd9d63c979deff5,
+    type: 3}
+  m_PrefabInstance: {fileID: 442684815692294424}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &5992497855621946259 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6128583745981035147, guid: 47c79e110a8c04960bd9d63c979deff5,
@@ -1964,8 +2020,15 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4841557796724486827, guid: 7bcfa79dca7e04eca9bffce4331aeb3d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 7bcfa79dca7e04eca9bffce4331aeb3d, type: 3}
+--- !u!1 &5122147932973388602 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3600170689330017804, guid: 7bcfa79dca7e04eca9bffce4331aeb3d,
+    type: 3}
+  m_PrefabInstance: {fileID: 8566944090613654838}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &2589284121033709501 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6128583745981035147, guid: 7bcfa79dca7e04eca9bffce4331aeb3d,
