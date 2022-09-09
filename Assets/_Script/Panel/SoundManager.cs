@@ -254,6 +254,8 @@ public class SoundManager : MonoBehaviour
 
     public void Vibrate()
     {
+        //Vibration is discomfort
+        //Better switch to native vibration
 #if UNITY_ANDROID || UNITY_IOS
         if (PlayerPrefs.GetInt("Vibration", 1) == 1)
         {
@@ -261,7 +263,23 @@ public class SoundManager : MonoBehaviour
         }
 #endif
     }
-
+    
+    //todo Move PlayerPrefs Logic (all classes) to SaveComponent
+    public void SetSoundActive(bool active)
+    {
+        if (!active)
+        {
+            PlayerPrefs.SetInt("bgMusic", 0);
+            PlayerPrefs.SetInt("Sound", 0);
+            UIManager.Instance.SoundManager.stopBgSound();
+        }
+        else
+        {
+            PlayerPrefs.SetInt("bgMusic", 1);
+            PlayerPrefs.SetInt("Sound", 1);
+            UIManager.Instance.SoundManager.PlayBgSound();
+        }
+    }
     #endregion
 
     #region PRIVATE_METHODS

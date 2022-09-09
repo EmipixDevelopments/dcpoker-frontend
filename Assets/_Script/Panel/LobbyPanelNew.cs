@@ -18,6 +18,7 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private Button _howToPlayButton;
     [SerializeField] private Button _aboutButton;
     [SerializeField] private Button _supportButton;
+    [SerializeField] private ToggleImageNormal _soundToggleImageNormal;
     [Header("Bottom panel buttons")]
     [SerializeField] private Button _termsOfServiceButton;
     [SerializeField] private Button _privacyPolicyButton;
@@ -40,6 +41,7 @@ public class LobbyPanelNew : MonoBehaviour
 
     [Space] public Messages Messages;
     [SerializeField] private Background Background;
+    
 
     private enum LobbyPanel
     {
@@ -67,7 +69,15 @@ public class LobbyPanelNew : MonoBehaviour
     private void OnEnable()
     {
         SwitchPanel(_currentPanel);
+        
         //SwitchAtlHome(true);
+        
+        _soundToggleImageNormal.AddListener(OnChangeSoundToggle);
+    }
+
+    private void OnDisable()
+    {
+        _soundToggleImageNormal.RemoveListener(OnChangeSoundToggle);
     }
 
     public void UpdatePanel() 
@@ -86,6 +96,8 @@ public class LobbyPanelNew : MonoBehaviour
     #region Menu
     private void InitButtonsAndToggles()
     {
+        // Idk Why This Need? (Remove)
+        
         // init
         // clear all listeners
         _tournamentsToggle.onValueChanged.RemoveAllListeners();
@@ -122,8 +134,16 @@ public class LobbyPanelNew : MonoBehaviour
         _termsOfServiceButton.onClick.AddListener(SwitchAtTermsOfService);
         _privacyPolicyButton.onClick.AddListener(SwitchAtPrivacyPolicy);
         _responsibleGamingButton.onClick.AddListener(SwitchAtResponsibleGaming);
+        
+        _soundToggleImageNormal.SetActive(PlayerPrefs.GetInt("Sound") > 0);
     }
+    
 
+    private void OnChangeSoundToggle(bool active)
+    {
+        UIManager.Instance.SoundManager.SetSoundActive(active);;
+    }
+    
     private void SwitchPanel(LobbyPanel nextWindow)
     {
         Messages.CheckMessage();
