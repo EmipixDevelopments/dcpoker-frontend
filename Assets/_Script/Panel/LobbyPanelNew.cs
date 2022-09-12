@@ -356,4 +356,10 @@ public class LobbyPanelNew : MonoBehaviour
     {
         LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
     }
+
+    public void UpdateAccountUi()
+    {
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_panelMyAccount.GetComponent<RectTransform>());
+        //_panelMyAccount.
+    }
 }

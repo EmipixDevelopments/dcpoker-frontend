@@ -161,7 +161,7 @@ public class PanelProfileNew : MonoBehaviour
         var amount = 0;
         foreach (var t in messagesResult)
         {
-            if (t.read || _massagesReadId.Contains(t._id) || t.userId == null/* && t.userId._id != UIManager.Instance.assetOfGame.SavedLoginData.PlayerId*/) 
+            if (t.read || _massagesReadId.Contains(t._id) || t.userId!= null && t.userId._id ==  UIManager.Instance.assetOfGame.SavedLoginData.PlayerId)
                 continue;
             
             _messageBubbleTableContainer.GetElement(amount).SetData(t);
@@ -169,9 +169,17 @@ public class PanelProfileNew : MonoBehaviour
         }
         _messageBubbleTableContainer.HideFromIndex(amount);
         
-        LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
+        /*LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
         _isNeedMessageUpdate = false;
-        uiManager.LobbyPanelNew.UpdatePanel();
+        uiManager.LobbyPanelNew.UpdatePanel();*/
+        UpdateUi();
+    }
+
+    private void UpdateUi()
+    {
+        //UIManager.Instance.LobbyPanelNew.
+        LayoutRebuilder.MarkLayoutForRebuild(_rectTransform);
+        UIManager.Instance.LobbyPanelNew.UpdateUi();
     }
 
     /*var amount = 0;
