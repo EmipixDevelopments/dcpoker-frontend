@@ -1,6 +1,8 @@
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class TableContainer<T> where T : MonoBehaviour
 {
@@ -9,12 +11,16 @@ public class TableContainer<T> where T : MonoBehaviour
     private Transform _container;
     private T _element;
 
-    public TableContainer(Transform container, T element)
+    private Action<T> _initAction;
+
+    public TableContainer(Transform container, T element, Action<T> initAction )
     {
         _list = new List<T>();
         
         _container = container;
         _element = element;
+
+        _initAction = initAction;
     }
 
     public T GetElement(int index)
@@ -22,7 +28,10 @@ public class TableContainer<T> where T : MonoBehaviour
         while (_list.Count <= index)
             CreateElement();
 
-        return _list[index];
+        var result = _list[index];
+        result.gameObject.SetActive(true);
+        
+        return result;
     }
 
     public void HideFromIndex(int index)
@@ -52,7 +61,10 @@ public class TableContainer<T> where T : MonoBehaviour
 
     private void CreateElement()
     {
-        _list.Add(Object.Instantiate(_element, _container));
+        var element = Object.Instantiate(_element, _container);
+        _initAction?.Invoke(element);
+        
+        _list.Add(element);
     }
 }
 

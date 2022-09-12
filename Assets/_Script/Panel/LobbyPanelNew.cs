@@ -41,7 +41,8 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private PanelBottom _panelBottomMenu;
 
     [Space] public Messages Messages;
-    [SerializeField] private Background Background;
+    [SerializeField] private Background _background;
+    [SerializeField] private RectTransform _content;
     
 
     private enum LobbyPanel
@@ -204,8 +205,8 @@ public class LobbyPanelNew : MonoBehaviour
         
         //todo move to false always
         var isHomePage = _currentPanel == LobbyPanel.Home;
-        Background.SetActiveBackgroundPanel( !isHomePage );
-        Background.SetActiveChipsBottomImage( isHomePage || (int)_currentPanel > 6 );
+        _background.SetActiveBackgroundPanel( !isHomePage );
+        _background.SetActiveChipsBottomImage( isHomePage || (int)_currentPanel > 6 );
         
         _panelBottomMenu.gameObject.SetActive(true);
     }
@@ -350,4 +351,9 @@ public class LobbyPanelNew : MonoBehaviour
         UIManager.Instance.Reset(false);
     }
     #endregion
+
+    public void UpdateUi()
+    {
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
+    }
 }

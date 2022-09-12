@@ -12,7 +12,7 @@ public class PurchaseHistory : MonoBehaviour
 
     private void Start()
     {
-        _purchaseHistoryTableContainer = new TableContainer<PurchaseHistoryElement>(_container, _purchaseHistoryElement);
+        _purchaseHistoryTableContainer = new TableContainer<PurchaseHistoryElement>(_container, _purchaseHistoryElement, null);
     }
 
     private void OnEnable()

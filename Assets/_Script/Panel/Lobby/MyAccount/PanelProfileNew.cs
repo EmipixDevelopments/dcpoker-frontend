@@ -37,7 +37,7 @@ public class PanelProfileNew : MonoBehaviour
     {
         _rectTransform = gameObject.GetComponent<RectTransform>();
         //_messageBubbles = new List<MessageBubble>();
-        _messageBubbleTableContainer = new TableContainer<MessageBubble>(_infoListTransform,_messageBubbleElement);
+        _messageBubbleTableContainer = new TableContainer<MessageBubble>(_infoListTransform,_messageBubbleElement, element => element.Init(this));
         _massagesReadId = new List<string>();
         UpdateMessages();
         

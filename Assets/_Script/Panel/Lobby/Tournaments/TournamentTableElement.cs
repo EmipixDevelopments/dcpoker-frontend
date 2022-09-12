@@ -25,6 +25,8 @@ public class TournamentTableElement : MonoBehaviour
     NormalTournamentDetails.NormalTournamentData _data;
     private getTournamentInfoData _tournamentData;
 
+    private PanelTournaments _panelTournaments;
+
     private void OnEnable()
     {
         _detailInfo.onClick.AddListener(OnTournamentTableSelectButtonTap);
@@ -35,12 +37,12 @@ public class TournamentTableElement : MonoBehaviour
         _detailInfo.onClick.RemoveListener(OnTournamentTableSelectButtonTap);
     }
 
-    public void Init(NormalTournamentDetails.NormalTournamentData data)
+    public void Init(PanelTournaments panelTournaments)
     {
-        UpdateValue(data);
+        _panelTournaments = panelTournaments;
     }
 
-    public void UpdateValue(NormalTournamentDetails.NormalTournamentData data)
+    public void SetData(NormalTournamentDetails.NormalTournamentData data)
     {
         _data = data;
         _dateTimeText.text = $"{CheckStringData(ParsingDateTime(data.tournamentStartTime))}";
@@ -64,8 +66,6 @@ public class TournamentTableElement : MonoBehaviour
         _buyInText.color = color;
         _statusInText.color = color;
     }
-
-    //public NormalTournamentDetails.NormalTournamentData GetData() { return _tournamentTableElementData; }
 
     private void OnTournamentTableSelectButtonTap()
     {
@@ -142,8 +142,6 @@ public class TournamentTableElement : MonoBehaviour
 
     private void UpdateButton()
     {
-        ResetButton();
-        
         UIManager.Instance.SocketGameManager.getTournamentInfo(_data.tournamentId, _data.pokerGameType, (socket, packet, args) =>
         {
             Debug.Log("getSngTournamentInfo  : " + packet.ToString());
@@ -152,42 +150,37 @@ public class TournamentTableElement : MonoBehaviour
             var source = arr.getString(arr.length() - 1);
             PokerEventResponse<getTournamentInfoData> resp = JsonUtility.FromJson<PokerEventResponse<getTournamentInfoData>>(source);
 
-            if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
-            {
-                var result = resp.result;
-                _tournamentData = result;
-            }
-            else
-            {
-                UIManager.Instance.DisplayMessagePanel(resp.message);
+            if (!resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
                 return;
-            }
-        });
-        
-        if(_tournamentData == null)
-            return;
-
-        if (_data.status == "Running")
-        {
-            if (_tournamentData.isRegistered)
+            
+            var result = resp.result;
+            _tournamentData = result;
+            
+            ResetButton();
+            
+            if (_tournamentData.status == "Running")
             {
-                _openButtonGameObject.gameObject.SetActive(true);
-                _rightButton.onClick.AddListener(OnOpenTournamentRoom);
-                return;
-            }
+                if (_tournamentData.isRegistered)
+                {
+                    _openButtonGameObject.gameObject.SetActive(true);
+                    _rightButton.onClick.AddListener(OnOpenTournamentRoom);
+                    return;
+                }
 
-            if (IsLateRegister())
+                if (IsLateRegister())
+                {
+                    _rightButton.onClick.AddListener(OnRegisterButton);
+                    _lateRegisterButtonGameObject.gameObject.SetActive(true);
+                }
+            }
+    
+            if(!_tournamentData.isRegistered)
             {
+                _registerButtonGameObject.gameObject.SetActive(true);
                 _rightButton.onClick.AddListener(OnRegisterButton);
-                _lateRegisterButtonGameObject.gameObject.SetActive(true);
             }
-        }
-        
-        if(_tournamentData.isRegistered)
-        {
-            _registerButtonGameObject.gameObject.SetActive(true);
-            _rightButton.onClick.AddListener(OnRegisterButton);
-        }
+            
+        });
     }
 
     private bool IsLateRegister()
@@ -221,7 +214,13 @@ public class TournamentTableElement : MonoBehaviour
 
     private void RegisterTournamentResponse(Socket socket, Packet packet, object[] args)
     {
-        Debug.LogError("Register"+packet.ToString());
+        Debug.Log("Register Tournament: "+packet.ToString());
+        var statusMessageStandard = JsonUtility.FromJson<StatusMessageStandard<RoomId>>(packet.ToString());
         
+        if(!statusMessageStandard.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+            return;
+        
+        UIManager.Instance.DisplayMessagePanel(statusMessageStandard.message);  
+        _panelTournaments.UpdateTable();
     }
 }

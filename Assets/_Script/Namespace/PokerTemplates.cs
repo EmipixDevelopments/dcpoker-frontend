@@ -1800,9 +1800,24 @@ public class Transaction
 }
 
 [Serializable]
+public class RoomId
+{
+    public string roomId;
+}
+
+[Serializable]
 public class StatusStandard<T>
 {
     public string status;
     public List<T> result;
+    public int statusCode;
+}
+
+[Serializable]
+public class StatusMessageStandard<T>
+{
+    public string status;
+    public List<T> result;
+    public string message;
     public int statusCode;
 }

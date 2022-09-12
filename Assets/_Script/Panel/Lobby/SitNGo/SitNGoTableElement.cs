@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using BestHTTP.SocketIO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,6 +23,9 @@ public class SitNGoTableElement : MonoBehaviour
     private Button _button;
     TournamentRoomObject.TournamentRoom _data;
     private getTournamentInfoData _tournamentData;
+
+    private PanelSitNGo _panelSitNGo;
+    
     private void Start()
     {
         _button = GetComponent<Button>();
@@ -38,7 +42,11 @@ public class SitNGoTableElement : MonoBehaviour
         detailsTournament.GetDetailsTournamentButtonTap(_data.id, _data.pokerGameType);
         //detailsTournament.Open();
     }
-    
+
+    public void Init(PanelSitNGo panelSitNGo)
+    {
+        _panelSitNGo = panelSitNGo;
+    }
 
     private void OnDestroy()
     {
@@ -48,14 +56,10 @@ public class SitNGoTableElement : MonoBehaviour
         }
     }
 
-    public void Init(TournamentRoomObject.TournamentRoom data)
-    {
-        UpdateValue(data);
-    }
-
-    public void UpdateValue(TournamentRoomObject.TournamentRoom data)
+    public void SetData(TournamentRoomObject.TournamentRoom data)
     {
         _data = data;
+        
         _seatText.text = $"{CheckStringData(data.seat)}";
         _nameText.text = $"{CheckStringData(data.name)}";
         _typeText.text = $"{CheckStringData(data.type)}";
@@ -65,9 +69,51 @@ public class SitNGoTableElement : MonoBehaviour
 
         UpdateButton();
     }
-
     
-    public TournamentRoomObject.TournamentRoom GetData() { return _data; }
+    private void UpdateButton()
+    {
+        UIManager.Instance.SocketGameManager.getSngTournamentInfo(_data.id, _data.pokerGameType, (socket, packet, args) =>
+        {
+            Debug.Log("getSngTournamentInfo  : " + packet.ToString());
+            UIManager.Instance.HideLoader();
+            JSONArray arr = new JSONArray(packet.ToString());
+            var source = arr.getString(arr.length() - 1);
+            PokerEventResponse<getTournamentInfoData> resp = JsonUtility.FromJson<PokerEventResponse<getTournamentInfoData>>(source);
+
+            if (!resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+                return;
+
+            var result = resp.result;
+            _tournamentData = result;
+            
+            if(_tournamentData == null)
+                return;
+
+            ResetButton();
+            
+            if (_tournamentData.isRegistered)
+            {
+                _openButtonGameObject.gameObject.SetActive(true);
+                _rightButton.onClick.AddListener(OnOpenTournamentRoom);
+                return;
+            }
+
+            if(!_tournamentData.isRegistered)
+            {
+                _registerButtonGameObject.gameObject.SetActive(true);
+                _rightButton.onClick.AddListener(OnRegisterButton);
+            }
+        });
+    }
+    
+    private void ResetButton()
+    {
+        _registerButtonGameObject.gameObject.SetActive(false);
+        _lateRegisterButtonGameObject.gameObject.SetActive(false);
+        _openButtonGameObject.gameObject.SetActive(false);
+        
+        _rightButton.onClick.RemoveAllListeners();
+    }
 
     public void OnTournamentTableSelectButtonTap()
     {
@@ -75,8 +121,7 @@ public class SitNGoTableElement : MonoBehaviour
         UIManager.Instance.gameType = GameType.sng;
         UIManager.Instance.DetailsTournament.GetDetailsTournamentButtonTap(_data.id, _data.pokerGameType);
     }
-
-    //Why might this happen?
+    
     private string CheckStringData(string text)
     {
         if (string.IsNullOrEmpty(text))
@@ -88,117 +133,58 @@ public class SitNGoTableElement : MonoBehaviour
 
     private void OnOpenTournamentRoom()
     {
-        UIManager.Instance.SocketGameManager.JoinTournamentRoom(_tournamentData.id, (socket, packet, args) =>
-        {
-            print("JoinTournamentRoom response: " + packet.ToString());
-
-            JSONArray arr = new JSONArray(packet.ToString());
-            string Source;
-            Source = arr.getString(arr.length() - 1);
-            var resp1 = Source;
-
-            PokerEventResponse<RoomsListing.Room> JoinTournamentRoomResp = JsonUtility.FromJson<PokerEventResponse<RoomsListing.Room>>(resp1);
-            Debug.LogError(JoinTournamentRoomResp.ToString());
-            if (JoinTournamentRoomResp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+        var uiManager = UIManager.Instance;
+        uiManager.SocketGameManager.getSngTournamentTables(_data.id,_data.pokerGameType,
+            (socket, packet, args) =>
             {
-                var room = JoinTournamentRoomResp.result;
-                Constants.Poker.TableId = room.roomId;
-                UIManager.Instance.GameScreeen.SetRoomDataAndPlay(room);
 
-                UIManager.Instance.DisplayLoader("");
-                UIManager.Instance.LobbyPanelNew.Close();
-                UIManager.Instance.GameScreeen.Open();
-                
-            }
-            else
-            {
-                UIManager.Instance.DisplayMessagePanel(JoinTournamentRoomResp.message);
-            }
-        });
+                Debug.Log("getSngTournamentTables  : " + packet.ToString());
+
+                uiManager.HideLoader();
+
+                JSONArray arr = new JSONArray(packet.ToString());
+                string Source;
+                Source = arr.getString(arr.length() - 1);
+                var resp1 = Source;
+
+                PokerEventResponse<RoomsListing.Room> resp =
+                    JsonUtility.FromJson<PokerEventResponse<RoomsListing.Room>>(resp1);
+
+                if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+                {
+                    var room = resp.result;
+                    Constants.Poker.TableId = room.roomId;
+                    uiManager.GameScreeen.SetRoomDataAndPlay(room);
+
+                    uiManager.DisplayLoader("");
+                    uiManager.LobbyPanelNew.Close();
+                    uiManager.GameScreeen.Open();
+                }
+                else
+                {
+                    uiManager.DisplayMessagePanel(resp.message);
+                }
+            });
     }
 
     private void OnRegisterButton()
     {
-        
+        var uiManager = UIManager.Instance;
+        uiManager.SocketGameManager.getRegisterSngTournament(_tournamentData.id, GameType.sng.ToString(), OnRegisterResponse);
     }
 
-    private void OnLateRegisterButton()
+    private void OnRegisterResponse(Socket socket, Packet packet, object[] args)
     {
+        Debug.Log("Register SnG: "+packet.ToString());          
+        JSONArray arr = new JSONArray(packet.ToString());
+        var source = arr.getString(arr.length() - 1);           
+        var statusMessageStandard = JsonUtility.FromJson<StatusMessageStandard<RoomId>>(source);
         
-    }
-
-    private void ResetButton()
-    {
-        _registerButtonGameObject.gameObject.SetActive(false);
-        _lateRegisterButtonGameObject.gameObject.SetActive(false);
-        _openButtonGameObject.gameObject.SetActive(false);
-        
-        _rightButton.onClick.RemoveAllListeners();
-    }
-    
-    private void UpdateButton()
-    {
-        ResetButton();
-        
-        UIManager.Instance.SocketGameManager.getSngTournamentInfo(_data.tournamentId, _data.pokerGameType, (socket, packet, args) =>
-        {
-            Debug.Log("getSngTournamentInfo  : " + packet.ToString());
-            UIManager.Instance.HideLoader();
-            JSONArray arr = new JSONArray(packet.ToString());
-            var source = arr.getString(arr.length() - 1);
-            PokerEventResponse<getTournamentInfoData> resp = JsonUtility.FromJson<PokerEventResponse<getTournamentInfoData>>(source);
-
-            if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
-            {
-                var result = resp.result;
-                _tournamentData = result;
-            }
-            else
-            {
-                UIManager.Instance.DisplayMessagePanel(resp.message);
-                return;
-            }
-        });
-        
-        if(_tournamentData == null)
+        if(!statusMessageStandard.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
             return;
-
-        if (_data.status == "Running")
-        {
-            if (_tournamentData.isRegistered)
-            {
-                _openButtonGameObject.gameObject.SetActive(true);
-                _rightButton.onClick.AddListener(OnOpenTournamentRoom);
-                return;
-            }
-
-            if (IsLateRegister())
-            {
-                _rightButton.onClick.AddListener(OnRegisterButton);
-                _lateRegisterButtonGameObject.gameObject.SetActive(true);
-            }
-        }
         
-        if(_tournamentData.isRegistered)
-        {
-            _registerButtonGameObject.gameObject.SetActive(true);
-            _rightButton.onClick.AddListener(OnRegisterButton);
-        }
-    }
-
-    private bool IsLateRegister()
-    {
-        /*
-        if (!string.IsNullOrEmpty(_tournamentData.dateTime))
-        {
-            Debug.LogError(_tournamentData.dateTime);
-            var dateTime = ParseDateTime(_tournamentData.dateTime);
-            int lastTileForRegister = _tournamentData.lateRegistrationLevel * _tournamentData.bindLevelRizeTime;
-            if (dateTime < DateTime.UtcNow && dateTime.AddMinutes(lastTileForRegister) > DateTime.UtcNow)
-            {
-                return true;
-            }
-        }*/
-        return false;
+        UIManager.Instance.DisplayMessagePanel(statusMessageStandard.message);
+        
+        _panelSitNGo.UpdateTable();
     }
 }
