@@ -81,26 +81,8 @@ public class LobbyPanelNew : MonoBehaviour
         _soundToggleImageNormal.RemoveListener(OnChangeSoundToggle);
     }
 
-    public void UpdatePanel() 
+    private void OnDestroy()
     {
-        SwitchPanel(_currentPanel);
-    }
-
-    public void OpenWitchdawPanel() 
-    {
-        _accountInfoInToggle.isOn = true;
-        _currentPanel = LobbyPanel.MyAccount;
-        UpdatePanel();
-        _panelMyAccount.OpenWithdraw();
-    }
-
-    #region Menu
-    private void InitButtonsAndToggles()
-    {
-        // Idk Why This Need? (Remove)
-        
-        // init
-        // clear all listeners
         _tournamentsToggle.onValueChanged.RemoveAllListeners();
         _sitNGoToggle.onValueChanged.RemoveAllListeners();
         _texasHoldemToggle.onValueChanged.RemoveAllListeners();
@@ -117,7 +99,24 @@ public class LobbyPanelNew : MonoBehaviour
         _termsOfServiceButton.onClick.RemoveAllListeners();
         _privacyPolicyButton.onClick.RemoveAllListeners();
         _responsibleGamingButton.onClick.RemoveAllListeners();
+    }
 
+    public void UpdatePanel() 
+    {
+        SwitchPanel(_currentPanel);
+    }
+
+    public void OpenWitchdawPanel() 
+    {
+        _accountInfoInToggle.isOn = true;
+        _currentPanel = LobbyPanel.MyAccount;
+        UpdatePanel();
+        _panelMyAccount.OpenWithdraw();
+    }
+
+    #region Menu
+    private void InitButtonsAndToggles()
+    {
         // set listeners
         _tournamentsToggle.onValueChanged.AddListener(SwitchAtTournaments);
         _sitNGoToggle.onValueChanged.AddListener(SwitchAtSitNGo);
@@ -197,12 +196,22 @@ public class LobbyPanelNew : MonoBehaviour
                 break;
         }
         _currentPanel = nextWindow;
+        ShowBottomMenu();
 
         // need open in next frame for other panels to be opened
-        StartCoroutine(ShowBottomMenu());
+        //StartCoroutine(ShowBottomMenu());
     }
 
-    IEnumerator ShowBottomMenu()
+    private void ShowBottomMenu()
+    {
+        var isHomePage = _currentPanel == LobbyPanel.Home;
+        _background.SetActiveBackgroundPanel( !isHomePage );
+        _background.SetActiveChipsBottomImage( isHomePage || (int)_currentPanel > 6 );
+        
+        _panelBottomMenu.gameObject.SetActive(true);
+    }
+
+    /*IEnumerator ShowBottomMenu()
     {
         yield return new WaitForEndOfFrame();
         
@@ -212,7 +221,7 @@ public class LobbyPanelNew : MonoBehaviour
         _background.SetActiveChipsBottomImage( isHomePage || (int)_currentPanel > 6 );
         
         _panelBottomMenu.gameObject.SetActive(true);
-    }
+    }*/
 
     private void SwitchAtlHome(bool run)
     {

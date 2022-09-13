@@ -17,6 +17,10 @@ public class Banner : MonoBehaviour
     private Action _onButtonClick;
     private BannerDataRequest.BannerData _bannerData;
 
+    private Texture2D _bannerTexture;
+    private Sprite _bannerSprite;
+    private bool _lock;
+
     private void Start()
     {
         _button.onClick.RemoveAllListeners();
@@ -44,6 +48,9 @@ public class Banner : MonoBehaviour
 
     private void UpdateBanner()
     {
+        if(_lock)
+            return;
+        
         UIManager.Instance.SocketGameManager.Banner(_bannerPosition.ToString(), (socket, packet, args) =>
         {
             print("Banners: " + packet.ToString());
@@ -63,16 +70,29 @@ public class Banner : MonoBehaviour
 
     IEnumerator DownloadAndShowImage(string mediaUrl)
     {
+        _lock = true;
+
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(mediaUrl);
+        
         yield return request.SendWebRequest();
         if (request.isNetworkError || request.isHttpError)
             Debug.Log(request.error);
         else
         {
-            Texture2D tex = ((DownloadHandlerTexture)request.downloadHandler).texture;
-            Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(tex.width / 2, tex.height / 2));
-            _image.overrideSprite = sprite;
+            if (_bannerTexture != null)
+            {
+                Destroy(_bannerTexture);
+                Destroy(_bannerSprite); 
+            }
+            
+            _bannerTexture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+            _bannerSprite = Sprite.Create(_bannerTexture, new Rect(0, 0, _bannerTexture.width, _bannerTexture.height), new Vector2(_bannerTexture.width / 2, _bannerTexture.height / 2));
+            _image.overrideSprite = _bannerSprite;
         }
+
+        request.Abort();
+        _lock = false;
+        
     }
 
     #region Tournament Banner Logic

@@ -53,7 +53,7 @@ public class HomeTournamentTableList : MonoBehaviour
         JSONArray arr = new JSONArray(packet.ToString());
         string Source = arr.getString(arr.length() - 1);
         var touramentsDetail = JsonUtility.FromJson<NormalTournamentDetails>(Source);
-
+        
         if (!touramentsDetail.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
         {
             UIManager.Instance.DisplayMessagePanel(touramentsDetail.message, null);
