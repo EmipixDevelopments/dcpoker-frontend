@@ -308,6 +308,10 @@ namespace Constants
         public const string PokerPlayerStatusLeft = "Left";
     }
 
+    public class PokerStatus
+    {
+        public static string RunningStatus = "Running";
+    }
     /// <summary>
     /// Poker events
     /// </summary>
@@ -546,6 +550,8 @@ namespace Constants
 
         public static string Transactions = "transactions";
     }
+    
+    
     
 
     /// <summary>

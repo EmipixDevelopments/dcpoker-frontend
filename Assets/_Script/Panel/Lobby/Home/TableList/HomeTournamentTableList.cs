@@ -66,7 +66,9 @@ public class HomeTournamentTableList : MonoBehaviour
         {
             if ( i < tableData.Count)
             {
-                _homeBigTableElements[i].SetInfo(tableData[i]);
+                var element = _homeBigTableElements[i];
+                element.SetInfo(tableData[i]);
+                element.gameObject.SetActive(true);
             }
             else
             {

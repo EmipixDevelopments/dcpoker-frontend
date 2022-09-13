@@ -12,9 +12,13 @@ public class ToggleImageNormal : MonoBehaviour
 
     private Toggle _toggle;
 
-    private void Start()
+    private void OnEnable()
     {
         _toggle = GetComponent<Toggle>();
+    }
+
+    private void Start()
+    {
         if (_toggle == null)
         {
             Debug.LogError("Toggle not find in : " + gameObject.name);

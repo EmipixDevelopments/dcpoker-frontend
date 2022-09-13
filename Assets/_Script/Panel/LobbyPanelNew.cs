@@ -142,7 +142,10 @@ public class LobbyPanelNew : MonoBehaviour
 
     private void OnChangeSoundToggle(bool active)
     {
-        UIManager.Instance.SoundManager.SetSoundActive(active);;
+        var uiManager = UIManager.Instance;
+        
+        if(uiManager)
+            uiManager.SoundManager.SetSoundActive(active);;
     }
     
     private void SwitchPanel(LobbyPanel nextWindow)

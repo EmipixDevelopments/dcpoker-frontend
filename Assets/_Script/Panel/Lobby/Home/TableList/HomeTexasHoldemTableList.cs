@@ -76,7 +76,9 @@ public class HomeTexasHoldemTableList : MonoBehaviour
         {
             if ( i < tableData.Count)
             {
-                _homeSmallTableElements[i].SetInfo(tableData[i]);
+                var element = _homeSmallTableElements[i];
+                element.SetInfo(tableData[i]);
+                element.gameObject.SetActive(true);
             }
             else
             {

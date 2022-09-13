@@ -19,6 +19,7 @@ public class TournamentTableElement : MonoBehaviour
     [SerializeField] private GameObject _lateRegisterButtonGameObject; 
     [SerializeField] private GameObject _registerButtonGameObject; 
     [SerializeField] private GameObject _openButtonGameObject; 
+    [SerializeField] private GameObject _unregisterButtonGameObject;
     [Space]
     [SerializeField] private TableListColors _tableListColors;
     
@@ -136,6 +137,7 @@ public class TournamentTableElement : MonoBehaviour
         _registerButtonGameObject.gameObject.SetActive(false);
         _lateRegisterButtonGameObject.gameObject.SetActive(false);
         _openButtonGameObject.gameObject.SetActive(false);
+        _unregisterButtonGameObject.gameObject.SetActive(false);
         
         _rightButton.onClick.RemoveAllListeners();
     }
@@ -179,6 +181,11 @@ public class TournamentTableElement : MonoBehaviour
                 _registerButtonGameObject.gameObject.SetActive(true);
                 _rightButton.onClick.AddListener(OnRegisterButton);
             }
+            else
+            {
+                _unregisterButtonGameObject.gameObject.SetActive(true);
+                _rightButton.onClick.AddListener(OnUnregisterButton);
+            }
             
         });
     }
@@ -207,18 +214,43 @@ public class TournamentTableElement : MonoBehaviour
 
     private void OnRegisterButton()
     {
-        var socketGameManager = UIManager.Instance.SocketGameManager;
-        
-        socketGameManager.getRegisterTournament(_tournamentData.id,GameType.Touranment.ToString(),RegisterTournamentResponse);
+        UIManager.Instance.SocketGameManager.getRegisterTournament(_tournamentData.id,GameType.Touranment.ToString(),RegisterTournamentResponse);
     }
 
     private void RegisterTournamentResponse(Socket socket, Packet packet, object[] args)
     {
         Debug.Log("Register Tournament: "+packet.ToString());
-        var statusMessageStandard = JsonUtility.FromJson<StatusMessageStandard<RoomId>>(packet.ToString());
+        JSONArray arr = new JSONArray(packet.ToString());
+        var source = arr.getString(arr.length() - 1);
+        var statusMessageStandard = JsonUtility.FromJson<StatusMessageStandard<RoomId>>(source);
         
         if(!statusMessageStandard.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+        {
+            UIManager.Instance.DisplayMessagePanel(statusMessageStandard.message);  
             return;
+        }
+        
+        UIManager.Instance.DisplayMessagePanel(statusMessageStandard.message);  
+        _panelTournaments.UpdateTable();
+    }
+
+    private void OnUnregisterButton()
+    {
+        UIManager.Instance.SocketGameManager.getUnRegisterTournament(_tournamentData.id,GameType.Touranment.ToString(),UnregisterTournamentResponse);
+    }
+    
+    private void UnregisterTournamentResponse(Socket socket, Packet packet, object[] args)
+    {
+        Debug.Log("Unregister Tournament: "+packet.ToString());
+        JSONArray arr = new JSONArray(packet.ToString());
+        var source = arr.getString(arr.length() - 1);
+        var statusMessageStandard = JsonUtility.FromJson<StatusMessageStandard<PlayerId>>(source);
+        
+        if(!statusMessageStandard.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+        {
+            UIManager.Instance.DisplayMessagePanel(statusMessageStandard.message);  
+            return;
+        }
         
         UIManager.Instance.DisplayMessagePanel(statusMessageStandard.message);  
         _panelTournaments.UpdateTable();

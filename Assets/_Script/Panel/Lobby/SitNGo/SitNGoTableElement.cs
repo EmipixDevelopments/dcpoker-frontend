@@ -16,11 +16,13 @@ public class SitNGoTableElement : MonoBehaviour
     [SerializeField] private GameObject _registerButtonGameObject;
     [SerializeField] private GameObject _lateRegisterButtonGameObject;
     [SerializeField] private GameObject _openButtonGameObject;
+    [SerializeField] private GameObject _unregisterButtonGameObject;
 
     [Space]
     [SerializeField] private Button _rightButton;
+    [SerializeField] private Button _infoButton;
 
-    private Button _button;
+    //private Button _button;
     TournamentRoomObject.TournamentRoom _data;
     private getTournamentInfoData _tournamentData;
 
@@ -28,9 +30,7 @@ public class SitNGoTableElement : MonoBehaviour
     
     private void Start()
     {
-        _button = GetComponent<Button>();
-        _button.onClick.RemoveAllListeners();
-        _button.onClick.AddListener(OnTournamentTableSelectButtonTap);
+        _infoButton.onClick.AddListener(OnTournamentTableSelectButtonTap);
     }
 
     private void OnClickRegisterGreenButton()
@@ -46,14 +46,6 @@ public class SitNGoTableElement : MonoBehaviour
     public void Init(PanelSitNGo panelSitNGo)
     {
         _panelSitNGo = panelSitNGo;
-    }
-
-    private void OnDestroy()
-    {
-        if (_button)
-        {
-            _button.onClick.RemoveAllListeners();
-        }
     }
 
     public void SetData(TournamentRoomObject.TournamentRoom data)
@@ -91,18 +83,24 @@ public class SitNGoTableElement : MonoBehaviour
 
             ResetButton();
             
-            if (_tournamentData.isRegistered)
-            {
-                _openButtonGameObject.gameObject.SetActive(true);
-                _rightButton.onClick.AddListener(OnOpenTournamentRoom);
-                return;
-            }
-
             if(!_tournamentData.isRegistered)
             {
                 _registerButtonGameObject.gameObject.SetActive(true);
                 _rightButton.onClick.AddListener(OnRegisterButton);
             }
+            else
+            {
+                if (_tournamentData.status == Constants.PokerStatus.RunningStatus)
+                {
+                    _openButtonGameObject.gameObject.SetActive(true);
+                    _rightButton.onClick.AddListener(OnOpenTournamentRoom); 
+                    return;
+                }
+                
+                _unregisterButtonGameObject.gameObject.SetActive(true);
+                _rightButton.onClick.AddListener(OnUnregisterButton);
+            }
+            
         });
     }
     
@@ -111,6 +109,7 @@ public class SitNGoTableElement : MonoBehaviour
         _registerButtonGameObject.gameObject.SetActive(false);
         _lateRegisterButtonGameObject.gameObject.SetActive(false);
         _openButtonGameObject.gameObject.SetActive(false);
+        _unregisterButtonGameObject.gameObject.SetActive(false);
         
         _rightButton.onClick.RemoveAllListeners();
     }
@@ -169,8 +168,7 @@ public class SitNGoTableElement : MonoBehaviour
 
     private void OnRegisterButton()
     {
-        var uiManager = UIManager.Instance;
-        uiManager.SocketGameManager.getRegisterSngTournament(_tournamentData.id, GameType.sng.ToString(), OnRegisterResponse);
+        UIManager.Instance.SocketGameManager.getRegisterSngTournament(_tournamentData.id, GameType.sng.ToString(), OnRegisterResponse);
     }
 
     private void OnRegisterResponse(Socket socket, Packet packet, object[] args)
@@ -181,7 +179,33 @@ public class SitNGoTableElement : MonoBehaviour
         var statusMessageStandard = JsonUtility.FromJson<StatusMessageStandard<RoomId>>(source);
         
         if(!statusMessageStandard.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+        {
+            UIManager.Instance.DisplayMessagePanel(statusMessageStandard.message);  
             return;
+        }
+        
+        UIManager.Instance.DisplayMessagePanel(statusMessageStandard.message);
+        
+        _panelSitNGo.UpdateTable();
+    }
+
+    private void OnUnregisterButton()
+    {
+        UIManager.Instance.SocketGameManager.getUnRegisterSngTournament(_tournamentData.id, GameType.sng.ToString(), OnUnregisterResponse);
+    }
+
+    private void OnUnregisterResponse(Socket socket, Packet packet, object[] args)
+    {
+        Debug.Log("Unregister SnG: " + packet);
+        var arr = new JSONArray(packet.ToString());
+        var source = arr.getString(arr.length() - 1);
+        var statusMessageStandard = JsonUtility.FromJson<StatusMessageStandard<PlayerId>>(source);
+        
+        if(!statusMessageStandard.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+        {
+            UIManager.Instance.DisplayMessagePanel(statusMessageStandard.message);  
+            return;
+        }
         
         UIManager.Instance.DisplayMessagePanel(statusMessageStandard.message);
         

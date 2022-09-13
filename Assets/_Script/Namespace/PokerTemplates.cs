@@ -1806,6 +1806,12 @@ public class RoomId
 }
 
 [Serializable]
+public class PlayerId
+{
+    public string playerId;
+}
+
+[Serializable]
 public class StatusStandard<T>
 {
     public string status;

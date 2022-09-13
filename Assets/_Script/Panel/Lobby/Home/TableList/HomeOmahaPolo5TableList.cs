@@ -114,11 +114,15 @@ public class HomeOmahaPolo5TableList : MonoBehaviour
         
         for (var i = 0; i < omahaRoomAmount; i++)
         {
-            _homeSmallTableElements[i].SetInfo(_roomsOmaha[i]);
+            var element = _homeSmallTableElements[i];
+            element.SetInfo(_roomsOmaha[i]);
+            element.gameObject.SetActive(true);
         }
         for (var i = 0; i < polo5RoomAmount; i++)
         {
-            _homeSmallTableElements[i+omahaRoomAmount].SetInfo(_roomsPolo5[i]);
+            var element = _homeSmallTableElements[i + omahaRoomAmount];
+            element.SetInfo(_roomsPolo5[i]);
+            element.gameObject.SetActive(true);
         }
 
         var amountRoom = omahaRoomAmount + polo5RoomAmount;
