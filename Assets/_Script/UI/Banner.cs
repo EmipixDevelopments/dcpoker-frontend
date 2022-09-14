@@ -20,6 +20,7 @@ public class Banner : MonoBehaviour
     private Texture2D _bannerTexture;
     private Sprite _bannerSprite;
     private bool _lock;
+    private string _url;
 
     private void Start()
     {
@@ -63,8 +64,10 @@ public class Banner : MonoBehaviour
             //if (_bannerData.position == "tournament") TournamentBannerLogic(_bannerData);
             TournamentBannerLogic(_bannerData);
 
-            string url = PokerAPI.BaseUrl + _bannerData.image;
-            StartCoroutine(DownloadAndShowImage(url));
+            var url = PokerAPI.BaseUrl + _bannerData.image;
+            
+            if(_url != url)
+                StartCoroutine(DownloadAndShowImage(url));
         });
     }
 
@@ -91,6 +94,7 @@ public class Banner : MonoBehaviour
         }
 
         request.Abort();
+        _url = mediaUrl;
         _lock = false;
         
     }

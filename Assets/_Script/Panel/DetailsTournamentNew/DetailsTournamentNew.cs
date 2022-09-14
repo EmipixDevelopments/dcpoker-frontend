@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 using System;
+using System.Threading.Tasks;
 
 public class DetailsTournamentNew : MonoBehaviour
 {
@@ -31,7 +30,20 @@ public class DetailsTournamentNew : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _registerButtonText;
 
     [Header("Left panel")]
-    [SerializeField] private GameObject _leftPanel;
+    [SerializeField] private DetailsTournamentNewLeftPanel _detailsTournamentNewLeftPanel;
+    
+    [Space] 
+    [SerializeField] private GameObject _registerButtonGameObject;
+    [SerializeField] private GameObject _unregisterButtonGameObject;
+    [SerializeField] private GameObject _lateRegisterButtonGameObject;
+    [SerializeField] private GameObject _openButtonGameObject;
+    [SerializeField] private Button _button;
+
+    [SerializeField] private Button _closeButton;
+
+    private Animator _animator;
+    private int _openAnimationId = Animator.StringToHash("open");
+    private int _closeAnimationId = Animator.StringToHash("close");
 
     public string TournamentDetailsId = "";
 
@@ -41,9 +53,17 @@ public class DetailsTournamentNew : MonoBehaviour
     private string _nameSpaceStr = "";
     private long   _rebuyAmount;
     private double totalSeconds;
+    
+    private DetailsTournamentData _detailsTournamentData;
+
+    private void Awake()
+    {
+        _animator = GetComponent<Animator>();
+    }
 
     private void Start()
     {
+        //not need remove
         _summaryToggle.onValueChanged.RemoveAllListeners();
         _reBuyButton.onClick.RemoveAllListeners();
         _registerButton.onClick.RemoveAllListeners();
@@ -53,22 +73,246 @@ public class DetailsTournamentNew : MonoBehaviour
         _reBuyButton.onClick.AddListener(RebuyButtonaTap);
         _registerButton.onClick.AddListener(RegisterButtonTap);
         _unRegisterButton.onClick.AddListener(UnRegisterButtonTap);
+        
+        _button.onClick.AddListener(OnButton);
+        _closeButton.onClick.AddListener(CloseAnim);
+
+    }
+
+    private void OnDestroy()
+    {
+        _button.onClick.RemoveAllListeners();
+        _closeButton.onClick.RemoveListener(CloseAnim);
+
     }
 
     private void OpenOrCloseLeftPanel(bool value)
     {
-        if (value)
+        _summaryToggleText.text = value ? "Close Summary" : "Show Summary";
+        _detailsTournamentNewLeftPanel.SetActive(value);
+        //_detailsTournamentNewLeftPanel.gameObject.SetActive(value);
+    }
+
+    private void OnEnable()
+    {
+        var uiManager = UIManager.Instance;
+        if(uiManager == null)
+            return;
+        
+        uiManager.LobbyPanelNew.AddOnSwitchLobbyPanelListener(OnSwitchLobbyPanel);
+        
+        _animator.Play(_openAnimationId);
+        AnimScrollRect(false);
+    }
+
+    private void OnDisable()
+    {
+        var uiManager = UIManager.Instance;
+        if(uiManager == null)
+            return;
+
+        if(_summaryToggle.isOn)
+            _summaryToggle.isOn = false;
+        
+        uiManager.LobbyPanelNew.RemoveOnSwitchLobbyPanelListener(OnSwitchLobbyPanel);
+        _detailsTournamentData.HighlightTableElement.SetHighlight(false);
+    }
+
+    private void OnSwitchLobbyPanel(LobbyPanelNew.LobbyPanel lobbyPanel)
+    {
+        gameObject.SetActive(false);
+        EnableScrollBar();
+    }
+
+    private void CloseAnim()
+    {
+        _animator.Play(_closeAnimationId);
+        _detailsTournamentNewLeftPanel.SetActive(false);
+        AnimScrollRect(true);
+        DisableAfterAnimAsync();
+    }
+
+    private async void DisableAfterAnimAsync()
+    {
+        await Task.Delay(250); // This is animation duration
+        gameObject.SetActive(false);
+    }
+
+    public void OpenPanel(DetailsTournamentData detailsTournamentData)
+    {
+        TournamentDetailsId = detailsTournamentData.TournamentId;//It's old
+        _pokerGameType = detailsTournamentData.TournamentInfoData.pokerGameType;//It's old
+        Constants.Poker.TournamentId = TournamentDetailsId; //I don't know why it need.
+        
+        if(detailsTournamentData.HighlightTableElement == null || detailsTournamentData.TournamentInfoData == null)
+            return;
+
+        /* if (detailsTournamentData == _detailsTournamentData) // need to rewrite
         {
-            _summaryToggleText.text = "Close Summary";
+            if(!gameObject.activeSelf)
+                gameObject.SetActive(true);
+            
+            return;
+        }*/
+        
+        if(gameObject.activeSelf)
+            _detailsTournamentData.HighlightTableElement.SetHighlight(false);
+
+        _detailsTournamentData = detailsTournamentData;
+
+        UpdateData();
+        
+        detailsTournamentData.HighlightTableElement.SetHighlight(true);
+        
+        if(!gameObject.activeSelf)
+            gameObject.SetActive(true);
+    }
+
+    private void UpdateButton()
+    {
+        ResetButton();
+        GameObject gameObjectButton = null;
+        
+        switch (_detailsTournamentData.TournamentButtonState)
+        {
+            case TournamentButtonState.Open:
+                gameObjectButton = _openButtonGameObject;
+                break;
+            case TournamentButtonState.Register:
+                gameObjectButton = _registerButtonGameObject;
+                break;
+            case TournamentButtonState.Unregister:
+                gameObjectButton = _unregisterButtonGameObject;
+                break;
+            case TournamentButtonState.LateRegister:
+                gameObjectButton = _lateRegisterButtonGameObject;
+                break;
+        }
+        
+        if(gameObjectButton == null)
+        {
+            _button.gameObject.SetActive(false);
+            return;
+        }
+        
+        gameObjectButton.SetActive(true);
+        _button.gameObject.SetActive(true);
+    }
+
+    private void OnButton()
+    {
+        _detailsTournamentData.ButtonAction?.Invoke();
+        _detailsTournamentData.HighlightTableElement.UpdateData();
+    }
+
+    private void ResetButton()
+    {
+        _registerButtonGameObject.SetActive(false);
+        _unregisterButtonGameObject.SetActive(false);
+        _lateRegisterButtonGameObject.SetActive(false);
+        _openButtonGameObject.SetActive(false);
+    }
+
+    private void UpdateData()
+    {
+        var tournamentInfoData = _detailsTournamentData.TournamentInfoData;
+        _statusText.text = tournamentInfoData.status;
+        _buyInText.text = tournamentInfoData.buyIn;
+        _playersText.text = tournamentInfoData.players.ToString();
+        _limitText.text = tournamentInfoData.gameType;
+        _prizePoolText.text = tournamentInfoData.prizePool.ConvertToCommaSeparatedValue();
+
+        _tournamentNameText.text = tournamentInfoData.name;
+        _nameSpaceStr = tournamentInfoData.namespaceString;
+        _TID = tournamentInfoData.id;
+        _rebuyAmount = tournamentInfoData.rebuyAmount;
+        
+        ChangeInfoText();
+        UpdateButton();
+    }
+
+    private void ChangeInfoText()
+    {
+        var tournamentInfoData = _detailsTournamentData.TournamentInfoData;
+        _startInText.gameObject.SetActive(true);
+        if (string.IsNullOrEmpty(tournamentInfoData.dateTime))
+        {
+            // 3. Турнир не начался из за того, что нет минимального количества игроков (время пустое)
+            _startInText.text = $"Will start when <b>{tournamentInfoData.min_players - tournamentInfoData.players} playeres will join</b>";
         }
         else
         {
-            _summaryToggleText.text = "Open Summary";
+            DateTime dateTime = ParseDateTime(tournamentInfoData.dateTime);
+            int lastTileForRegister = tournamentInfoData.lateRegistrationLevel * tournamentInfoData.bindLevelRizeTime;
+            // 2. Турнир не начался по времени (время есть)
+            if (dateTime > DateTime.Now)
+            {
+                TimeSpan lastTime = dateTime.Subtract(DateTime.UtcNow);
+                _startInText.text = $"Will start in <b>{lastTime.Days} Days : {lastTime.Hours} Hours : {lastTime.Minutes} Minutes</b>";
+            }
+            // 1. Турнир начался, и не прошло разрешенное время
+            else if (dateTime.AddMinutes(lastTileForRegister) > DateTime.UtcNow)
+            {
+                _startInText.gameObject.SetActive(false);
+            }
         }
-        _leftPanel.SetActive(value);
     }
 
-    void OnEnable()
+    private float _oldValueScrollbar;
+    private void AnimScrollRect(bool active)
+    {
+        var scrollRect = UIManager.Instance.LobbyPanelNew.GetScrollRect();
+
+        if (active)
+        {
+            AnimScrollBarAsync(1, _oldValueScrollbar, .15f,
+                value => scrollRect.verticalScrollbar.value = value,
+                EnableScrollBar);
+
+            return;
+        }
+
+        _oldValueScrollbar = scrollRect.verticalScrollbar.value;
+        
+        AnimScrollBarAsync(scrollRect.verticalScrollbar.value, 1, .15f,
+            value => scrollRect.verticalScrollbar.value = value);
+        
+        scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.Permanent;
+        scrollRect.vertical = false;
+    }
+
+    private void EnableScrollBar()
+    {
+        var scrollRect = UIManager.Instance.LobbyPanelNew.GetScrollRect();
+        scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
+        scrollRect.vertical = true; 
+    }
+
+    private async void AnimScrollBarAsync(float fromValue, float toValue, float duration, Action<float> setAction, Action onCompleteAction = null)// I don't know (if need)
+    {
+        float value;
+        var rawValue = toValue - fromValue;
+        
+        float time = 0;
+        while ( time <= duration )
+        {
+            value = fromValue + rawValue * (time / duration);
+            time += Time.deltaTime;
+            setAction(value);
+            
+            await Task.Yield();
+        }
+
+        value = toValue;
+        setAction(value);
+        
+        onCompleteAction?.Invoke();
+    }
+
+    /// <summary>
+    /// old
+    /// </summary>
+    /*void OnEnable()
     {
         ResetData();
         TournamentEventCall();
@@ -77,7 +321,7 @@ public class DetailsTournamentNew : MonoBehaviour
     void OnDisable()
     {
         CancelInvoke();
-    }
+    }*/
 
     //void Update()
     //{

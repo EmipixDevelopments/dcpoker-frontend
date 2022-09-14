@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TournamentTableElement : MonoBehaviour
+public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
 {
     [SerializeField] private TextMeshProUGUI _dateTimeText;
     [SerializeField] private TextMeshProUGUI _nameText;
@@ -22,14 +22,18 @@ public class TournamentTableElement : MonoBehaviour
     [SerializeField] private GameObject _unregisterButtonGameObject;
     [Space]
     [SerializeField] private TableListColors _tableListColors;
-    
+
     NormalTournamentDetails.NormalTournamentData _data;
     private getTournamentInfoData _tournamentData;
 
     private PanelTournaments _panelTournaments;
+    private Image _highlightImage;
+
+    private DetailsTournamentData _detailsTournamentData;
 
     private void OnEnable()
     {
+        _highlightImage = GetComponent<Image>();
         _detailInfo.onClick.AddListener(OnTournamentTableSelectButtonTap);
     }
 
@@ -41,11 +45,16 @@ public class TournamentTableElement : MonoBehaviour
     public void Init(PanelTournaments panelTournaments)
     {
         _panelTournaments = panelTournaments;
+        
+        _detailsTournamentData = new DetailsTournamentData();
+        _detailsTournamentData.HighlightTableElement = this;
     }
 
     public void SetData(NormalTournamentDetails.NormalTournamentData data)
     {
         _data = data;
+        _detailsTournamentData.TournamentId = _data.tournamentId;
+        
         _dateTimeText.text = $"{CheckStringData(ParsingDateTime(data.tournamentStartTime))}";
         _nameText.text = $"{CheckStringData(data.name)}";
         _typeText.text = $"{CheckStringData(data.type)}";
@@ -70,10 +79,15 @@ public class TournamentTableElement : MonoBehaviour
 
     private void OnTournamentTableSelectButtonTap()
     {
-        UIManager.Instance.SoundManager.OnButtonClick();
+        if(_tournamentData == null)
+            return;
         
-        UIManager.Instance.gameType = GameType.Touranment;
-        UIManager.Instance.DetailsTournament.GetDetailsTournamentButtonTap(_data.tournamentId, _data.pokerGameType);
+        var uiManager = UIManager.Instance;
+        uiManager.SoundManager.OnButtonClick();
+        
+        uiManager.gameType = GameType.Touranment;
+        uiManager.DetailsTournament.OpenPanel(_detailsTournamentData);
+        //UIManager.Instance.DetailsTournament.GetDetailsTournamentButtonTap(_data.tournamentId, _data.pokerGameType);
     }
 
     private string CheckStringData(string text)
@@ -157,7 +171,8 @@ public class TournamentTableElement : MonoBehaviour
             
             var result = resp.result;
             _tournamentData = result;
-            
+            _detailsTournamentData.TournamentInfoData = result;
+
             ResetButton();
             
             if (_tournamentData.status == "Running")
@@ -166,6 +181,8 @@ public class TournamentTableElement : MonoBehaviour
                 {
                     _openButtonGameObject.gameObject.SetActive(true);
                     _rightButton.onClick.AddListener(OnOpenTournamentRoom);
+                    _detailsTournamentData.TournamentButtonState = TournamentButtonState.Open;
+                    _detailsTournamentData.ButtonAction = OnOpenTournamentRoom;
                     return;
                 }
 
@@ -173,6 +190,9 @@ public class TournamentTableElement : MonoBehaviour
                 {
                     _rightButton.onClick.AddListener(OnRegisterButton);
                     _lateRegisterButtonGameObject.gameObject.SetActive(true);
+                    _detailsTournamentData.TournamentButtonState = TournamentButtonState.LateRegister;
+                    _detailsTournamentData.ButtonAction = OnRegisterButton;
+                    return;
                 }
             }
     
@@ -180,13 +200,17 @@ public class TournamentTableElement : MonoBehaviour
             {
                 _registerButtonGameObject.gameObject.SetActive(true);
                 _rightButton.onClick.AddListener(OnRegisterButton);
+                _detailsTournamentData.TournamentButtonState = TournamentButtonState.Register;
+                _detailsTournamentData.ButtonAction = OnRegisterButton;
             }
             else
             {
                 _unregisterButtonGameObject.gameObject.SetActive(true);
                 _rightButton.onClick.AddListener(OnUnregisterButton);
+                _detailsTournamentData.TournamentButtonState = TournamentButtonState.Unregister;
+                _detailsTournamentData.ButtonAction = OnUnregisterButton;
             }
-            
+
         });
     }
 
@@ -254,5 +278,15 @@ public class TournamentTableElement : MonoBehaviour
         
         UIManager.Instance.DisplayMessagePanel(statusMessageStandard.message);  
         _panelTournaments.UpdateTable();
+    }
+
+    public void SetHighlight(bool active)
+    {
+        _highlightImage.enabled = active;
+    }
+
+    public void UpdateData()
+    {
+        UpdateButton();
     }
 }

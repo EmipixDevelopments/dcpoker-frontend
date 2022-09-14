@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SitNGoTableElement : MonoBehaviour
+public class SitNGoTableElement : MonoBehaviour, IHighlightTableElement
 {
     [SerializeField] private TextMeshProUGUI _typeText;
     [SerializeField] private TextMeshProUGUI _nameText;
@@ -22,14 +22,16 @@ public class SitNGoTableElement : MonoBehaviour
     [SerializeField] private Button _rightButton;
     [SerializeField] private Button _infoButton;
 
-    //private Button _button;
+    private Image _highlightImage;
     TournamentRoomObject.TournamentRoom _data;
     private getTournamentInfoData _tournamentData;
 
     private PanelSitNGo _panelSitNGo;
+    private DetailsTournamentData _detailsTournamentData;
     
     private void Start()
     {
+        _highlightImage = GetComponent<Image>();
         _infoButton.onClick.AddListener(OnTournamentTableSelectButtonTap);
     }
 
@@ -38,14 +40,18 @@ public class SitNGoTableElement : MonoBehaviour
         var uiManager = UIManager.Instance;
         uiManager.SoundManager.OnButtonClick();
         
-        var detailsTournament = uiManager.DetailsTournament;
-        detailsTournament.GetDetailsTournamentButtonTap(_data.id, _data.pokerGameType);
+        //var detailsTournament = uiManager.DetailsTournament;
+        //detailsTournament.GetDetailsTournamentButtonTap(_data.id, _data.pokerGameType);
+        //uiManager.DetailsTournament.OpenPanel(this, _tournamentData, _data.tournamentId);
         //detailsTournament.Open();
     }
 
     public void Init(PanelSitNGo panelSitNGo)
     {
         _panelSitNGo = panelSitNGo;
+        
+        _detailsTournamentData = new DetailsTournamentData();
+        _detailsTournamentData.HighlightTableElement = this;
     }
 
     public void SetData(TournamentRoomObject.TournamentRoom data)
@@ -77,6 +83,8 @@ public class SitNGoTableElement : MonoBehaviour
 
             var result = resp.result;
             _tournamentData = result;
+            _detailsTournamentData.TournamentInfoData = result;
+            _detailsTournamentData.TournamentId = _data.id;
             
             if(_tournamentData == null)
                 return;
@@ -87,6 +95,8 @@ public class SitNGoTableElement : MonoBehaviour
             {
                 _registerButtonGameObject.gameObject.SetActive(true);
                 _rightButton.onClick.AddListener(OnRegisterButton);
+                _detailsTournamentData.TournamentButtonState = TournamentButtonState.Register;
+                _detailsTournamentData.ButtonAction = OnRegisterButton;
             }
             else
             {
@@ -94,11 +104,17 @@ public class SitNGoTableElement : MonoBehaviour
                 {
                     _openButtonGameObject.gameObject.SetActive(true);
                     _rightButton.onClick.AddListener(OnOpenTournamentRoom); 
+                    _detailsTournamentData.TournamentButtonState = TournamentButtonState.Open;
+                    _detailsTournamentData.ButtonAction = OnOpenTournamentRoom;
+
                     return;
                 }
                 
                 _unregisterButtonGameObject.gameObject.SetActive(true);
                 _rightButton.onClick.AddListener(OnUnregisterButton);
+                _detailsTournamentData.TournamentButtonState = TournamentButtonState.Unregister;
+                _detailsTournamentData.ButtonAction = OnUnregisterButton;
+
             }
             
         });
@@ -116,9 +132,12 @@ public class SitNGoTableElement : MonoBehaviour
 
     public void OnTournamentTableSelectButtonTap()
     {
-        UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.gameType = GameType.sng;
-        UIManager.Instance.DetailsTournament.GetDetailsTournamentButtonTap(_data.id, _data.pokerGameType);
+        var uiManager = UIManager.Instance;
+        uiManager.SoundManager.OnButtonClick();
+        uiManager.gameType = GameType.sng;
+        //UIManager.Instance.DetailsTournament.GetDetailsTournamentButtonTap(_data.id, _data.pokerGameType);
+
+        uiManager.DetailsTournament.OpenPanel(_detailsTournamentData);
     }
     
     private string CheckStringData(string text)
@@ -210,5 +229,15 @@ public class SitNGoTableElement : MonoBehaviour
         UIManager.Instance.DisplayMessagePanel(statusMessageStandard.message);
         
         _panelSitNGo.UpdateTable();
+    }
+
+    public void SetHighlight(bool active)
+    {
+        _highlightImage.enabled = active;
+    }
+
+    public void UpdateData()
+    {
+        UpdateButton();
     }
 }

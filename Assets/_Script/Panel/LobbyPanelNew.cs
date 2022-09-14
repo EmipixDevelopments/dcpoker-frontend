@@ -43,9 +43,12 @@ public class LobbyPanelNew : MonoBehaviour
     [Space] public Messages Messages;
     [SerializeField] private Background _background;
     [SerializeField] private RectTransform _content;
-    
 
-    private enum LobbyPanel
+    private ScrollRect _scrollRect;
+    private bool _isScrollHide;
+    private Action<LobbyPanel> _onSwitchLobbyPanel;
+
+    public enum LobbyPanel
     {
         Home,
         MyAccount,
@@ -64,6 +67,8 @@ public class LobbyPanelNew : MonoBehaviour
 
     private void Start()
     {
+        _scrollRect = GetComponent<ScrollRect>();
+        
         InitButtonsAndToggles();
     }
 
@@ -195,9 +200,13 @@ public class LobbyPanelNew : MonoBehaviour
             default:
                 break;
         }
+        
+        if(_currentPanel != nextWindow)
+            _onSwitchLobbyPanel?.Invoke(nextWindow);
+        
         _currentPanel = nextWindow;
         ShowBottomMenu();
-
+        
         // need open in next frame for other panels to be opened
         //StartCoroutine(ShowBottomMenu());
     }
@@ -374,4 +383,16 @@ public class LobbyPanelNew : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(_panelMyAccount.GetComponent<RectTransform>());
         //_panelMyAccount.
     }
+
+    public void AddOnSwitchLobbyPanelListener(Action<LobbyPanel> action)
+    {
+        _onSwitchLobbyPanel += action;
+    }
+
+    public void RemoveOnSwitchLobbyPanelListener(Action<LobbyPanel> action)
+    {
+        _onSwitchLobbyPanel -= action;
+    }
+
+    public ScrollRect GetScrollRect() => _scrollRect;
 }

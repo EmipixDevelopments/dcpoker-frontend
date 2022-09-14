@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +20,44 @@ public class DetailsTournamentNewLeftPanel : MonoBehaviour
     [SerializeField] private TableDetails _tablesPanel;
     [SerializeField] private payoutDetails _playoutsPanel;
     [SerializeField] private BlindDetails _blindsPanel;
+    
+    private Animator _animator;
+    private int _openAnimationId = Animator.StringToHash("open");
+    private int _closeAnimationId = Animator.StringToHash("close");
+
+    private void Awake()
+    {
+        _animator = GetComponent<Animator>();
+    }
+
+    private void OnEnable()
+    {
+        _animator.Play(_openAnimationId);
+    }
+
+    public void SetActive(bool active)
+    {
+        if (active)
+        {
+            gameObject.SetActive(true);
+        }
+        else
+        {
+            if(gameObject.activeSelf)
+                CloseAnim();
+        }
+    }
+    private void CloseAnim()
+    {
+        _animator.Play(_closeAnimationId);
+        DisableAfterAnimAsync();
+    }
+
+    private async void DisableAfterAnimAsync()
+    {
+        await Task.Delay(250); // This is animation duration
+        gameObject.SetActive(false);
+    }
 
     private void Start()
     {
