@@ -242,10 +242,8 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
     {
         _popupConfirmTournamentData.ConfirmAction = Register;
         
-        _popupConfirmTournamentData.FirstValue = 1;
-        _popupConfirmTournamentData.SecondValue = 2;
-        _popupConfirmTournamentData.ThirdValue = 3;
-        
+        _popupConfirmTournamentData.BuyInText = _data.buyIn;
+
         UIManager.Instance.PopupConfirmTournament.OpenPopup(_popupConfirmTournamentData);
     }
 

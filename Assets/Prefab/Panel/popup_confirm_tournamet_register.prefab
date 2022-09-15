@@ -1071,9 +1071,9 @@ PrefabInstance:
       propertyPath: m_text
       value: 'Your account will be charged
 
-        $ {0:0.00} + $ {1:0.00} + $ {2:0.00}
+        {0}
 
-        Total: $ {3:0.00}'
+        Total:{1}'
       objectReference: {fileID: 0}
     - target: {fileID: 8382760213726978002, guid: e8b6e0ecd9f4048afa4e869ce67056f9,
         type: 3}

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -49,15 +50,23 @@ public class PopupConfirmTournament : MonoBehaviour
 
     private void UpdateData()
     {
-        var totalSum = _data.FirstValue + _data.SecondValue + _data.ThirdValue;
-        _text.text = string.Format(_text.text, _data.FirstValue, _data.SecondValue, _data.ThirdValue, totalSum);
+        var values = _data.BuyInText.Split('+');
+        
+        var fistParam = "";
+        float totalSum = 0;
+        for (var i = 0; i < values.Length; i++)
+        {
+            var floatValue = float.Parse(values[i], CultureInfo.InvariantCulture.NumberFormat);
+            fistParam = $"{fistParam} ${floatValue:0.00} " + (values.Length - 1 != i ? "+" : "");
+            totalSum += floatValue;
+        }
+        
+        _text.text = string.Format(_text.text, fistParam, $" ${totalSum:0.00} ");
     }
 }
 
 public class PopupConfirmTournamentData
 {
     public Action ConfirmAction;
-    public float FirstValue;
-    public float SecondValue;
-    public float ThirdValue;
+    public string BuyInText;
 }
