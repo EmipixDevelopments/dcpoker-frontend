@@ -8,12 +8,12 @@ public class TableDetailsObj : MonoBehaviour
 {
 
     #region PUBLIC_VARIABLES
-    [Header("Images")]
+    /*[Header("Images")]
     public Image BarMain;
 
     [Header("Colors")]
     public Sprite[] Colors;
-    [Header("Button")]
+    [Header("Button")]*/
     public Button join;
 
     [Header("Text")]
@@ -77,14 +77,14 @@ public class TableDetailsObj : MonoBehaviour
         TournamentTableId = Data.roomId;
 
         this.Data = Data;
-        if (i % 2 == 0)
+        /*if (i % 2 == 0)
         {
             BarMain.sprite = Colors[0];
         }
         else
         {
             BarMain.sprite = Colors[1];
-        }
+        }*/
 
         this.Open();
     }

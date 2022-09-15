@@ -296,8 +296,10 @@ public class LoginPanel : MonoBehaviour
         root.password = password;
         root.timestamp = DateTimeToUnix(DateTime.UtcNow);
         string json = JsonUtility.ToJson(root);
-        //Debug.Log(json);
+        Debug.LogError("Not Encrypt: " + json);
         string encryptedJson = UIManager.Instance.MainHomeScreen.AESEncryption(json);
+        Debug.LogError("Encrypt: " + encryptedJson);
+
         syndicate = encryptedJson;
         //syndicate = System.Uri.EscapeDataString(syndicate);
         //print(syndicate);

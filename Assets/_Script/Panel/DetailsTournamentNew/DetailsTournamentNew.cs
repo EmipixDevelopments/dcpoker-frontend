@@ -521,7 +521,9 @@ public class DetailsTournamentNew : MonoBehaviour
     {
         Debug.LogError(dateTime);
         var timeString = dateTime.Substring(0, dateTime.Length - 5);
-        return DateTime.ParseExact(timeString, "dd-MM-yyyy H:mm:ss tt ",null);
+        Debug.LogError("timeString: " + timeString);
+
+        return DateTime.ParseExact(timeString, "dd-MM-yyyy H:mm:ss tt",null);
     }
 
     private void ChangeInfoText(PokerEventResponse<getTournamentInfoData> resp)

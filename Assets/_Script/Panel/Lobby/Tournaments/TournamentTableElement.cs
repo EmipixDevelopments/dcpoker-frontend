@@ -30,6 +30,7 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
     private Image _highlightImage;
 
     private DetailsTournamentData _detailsTournamentData;
+    private PopupConfirmTournamentData _popupConfirmTournamentData;
 
     private void OnEnable()
     {
@@ -47,6 +48,7 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
         _panelTournaments = panelTournaments;
         
         _detailsTournamentData = new DetailsTournamentData();
+        _popupConfirmTournamentData = new PopupConfirmTournamentData();
         _detailsTournamentData.HighlightTableElement = this;
     }
 
@@ -237,6 +239,17 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
     }
 
     private void OnRegisterButton()
+    {
+        _popupConfirmTournamentData.ConfirmAction = Register;
+        
+        _popupConfirmTournamentData.FirstValue = 1;
+        _popupConfirmTournamentData.SecondValue = 2;
+        _popupConfirmTournamentData.ThirdValue = 3;
+        
+        UIManager.Instance.PopupConfirmTournament.OpenPopup(_popupConfirmTournamentData);
+    }
+
+    private void Register()
     {
         UIManager.Instance.SocketGameManager.getRegisterTournament(_tournamentData.id,GameType.Touranment.ToString(),RegisterTournamentResponse);
     }

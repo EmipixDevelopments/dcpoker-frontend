@@ -20,11 +20,11 @@ public class PlayerDetailsTorunamentObj : MonoBehaviour
 	[Header ("DropDowns")]*/
 
 
-    [Header("Images")]
-    public Image BarMain;
+    //[Header("Images")]
+    //public Image BarMain;
 
-    [Header("Colors")]
-    public Sprite[] Colors;
+    //[Header("Colors")]
+    //public Sprite[] Colors;
 
 
     //	[Header("InputField")] 
@@ -34,7 +34,7 @@ public class PlayerDetailsTorunamentObj : MonoBehaviour
 
     [Header("Text")]
     public TextMeshProUGUI Rank;
-    public Text Player;
+    public TextMeshProUGUI Player;
     //public TextMeshProUGUI stack;
     public TextMeshProUGUI Winnings;
 
@@ -85,14 +85,14 @@ public class PlayerDetailsTorunamentObj : MonoBehaviour
         //stack.text = Data.cash.ToString();
         Winnings.text = Data.winning.ToString();
 
-        if (i % 2 == 0)
+        /*if (i % 2 == 0)
         {
             BarMain.sprite = Colors[0];
         }
         else
         {
             BarMain.sprite = Colors[1];
-        }
+        }*/
         this.Open();
 
 
