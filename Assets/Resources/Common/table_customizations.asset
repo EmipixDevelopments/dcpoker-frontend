@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c4e1d13f49424bbf499b4fd6dcdd5c, type: 3}
+  m_Name: table_customizations
+  m_EditorClassIdentifier: 
+  TableCustomizationList:
+  - GameType: 0
+    TableCustomizationData:
+      RoomColor: 7
+      TableColor: 4
+      CardsColor: 3
+  - GameType: 1
+    TableCustomizationData:
+      RoomColor: 9
+      TableColor: 2
+      CardsColor: 1
+  - GameType: 2
+    TableCustomizationData:
+      RoomColor: 1
+      TableColor: 3
+      CardsColor: 0
+  - GameType: 3
+    TableCustomizationData:
+      RoomColor: 2
+      TableColor: 0
+      CardsColor: 2
+  - GameType: 4
+    TableCustomizationData:
+      RoomColor: 7
+      TableColor: 4
+      CardsColor: 3

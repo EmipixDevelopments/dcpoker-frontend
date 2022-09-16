@@ -111,6 +111,8 @@ public class UIManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        GameScreeen.Init();
+        
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Application.runInBackground = true;
         //print("width =>" + Screen.width);

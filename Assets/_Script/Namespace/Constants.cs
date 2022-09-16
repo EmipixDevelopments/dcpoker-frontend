@@ -1,6 +1,5 @@
 ﻿
 using UnityEngine;
-using System.Collections;
 
 namespace Constants
 {
@@ -668,13 +667,14 @@ public enum SERVER
 }
 public enum GameType
 {
-    cash,
+    cash, // what is it cash?
     sng,
     Touranment,
     texas,
     omaha,
     PLO5
 }
+
 public enum PreBet
 {
     Check,

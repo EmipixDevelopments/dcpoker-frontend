@@ -5,16 +5,20 @@ using TMPro;
 using UnityEngine.UI;
 using BestHTTP.SocketIO;
 using System;
-using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Linq;
 
 public class GamePanel : MonoBehaviour
 {
+    private RoomData _currentRoomData;
+
+    [SerializeField] private PockerRoomCustomization _pockerRoomCustomization;
+    
+    [Space] [Space]
     #region PUBLIC_VARIABLES
 
-    public Image mainBG;
-    public Image currentBG;
+    ///public Image mainBG;
+    //public Image currentBG;
     public Image imgTable;
     public Image imgTableLogoMain;
     public GameObject currentTurnEffect;
@@ -68,7 +72,7 @@ public class GamePanel : MonoBehaviour
     public Button[] SeatsByOrder;
     public Button btnChat;
     public Button btnRebuyinTournament;
-    public Button btnRebuyin;
+    //public Button btnRebuyin;
     public Button btnAddOnTournament;
     public Button btnIAmBack;
     public Button btnShowCards;
@@ -81,6 +85,7 @@ public class GamePanel : MonoBehaviour
     public Button btnHistoryOpen;
     public Button btnRankingOpen;
     public Button btnClockOpen;
+    [SerializeField] private RebuyinButtons _rebuyinButtons; 
 
     [Header("Two Player")]
     public PokerPlayer[] twoByTwoGamePlayers;
@@ -187,7 +192,9 @@ public class GamePanel : MonoBehaviour
     int numberOfAlphabetsInSingleLine = 20;
     #endregion
 
-    #region PRIVATE_VARIABLES
+    public bool IsCash() => UIManager.Instance.assetOfGame.SavedLoginData.isCash; //rewrite
+
+        #region PRIVATE_VARIABLES
 
     System.Diagnostics.StackTrace stackTrace;
 
@@ -228,6 +235,14 @@ public class GamePanel : MonoBehaviour
         txtAppVersionOnTable.text = Utility.Instance.GetApplicationVersionWithOS();
     }
 
+    public void Init()
+    {
+        _currentRoomData = new RoomData();
+        
+        _rebuyinButtons.Init(this);
+        _pockerRoomCustomization.Init();
+    }
+
     void OnEnable()
     {
         UIManager.Instance.SoundManager.stopBgSound();
@@ -254,7 +269,7 @@ public class GamePanel : MonoBehaviour
             btnMinimize.Close();
         }
 
-        mainBG.sprite = currentBG.sprite;
+        //mainBG.sprite = currentBG.sprite;
         SidePotAmountNew = new PlayerSidePot();
         Switchingtable = false;
         if (UIManager.Instance.selectedGameType != GameType.cash)
@@ -289,7 +304,7 @@ public class GamePanel : MonoBehaviour
         chatPanel.gameObject.SetActive(false);
         btnChat.interactable = false;
         btnRebuyinTournament.Close();
-        btnRebuyin.Close();
+        _rebuyinButtons.Close();
         btnAddOnTournament.Close();
         btnShowCards.Close();
         btntwiceCards.Close();
@@ -1181,7 +1196,7 @@ public class GamePanel : MonoBehaviour
                     }
                 }
             }
-            btnRebuyin.Close();
+            _rebuyinButtons.Close();
             btnAddOnTournament.Close();
             btnRebuyinTournament.Close();
             preBetButtonsPanel.toggleSitOutNextHand.Close();
@@ -3549,6 +3564,12 @@ public class GamePanel : MonoBehaviour
         UIManager.Instance.SoundManager.OnButtonClick();
         UIManager.Instance.SocketGameManager.GetPlayerReBuyInChips(OnGetPlayerReBuyInChipsDone);
     }
+    
+    public void GetPlayerReBuyInMoney()
+    {
+        UIManager.Instance.SoundManager.OnButtonClick();
+        UIManager.Instance.SocketGameManager.GetPlayerReBuyInChips(OnGetPlayerReBuyInChipsDone);
+    }
 
     public void PlayerAddChips()
     {
@@ -3870,6 +3891,10 @@ public class GamePanel : MonoBehaviour
 
     public void SetRoomDataAndPlay(RoomsListing.Room currentRoomData)
     {
+        _currentRoomData.SetRoom(currentRoomData);
+        
+        _pockerRoomCustomization.SetData(_currentRoomData);
+
         //this.currentRoomData = currentRoomData;
         this.currentRoomData = Utility.Instance.GetNewRoomObjectClone(currentRoomData);
 
@@ -3887,7 +3912,7 @@ public class GamePanel : MonoBehaviour
 
         UIManager.Instance.tableManager.DeselectAllTableSelection();
         UIManager.Instance.tableManager.HighlightMiniTable(currentRoomData.roomId);
-        if (this.currentRoomData.isTournament)
+        /*if (this.currentRoomData.isTournament)
         {
             if (this.currentRoomData.namespaceString.Contains("sng") || this.currentRoomData.namespaceString.Contains("SNG"))
             {
@@ -3947,8 +3972,9 @@ public class GamePanel : MonoBehaviour
                 }
             }
         }
+        */
     }
-
+    /*
     public void SetRoomDataAndPlay(string roomId, string namespaceString, string pokerGameType, string pokerGameFormat)
     {
         this.currentRoomData.roomId = roomId;
@@ -4024,6 +4050,7 @@ public class GamePanel : MonoBehaviour
             }
         }
     }
+    */
     public void OnSeatButtonTapWaitingPlayer(int SeatIndex)
     {
         if (UIManager.Instance.assetOfGame.SavedLoginData.chips < currentRoomData.minBuyIn)
@@ -4254,14 +4281,14 @@ public class GamePanel : MonoBehaviour
                 }
                 if (currentRoomData.isTournament == false)
                 {
-                    btnRebuyin.Open();
+                    _rebuyinButtons.Open();
                     btnAddOnTournament.Close();
                     btnStandup.gameObject.SetActive(true);
                     //btnStandup.gameObject.SetActive(false);
                 }
                 else
                 {
-                    btnRebuyin.Close();
+                    _rebuyinButtons.Close();
                     btnStandup.gameObject.SetActive(false);
                 }
 
@@ -4658,7 +4685,7 @@ public class GamePanel : MonoBehaviour
         WaitForBigBlindCheckbox = false;
         preBetButtonsPanel.toggleSitOutNextBigBlind.Close();
         preBetButtonsPanel.toggleSitOutNextHand.Close();
-        btnRebuyin.Close();
+        _rebuyinButtons.Close();
         btnAddOnTournament.Close();
         btnRebuyinTournament.Close();
     }
