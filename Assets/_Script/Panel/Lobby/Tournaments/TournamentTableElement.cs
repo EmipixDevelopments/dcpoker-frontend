@@ -20,6 +20,7 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
     [SerializeField] private GameObject _registerButtonGameObject; 
     [SerializeField] private GameObject _openButtonGameObject; 
     [SerializeField] private GameObject _unregisterButtonGameObject;
+    [SerializeField] private GameObject _waitingListStatusTextGameObject;
     [Space]
     [SerializeField] private TableListColors _tableListColors;
 
@@ -150,10 +151,11 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
 
     private void ResetButton()
     {
-        _registerButtonGameObject.gameObject.SetActive(false);
-        _lateRegisterButtonGameObject.gameObject.SetActive(false);
-        _openButtonGameObject.gameObject.SetActive(false);
-        _unregisterButtonGameObject.gameObject.SetActive(false);
+        _registerButtonGameObject.SetActive(false);
+        _lateRegisterButtonGameObject.SetActive(false);
+        _openButtonGameObject.SetActive(false);
+        _unregisterButtonGameObject.SetActive(false);
+        _waitingListStatusTextGameObject.SetActive(false);
         
         _rightButton.onClick.RemoveAllListeners();
     }
@@ -198,6 +200,14 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
                 }
             }
     
+            if(!IsRegister())
+            {
+                _waitingListStatusTextGameObject.SetActive(true);
+                _detailsTournamentData.TournamentButtonState = TournamentButtonState.None;
+                _detailsTournamentData.ButtonAction = null;
+                return;
+            }
+            
             if(!_tournamentData.isRegistered)
             {
                 _registerButtonGameObject.gameObject.SetActive(true);
@@ -220,14 +230,45 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
     {
         if (!string.IsNullOrEmpty(_tournamentData.dateTime))
         {
-            Debug.LogError(_tournamentData.dateTime);
-            var dateTime = ParseDateTime(_tournamentData.dateTime);
-            int lastTileForRegister = _tournamentData.lateRegistrationLevel * _tournamentData.bindLevelRizeTime;
-            if (dateTime < DateTime.UtcNow && dateTime.AddMinutes(lastTileForRegister) > DateTime.UtcNow)
+            try
             {
+                var dateTime = ParseDateTime(_tournamentData.dateTime);
+                int lastTileForRegister = _tournamentData.lateRegistrationLevel * _tournamentData.bindLevelRizeTime;
+                if (dateTime < DateTime.UtcNow && dateTime.AddMinutes(lastTileForRegister) > DateTime.UtcNow)
+                {
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Not Parse To Date Time: " + _tournamentData.dateTime);
+                return false;
+            }
+            
+        }
+        return false;
+    }
+
+    private bool IsRegister()
+    {
+        if (!string.IsNullOrEmpty(_tournamentData.dateTime))
+        {
+            try
+            {
+                var dateTime = ParseDateTime(_tournamentData.dateTime);
+                if (dateTime < DateTime.UtcNow)
+                {
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Not Parse To Date Time: " + _tournamentData.dateTime);
                 return true;
             }
+            
         }
+
         return false;
     }
     

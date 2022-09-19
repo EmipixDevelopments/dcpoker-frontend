@@ -12,6 +12,7 @@ public class TableElement : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _byInText;
     [SerializeField] private TextMeshProUGUI _typeText;
     [SerializeField] private Button _button;
+    [SerializeField] private TextMeshProUGUI _waitingText;
 
     private RoomsListing.Room _data;
 
@@ -31,6 +32,8 @@ public class TableElement : MonoBehaviour
         _blindsText.text = CheckStringData(data.stake);
         _byInText.text = CheckStringData($"{data.minBuyIn}");
         _typeText.text = CheckStringData(data.type);
+        
+        UpdateButton();
     }
     private string CheckStringData(string text)
     {
@@ -39,6 +42,23 @@ public class TableElement : MonoBehaviour
             return $"---";
         }
         return text;
+    }
+
+    private void UpdateButton()
+    {
+        ResetButton();
+        if (_data.playerCount < _data.maxPlayers)
+        {
+            _button.gameObject.SetActive(true);
+            return;
+        }
+        _waitingText.gameObject.SetActive(true);
+    }
+
+    private void ResetButton()
+    {
+        _button.gameObject.SetActive(false);
+        _waitingText.gameObject.SetActive(false);
     }
 
     // copypast from TableData.cs
