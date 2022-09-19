@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,15 +9,15 @@ public class BuyinPanel : MonoBehaviour
 {
     #region PUBLIC_VARIABLES
 
-    public Text txtTotalChips;
+    public TextMeshProUGUI txtTotalChips;
     public Text txtRemainingTime;
     public Text txtSliderSelectedChips;
     public Slider buyinSlider;
-    public Button btnSelectBuyin;
+    //public Button btnSelectBuyin;
 
-    public Text txtMinBuyin;
-    public Text txtMaxBuyin;
-    public InputField txtInputFieldSelectedChips;
+    public TextMeshProUGUI txtMinBuyin;
+    public TextMeshProUGUI txtMaxBuyin;
+    public TMP_InputField txtInputFieldSelectedChips;
     public Toggle toggleBuyin;
 
     #endregion
@@ -242,7 +243,7 @@ public class BuyinPanel : MonoBehaviour
         UIManager.Instance.HidePopup();
         selectedBuyinAmount = MinBuyinAmount;
         buyinSlider.value = MinBuyinAmount.doubleToFloat();
-        txtInputFieldSelectedChips.contentType = InputField.ContentType.Standard;
+        txtInputFieldSelectedChips.contentType = TMP_InputField.ContentType.Standard;
         txtInputFieldSelectedChips.text = MinBuyinAmount.ConvertToCommaSeparatedValue();
     }
 
@@ -347,7 +348,7 @@ public class BuyinPanel : MonoBehaviour
     public void OnPointerDownButtonTap()
     {
         //		down = true;
-        txtInputFieldSelectedChips.contentType = InputField.ContentType.DecimalNumber;
+        txtInputFieldSelectedChips.contentType = TMP_InputField.ContentType.DecimalNumber;
     }
 
     public void OnPlusBuyinButtonTap()
