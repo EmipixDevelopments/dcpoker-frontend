@@ -50,7 +50,20 @@ public class DetailsTournamentNewLeftPanel : MonoBehaviour
     private void CloseAnim()
     {
         _animator.Play(_closeAnimationId);
-        DisableAfterAnimAsync();
+        //DisableAfterAnimAsync();
+        StartCoroutine(DisableAfterSecond());
+    }
+
+    private void OnDisable()
+    {
+        gameObject.SetActive(false);
+    }
+
+
+    private IEnumerator DisableAfterSecond()
+    {
+        yield return new WaitForSeconds(.15f);
+        gameObject.SetActive(false);
     }
 
     private async void DisableAfterAnimAsync()

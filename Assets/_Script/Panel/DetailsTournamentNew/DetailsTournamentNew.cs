@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine;
 using System;
+using System.Collections;
 using System.Threading.Tasks;
 
 public class DetailsTournamentNew : MonoBehaviour
@@ -129,9 +130,14 @@ public class DetailsTournamentNew : MonoBehaviour
         _animator.Play(_closeAnimationId);
         _detailsTournamentNewLeftPanel.SetActive(false);
         AnimScrollRect(true);
-        DisableAfterAnimAsync();
+        StartCoroutine(DisableAfterSeconds());
     }
 
+    private IEnumerator DisableAfterSeconds()
+    {
+        yield return new WaitForSeconds(.15f);
+        gameObject.SetActive(false);
+    }
     private async void DisableAfterAnimAsync()
     {
         await Task.Delay(250); // This is animation duration
