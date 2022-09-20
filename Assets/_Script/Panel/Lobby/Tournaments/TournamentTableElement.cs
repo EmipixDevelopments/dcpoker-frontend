@@ -117,9 +117,28 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
         result = $"{year}{dt.ToString("MMM dd", CultureInfo.CreateSpecificCulture("en-US"))} / {dt.ToString("HH:mm")}";
         return result;
     }
+
+    private double GetAmountBuyIn()
+    {
+        var values = _data.buyIn.Split('+');
+        
+        double totalSum = 0;
+        for (var i = 0; i < values.Length; i++)
+        {
+            var floatValue = double.Parse(values[i], CultureInfo.InvariantCulture.NumberFormat);
+            totalSum += floatValue;
+        }
+
+        return totalSum;
+    }
     
     private void OnOpenTournamentRoom()
     {
+        var uiManager = UIManager.Instance;
+        
+        if(!uiManager.PopupDepositeOrClose.Open(GetAmountBuyIn()))
+            return;
+        
         UIManager.Instance.SocketGameManager.JoinTournamentRoom(_tournamentData.id, (socket, packet, args) =>
         {
             print("JoinTournamentRoom response: " + packet.ToString());
@@ -281,6 +300,11 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
 
     private void OnRegisterButton()
     {
+        var uiManager = UIManager.Instance;
+        
+        if(!uiManager.PopupDepositeOrClose.Open(GetAmountBuyIn()))
+            return;
+        
         _popupConfirmTournamentData.ConfirmAction = Register;
         
         _popupConfirmTournamentData.BuyInText = _data.buyIn;

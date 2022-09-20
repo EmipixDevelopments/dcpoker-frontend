@@ -1,4 +1,5 @@
-﻿using BestHTTP.SocketIO;
+﻿using System.Globalization;
+using BestHTTP.SocketIO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -149,9 +150,27 @@ public class SitNGoTableElement : MonoBehaviour, IHighlightTableElement
         return text;
     }
 
+    private double GetAmountBuyIn()
+    {
+        var values = _data.buyIn.Split('+');
+        
+        double totalSum = 0;
+        for (var i = 0; i < values.Length; i++)
+        {
+            var floatValue = double.Parse(values[i], CultureInfo.InvariantCulture.NumberFormat);
+            totalSum += floatValue;
+        }
+
+        return totalSum;
+    }
+    
     private void OnOpenTournamentRoom()
     {
         var uiManager = UIManager.Instance;
+        
+        if(!uiManager.PopupDepositeOrClose.Open(GetAmountBuyIn()))
+            return;
+        
         uiManager.SocketGameManager.getSngTournamentTables(_data.id,_data.pokerGameType,
             (socket, packet, args) =>
             {
@@ -187,7 +206,12 @@ public class SitNGoTableElement : MonoBehaviour, IHighlightTableElement
 
     private void OnRegisterButton()
     {
-        UIManager.Instance.SocketGameManager.getRegisterSngTournament(_tournamentData.id, GameType.sng.ToString(), OnRegisterResponse);
+        var uiManager = UIManager.Instance;
+        
+        if(!uiManager.PopupDepositeOrClose.Open(GetAmountBuyIn()))
+            return;
+        
+        uiManager.SocketGameManager.getRegisterSngTournament(_tournamentData.id, GameType.sng.ToString(), OnRegisterResponse);
     }
 
     private void OnRegisterResponse(Socket socket, Packet packet, object[] args)

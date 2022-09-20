@@ -41,6 +41,9 @@ public class HomeBigTableElement : MonoBehaviour
 
         var textColor = _tableListColors.GetColorByName(data.colorOfCapture);
         SetColorText(textColor);
+        
+        //todo add logic
+        _button.gameObject.SetActive(false);
     }
 
     private void SetColorText(Color color)

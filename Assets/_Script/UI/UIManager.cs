@@ -61,6 +61,7 @@ public class UIManager : MonoBehaviour
     public PanelTransferToOtherPlayerPopup PanelTransferToOtherPlayerPopup;
     public PanelMessageContactSupport PanelMessageContactSupport;
     public PopupConfirmTournament PopupConfirmTournament;
+    public PopupDepositeOrClose PopupDepositeOrClose;
 
     [Header("Public Variables")]
     public bool isLogAllEnabled = false;

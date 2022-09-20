@@ -64,6 +64,11 @@ public class TableElement : MonoBehaviour
     // copypast from TableData.cs
     public void OnGameButtonTap()
     {
+        var uiManager = UIManager.Instance;
+        
+        if(!uiManager.PopupDepositeOrClose.Open(_data.minBuyIn))
+            return;
+
         UIManager.Instance.SoundManager.OnButtonClick();
         if (UIManager.Instance.tableManager.playingTableList.Count == UIManager.Instance.tableManager.maxTableLimit && !UIManager.Instance.tableManager.playingTableList.Contains(_data.roomId))
         {
