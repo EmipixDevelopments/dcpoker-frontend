@@ -248,7 +248,17 @@ public class DetailsTournamentNew : MonoBehaviour
         }
         else
         {
-            DateTime dateTime = ParseDateTime(tournamentInfoData.dateTime);
+            DateTime dateTime = DateTime.Now;
+            
+            try
+            {
+                dateTime = ParseDateTime(tournamentInfoData.dateTime);
+            }
+            catch (Exception e)
+            {
+                _startInText.text = "";
+                return;
+            }
             int lastTileForRegister = tournamentInfoData.lateRegistrationLevel * tournamentInfoData.bindLevelRizeTime;
             // 2. Турнир не начался по времени (время есть)
             if (dateTime > DateTime.Now)
@@ -513,7 +523,16 @@ public class DetailsTournamentNew : MonoBehaviour
         if (!string.IsNullOrEmpty(resp.result.dateTime))
         {
             Debug.LogError(resp.result.dateTime);
-            var dateTime = ParseDateTime(resp.result.dateTime);
+            var dateTime = DateTime.Now;
+            try
+            {
+                dateTime = ParseDateTime(resp.result.dateTime);
+
+            }
+            catch (Exception e)
+            {
+                return;
+            }
             int lastTileForRegister = resp.result.lateRegistrationLevel * resp.result.bindLevelRizeTime;
             if (dateTime < DateTime.UtcNow && dateTime.AddMinutes(lastTileForRegister) > DateTime.UtcNow)
             {

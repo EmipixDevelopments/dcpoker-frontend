@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using BestHTTP.SocketIO;
 using UnityEngine;
 using UnityEngine.UI;
 
