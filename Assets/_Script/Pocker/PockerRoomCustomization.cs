@@ -18,8 +18,10 @@ public class PockerRoomCustomization : MonoBehaviour
     {
         _saveComponent = new SaveComponent(); // move from here
         _saveComponent.Init(_tableCustomizationsScriptableObject);
-
     }
+
+    public TableCustomizationData GetCurrentCustomizationData()
+        => _currentTableCustomizationData;
 
     public void SetData(RoomData roomData)
     {
@@ -35,11 +37,18 @@ public class PockerRoomCustomization : MonoBehaviour
         UpdateRoom();
     }
 
-    private void UpdateRoom()
+    public void Save(TableCustomizationData tableCustomizationData)
     {
-        switch (_currentTableCustomizationData.RoomColor)
+        _currentTableCustomizationData.Copy(tableCustomizationData);
+        _saveComponent.SaveTableCustomizationData(_currentGameType);
+    }
+
+    public void UpdateRoom() => UpdateRoom(_currentTableCustomizationData);
+
+    public void UpdateRoom(TableCustomizationData tableCustomizationData)
+    {
+        switch (tableCustomizationData.RoomColor)
         {
-            
             case RoomColor.Blue:
                 _backgroundImage.sprite = null;
                 _backgroundImage.color = _tableBackgroundReferenceScriptableObject.Colors[0];

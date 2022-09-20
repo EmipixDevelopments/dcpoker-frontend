@@ -13,6 +13,9 @@ public class GamePanel : MonoBehaviour
     private RoomData _currentRoomData;
 
     [SerializeField] private PockerRoomCustomization _pockerRoomCustomization;
+    [SerializeField] private CustomizationPopup _customizationPopup;
+
+    [SerializeField] private Button _gameCustomizationButton;
     
     [Space] [Space]
     #region PUBLIC_VARIABLES
@@ -233,6 +236,8 @@ public class GamePanel : MonoBehaviour
     void Start()
     {
         txtAppVersionOnTable.text = Utility.Instance.GetApplicationVersionWithOS();
+        
+        _gameCustomizationButton.onClick.AddListener( _customizationPopup.OpenClose);
     }
 
     public void Init()
@@ -241,6 +246,7 @@ public class GamePanel : MonoBehaviour
         
         _rebuyinButtons.Init(this);
         _pockerRoomCustomization.Init();
+        _customizationPopup.Init(_pockerRoomCustomization);
     }
 
     void OnEnable()
