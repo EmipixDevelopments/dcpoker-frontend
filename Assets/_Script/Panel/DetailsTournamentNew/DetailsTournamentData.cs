@@ -5,6 +5,7 @@ public class DetailsTournamentData
 {
     public IHighlightTableElement HighlightTableElement;
     public getTournamentInfoData TournamentInfoData;
+    public NormalTournamentDetails.NormalTournamentData NormalTournamentData;
     public string TournamentId;
 
     public TournamentButtonState TournamentButtonState;

@@ -153,7 +153,6 @@ MonoBehaviour:
   _registerButtonGameObject: {fileID: 7375700854630370051}
   _openButtonGameObject: {fileID: 3097083183151228083}
   _unregisterButtonGameObject: {fileID: 567514449491395743}
-  _waitingListStatusTextGameObject: {fileID: 7244522443577955201}
   _tableListColors: {fileID: 11400000, guid: bc52573c72ea1464db073e0183dfa2d8, type: 2}
 --- !u!114 &2370901028364835744
 MonoBehaviour:
@@ -1315,6 +1314,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: waiting_list_text
       objectReference: {fileID: 0}
+    - target: {fileID: 5428961556799149578, guid: 4058bb4798e854be8af3256574e47566,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8382760213726978002, guid: 4058bb4798e854be8af3256574e47566,
         type: 3}
       propertyPath: m_text
@@ -1445,12 +1449,6 @@ PrefabInstance:
 --- !u!224 &6580613008917250174 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8398427878544311797, guid: 4058bb4798e854be8af3256574e47566,
-    type: 3}
-  m_PrefabInstance: {fileID: 3449261444024812939}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &7244522443577955201 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5428961556799149578, guid: 4058bb4798e854be8af3256574e47566,
     type: 3}
   m_PrefabInstance: {fileID: 3449261444024812939}
   m_PrefabAsset: {fileID: 0}

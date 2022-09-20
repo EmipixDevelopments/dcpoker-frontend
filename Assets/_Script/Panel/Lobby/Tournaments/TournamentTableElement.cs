@@ -20,7 +20,7 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
     [SerializeField] private GameObject _registerButtonGameObject; 
     [SerializeField] private GameObject _openButtonGameObject; 
     [SerializeField] private GameObject _unregisterButtonGameObject;
-    [SerializeField] private GameObject _waitingListStatusTextGameObject;
+    //[SerializeField] private GameObject _waitingListStatusTextGameObject;
     [Space]
     [SerializeField] private TableListColors _tableListColors;
 
@@ -57,6 +57,7 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
     {
         _data = data;
         _detailsTournamentData.TournamentId = _data.tournamentId;
+        _detailsTournamentData.NormalTournamentData = _data;
         
         _dateTimeText.text = $"{CheckStringData(ParsingDateTime(data.tournamentStartTime))}";
         _nameText.text = $"{CheckStringData(data.name)}";
@@ -174,7 +175,7 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
         _lateRegisterButtonGameObject.SetActive(false);
         _openButtonGameObject.SetActive(false);
         _unregisterButtonGameObject.SetActive(false);
-        _waitingListStatusTextGameObject.SetActive(false);
+        //_waitingListStatusTextGameObject.SetActive(false);
         
         _rightButton.onClick.RemoveAllListeners();
     }
@@ -221,7 +222,7 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
     
             if(!IsRegister())
             {
-                _waitingListStatusTextGameObject.SetActive(true);
+                //_waitingListStatusTextGameObject.SetActive(true);
                 _detailsTournamentData.TournamentButtonState = TournamentButtonState.None;
                 _detailsTournamentData.ButtonAction = null;
                 return;

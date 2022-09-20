@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using System;
 using System.Collections;
+using System.Globalization;
 using System.Threading.Tasks;
 
 public class DetailsTournamentNew : MonoBehaviour
@@ -241,24 +242,52 @@ public class DetailsTournamentNew : MonoBehaviour
     {
         var tournamentInfoData = _detailsTournamentData.TournamentInfoData;
         _startInText.gameObject.SetActive(true);
-        if (string.IsNullOrEmpty(tournamentInfoData.dateTime))
+        _startInText.text = "";
+        //todo rewrite this
+        //dateTime always not empty or null
+
+
+
+        /*try
+        {
+            //var timeString = tournamentInfoData.dateTime.Substring(0, tournamentInfoData.dateTime.Length - 5);
+
+            //DateTime dateTime = DateTime.ParseExact(timeString, "dd-MM-yyyy HH:mm:ss tt",null);
+            DateTime dateTime = DateTime.Parse(_detailsTournamentData.NormalTournamentData.dateTime);
+
+            int lastTileForRegister = tournamentInfoData.lateRegistrationLevel * tournamentInfoData.bindLevelRizeTime;
+            
+            // 2. Турнир не начался по времени (время есть)
+            if (dateTime > DateTime.Now)
+            {
+                TimeSpan lastTime = dateTime.Subtract(DateTime.UtcNow);
+                _startInText.text = $"Will start in <b>{lastTime.Days} Days : {lastTime.Hours} Hours : {lastTime.Minutes} Minutes</b>";
+            }
+            
+            // 1. Турнир начался, и не прошло разрешенное время
+            else if (dateTime.AddMinutes(lastTileForRegister) > DateTime.UtcNow)
+            {
+                _startInText.gameObject.SetActive(false);
+            }
+        }
+        catch (Exception e)
+        {
+            _startInText.text = $"Will start when <b>{tournamentInfoData.min_players - tournamentInfoData.players} playeres will join</b>";
+        }
+        */
+        
+        var dateString = _detailsTournamentData.NormalTournamentData.tournamentStartTime;
+        
+        if (string.IsNullOrEmpty(dateString))
         {
             // 3. Турнир не начался из за того, что нет минимального количества игроков (время пустое)
             _startInText.text = $"Will start when <b>{tournamentInfoData.min_players - tournamentInfoData.players} playeres will join</b>";
+            _playersText.text = $"{tournamentInfoData.players}/{tournamentInfoData.max_players}";
         }
         else
         {
-            DateTime dateTime = DateTime.Now;
-            
-            try
-            {
-                dateTime = ParseDateTime(tournamentInfoData.dateTime);
-            }
-            catch (Exception e)
-            {
-                _startInText.text = "";
-                return;
-            }
+            var dateTime = DateTime.Parse(dateString);
+
             int lastTileForRegister = tournamentInfoData.lateRegistrationLevel * tournamentInfoData.bindLevelRizeTime;
             // 2. Турнир не начался по времени (время есть)
             if (dateTime > DateTime.Now)
