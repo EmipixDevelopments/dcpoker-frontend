@@ -23,10 +23,10 @@ public class PanelMessageContactSupport : MonoBehaviour
         _replyButton.onClick.RemoveListener(OnClickReplyButton);
     }
 
-    public void Open(MessagesDetails.Result data)
+    public void Open(MessageData messageData)
     {
-        _messageText.text = data.message;
-        _id = data._id;
+        _messageText.text = messageData.Message;
+        _id = messageData.ID;
         
         gameObject.SetActive(true);
     }

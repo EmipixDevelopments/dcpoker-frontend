@@ -13,7 +13,9 @@ public class TableContainer<T> where T : MonoBehaviour
 
     private Action<T> _initAction;
 
-    public TableContainer(Transform container, T element, Action<T> initAction )
+    private bool _isFirstOrderInstance;
+
+    public TableContainer(Transform container, T element, Action<T> initAction, bool isFirstOrderInstance = false)
     {
         _list = new List<T>();
         
@@ -21,6 +23,8 @@ public class TableContainer<T> where T : MonoBehaviour
         _element = element;
 
         _initAction = initAction;
+
+        _isFirstOrderInstance = isFirstOrderInstance;
     }
 
     public T GetElement(int index)
@@ -62,6 +66,10 @@ public class TableContainer<T> where T : MonoBehaviour
     private void CreateElement()
     {
         var element = Object.Instantiate(_element, _container);
+        
+        if (_isFirstOrderInstance)
+            element.transform.SetAsFirstSibling();
+
         _initAction?.Invoke(element);
         
         _list.Add(element);

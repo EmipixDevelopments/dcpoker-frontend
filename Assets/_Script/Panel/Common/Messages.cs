@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using BestHTTP.SocketIO;
 using TMPro;
@@ -7,26 +9,36 @@ public class Messages : MonoBehaviour
 {
     [SerializeField] private GameObject _notificationBubbleGameObject;
     [SerializeField] private TextMeshProUGUI _notificationBubbleText;
-
-    private MessagesDetails _messagesDetails;
-    private List<string> _messagesReadId;
-
-    private int _oldMessageAmount;
-
-    public MessagesDetails GetMessagesDetails() 
-        => _messagesDetails;
+    
+    private List<MessageData> _messages;
+    private Coroutine _messageUpdateCoroutine;
+    private Action _onUpdateMessagesAction;
 
     private void Start()
     {
-        _messagesReadId = new List<string>();
+        _messages = new List<MessageData>();
+    }
+
+    private IEnumerator MessageUpdateEnumerator()
+    {
+        while (true)
+        {
+            CheckMessage();
+            yield return new WaitForSeconds(30);  
+        }
     }
 
     private void OnEnable()
     {
-        CheckMessage();
+        _messageUpdateCoroutine = StartCoroutine(MessageUpdateEnumerator());
     }
 
-    public void CheckMessage()
+    private void OnDisable()
+    {
+        StopCoroutine(_messageUpdateCoroutine);
+    }
+
+    private void CheckMessage()
     {
         var uiManager = UIManager.Instance;
         
@@ -42,39 +54,77 @@ public class Messages : MonoBehaviour
 
         var arr = new JSONArray(packet.ToString());
         var source = arr.getString(arr.length() - 1);
+
+        var messagesDetails = JsonUtility.FromJson<MessagesDetails>(source);
         
-        _messagesDetails = JsonUtility.FromJson<MessagesDetails>(source);
-        if(_messagesDetails.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+        if(messagesDetails == null)
+            return;
+        if(messagesDetails.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
         {
-            UpdateMessageInfo();
+            UpdateMessageInfo(messagesDetails);
         }
     }
 
-    public void SetMessagesReadId(List<string> messagesReadId)
+    private void UpdateMessageInfo(MessagesDetails messagesDetails)
     {
-        _messagesReadId = messagesReadId;
-    }
-
-    private void UpdateMessageInfo()
-    {
-        if(_messagesDetails == null)
-            return;
-
         var amount = 0;
-        foreach (var t in _messagesDetails.result)
+        _messages.Clear();
+        
+        foreach (var t in messagesDetails.result)
         {
-            if (t.read || _messagesReadId.Contains(t._id) || t.userId!= null && t.userId._id ==  UIManager.Instance.assetOfGame.SavedLoginData.PlayerId)
+            if (t.read || t.userId!= null && t.userId._id == UIManager.Instance.assetOfGame.SavedLoginData.PlayerId)
                 continue;
             
-            amount++;
+            _messages.Add(new MessageData{Message = t.message, ID = t._id});
         }
+        //_messages.Reverse();
+        _onUpdateMessagesAction?.Invoke();
+        UpdateNotificationBubble();
+    }
 
-        var isNeedUpdate = amount > 0;
+    private void UpdateNotificationBubble()
+    {
+        var isNeedUpdate = _messages.Count > 0;
         
         _notificationBubbleGameObject.SetActive(isNeedUpdate);
+        
         if (isNeedUpdate)
         {
-            _notificationBubbleText.text = amount.ToString();
+            _notificationBubbleText.text = _messages.Count.ToString();
         }
     }
+
+    public void AddReedMessage(MessageData messageData)
+    {
+        var message = _messages.Find(messagePredicate => messagePredicate.ID == messageData.ID);
+        if(message == null)
+            return;
+        
+        UIManager.Instance.SocketGameManager.ReadContactUs(message.ID,(socket, packet, args) =>
+        {
+            //add check status
+            _messages.Remove(message);
+            
+            _onUpdateMessagesAction?.Invoke();
+            UpdateNotificationBubble();
+        });
+    }
+
+    public void AddUpdateListener(out List<MessageData> messages, Action action)
+    {
+        messages = _messages;
+        _onUpdateMessagesAction += action;
+    }
+
+    public void RemoveUpdateListener(Action action)
+    {
+        _onUpdateMessagesAction -= action;
+    }
+    
+}
+
+public class MessageData
+{
+    public string ID;
+    public string Message;
 }

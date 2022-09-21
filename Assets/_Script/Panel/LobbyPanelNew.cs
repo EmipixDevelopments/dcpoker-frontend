@@ -153,8 +153,6 @@ public class LobbyPanelNew : MonoBehaviour
     
     private void SwitchPanel(LobbyPanel nextWindow)
     {
-        Messages.CheckMessage();
-        
         // default, close all windows
         CloseAll();
 

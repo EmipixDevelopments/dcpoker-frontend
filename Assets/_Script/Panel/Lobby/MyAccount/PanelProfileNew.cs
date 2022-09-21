@@ -27,20 +27,22 @@ public class PanelProfileNew : MonoBehaviour
     [SerializeField] private MessageBubble _messageBubbleElement;
     [SerializeField] private Transform _infoListTransform;
     
-    //private List<MessageBubble> _messageBubbles;
     private TableContainer<MessageBubble> _messageBubbleTableContainer;
-    private List<string> _massagesReadId;
-    private bool _isNeedMessageUpdate = true;
     private RectTransform _rectTransform;
+
+    private Messages _messages;
+    private List<MessageData> _messagesData;
+
+    private void Awake()
+    {
+        _rectTransform = gameObject.GetComponent<RectTransform>();
+        
+        _messageBubbleTableContainer = new TableContainer<MessageBubble>(_infoListTransform,_messageBubbleElement, 
+            element => element.Init(this), true);
+    }
 
     private void Start()
     {
-        _rectTransform = gameObject.GetComponent<RectTransform>();
-        //_messageBubbles = new List<MessageBubble>();
-        _messageBubbleTableContainer = new TableContainer<MessageBubble>(_infoListTransform,_messageBubbleElement, element => element.Init(this));
-        _massagesReadId = new List<string>();
-        UpdateMessages();
-        
         _changeNameButton.onClick.RemoveAllListeners();
         _changePasswordButton.onClick.RemoveAllListeners();
         _deleteAccountButton.onClick.RemoveAllListeners();
@@ -54,19 +56,24 @@ public class PanelProfileNew : MonoBehaviour
 
     void OnEnable()
     {
-        if (UIManager.Instance)
-        {
-            CallProfileEvent();
+        var uiManager = UIManager.Instance;
+        if(uiManager == null)
+            return;
+        
+        CallProfileEvent();
+        
+        _messages = uiManager.LobbyPanelNew.Messages;
+        _messages.AddUpdateListener(out _messagesData, UpdateMessages);
+        UpdateMessages();
+    }
 
-            if (_isNeedMessageUpdate)
-            {
-                UpdateMessages();
-            }
-            else
-            {
-                _isNeedMessageUpdate = true;
-            }
-        }
+    private void OnDisable()
+    {
+        var uiManager = UIManager.Instance;
+        if(uiManager == null)
+            return;
+
+        uiManager.LobbyPanelNew.Messages.RemoveUpdateListener(UpdateMessages);
     }
 
 
@@ -146,89 +153,22 @@ public class PanelProfileNew : MonoBehaviour
         _userName.text = UIManager.Instance.assetOfGame.SavedLoginData.Username;
     }
 
-    public void UpdateMessages()
+    private void UpdateMessages()
     {
-        var uiManager = UIManager.Instance;
-        if (_messageBubbleTableContainer == null)
-            return;
-
-        var messages = uiManager.LobbyPanelNew.Messages;
-        messages.CheckMessage();
-
-        var messagesDetails = messages.GetMessagesDetails();
-        var messagesResult = messagesDetails.result;
-
-        var amount = 0;
-        foreach (var t in messagesResult)
+        for (var i = 0; i < _messagesData.Count; i++)
         {
-            if (t.read || _massagesReadId.Contains(t._id) || t.userId!= null && t.userId._id ==  UIManager.Instance.assetOfGame.SavedLoginData.PlayerId)
-                continue;
-            
-            _messageBubbleTableContainer.GetElement(amount).SetData(t);
-            amount++;
+            _messageBubbleTableContainer.GetElement(i).SetData(_messagesData[i]);
         }
-        _messageBubbleTableContainer.HideFromIndex(amount);
+        _messageBubbleTableContainer.HideFromIndex(_messagesData.Count);
         
-        /*LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
-        _isNeedMessageUpdate = false;
-        uiManager.LobbyPanelNew.UpdatePanel();*/
-        UpdateUi();
-    }
-
-    private void UpdateUi()
-    {
-        //UIManager.Instance.LobbyPanelNew.
-        LayoutRebuilder.MarkLayoutForRebuild(_rectTransform);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
         UIManager.Instance.LobbyPanelNew.UpdateUi();
-    }
 
-    /*var amount = 0;
-    
-    foreach (var result in messagesDetails.result)
-    {
-        if (result.read || _massagesReadId.Contains(result._id)) 
-            continue;
-        
-        if (_messageBubbles.Count - 1 < amount)
-            CreateNewBubble();
-
-        _messageBubbles[amount].SetData(result);
-        _messageBubbles[amount].gameObject.SetActive(true);
-     
-        amount++;
-    }
-    foreach (var messageBubble in _messageBubbles)
-    {
-        var equalMessage = _messageBubbles.Find(result => result.IsEqual(messageBubble) && result != messageBubble);
-        if (equalMessage != null)
-        {
-            equalMessage.SetData(null);
-            equalMessage.gameObject.SetActive(false);
-        }
-
-        if (_massagesReadId.Contains(messageBubble.GetMessageId()) || messageBubble.IsRead())
-        {
-            messageBubble.gameObject.SetActive(false);
-        }
     }
     
-    //update ui 
-    _isNeedMessageUpdate = false;
-    LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
-    uiManager.LobbyPanelNew.UpdatePanel();
-}
-*/
-    public void AddMessageToRead(string _id)
+    public void AddMessageToRead(MessageData messageData)
     {
-        _massagesReadId.Add(_id);
-        var messages = UIManager.Instance.LobbyPanelNew.Messages;
-        messages.SetMessagesReadId(_massagesReadId);
+        _messages.AddReedMessage(messageData);
     }
-    /*
-    private void CreateNewBubble()
-    {
-        var messageBubble = Instantiate(_messageBubbleElement, _infoListTransform);
-        messageBubble.Init(this);
-        _messageBubbles.Add(messageBubble);
-    }*/
 }
