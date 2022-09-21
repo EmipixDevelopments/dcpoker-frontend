@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &3107763040549307880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 188081678159399274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00d0a9f3963d4c6b80ccc5adb76933ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _text: {fileID: 6388044696458336191}
+  _selectColor: {r: 0.8705883, g: 0.6666667, b: 0.43529415, a: 1}
+  _unSelectColor: {r: 1, g: 1, b: 1, a: 1}
+--- !u!114 &3158333313962870377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3471397704620388431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00d0a9f3963d4c6b80ccc5adb76933ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _text: {fileID: 6388044695880494270}
+  _selectColor: {r: 0.8705883, g: 0.6666667, b: 0.43529415, a: 1}
+  _unSelectColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &3967125393002142684
 GameObject:
   m_ObjectHideFlags: 0
@@ -7215,7 +7245,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 6388044695488109471}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.53289783
+  m_Size: 0.6201926
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

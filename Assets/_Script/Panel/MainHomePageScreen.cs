@@ -195,6 +195,7 @@ public class MainHomePageScreen : MonoBehaviour
     public void OnClickMacauGoldLogo() 
     {
         OnClickloginButton();
+        Reset();
         _background.SetActiveBackgroundPanel(false);
         
         //UIManager.Instance.SoundManager.OnButtonClick();
@@ -250,6 +251,7 @@ public class MainHomePageScreen : MonoBehaviour
     // PanelMenu
     public void OnClickTournamentsButton()
     {
+        
         OnClickloginButton();
     }
     public void OnClickSitNGoButton()
@@ -276,7 +278,7 @@ public class MainHomePageScreen : MonoBehaviour
     public void OnClickloginButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
-        Reset();
+        //Reset();
         LoginScreen.Open();
     }
     // Free Tournament panel
