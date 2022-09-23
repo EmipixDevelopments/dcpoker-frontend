@@ -16,14 +16,16 @@ public class GamePanel : MonoBehaviour
     [SerializeField] private CustomizationPopup _customizationPopup;
 
     [SerializeField] private Button _gameCustomizationButton;
+
+    [SerializeField] private PlayerContainer _playerContainer;
     
     [Space] [Space]
     #region PUBLIC_VARIABLES
 
     ///public Image mainBG;
     //public Image currentBG;
-    public Image imgTable;
-    public Image imgTableLogoMain;
+    //public Image imgTable;
+    //public Image imgTableLogoMain;
     public GameObject currentTurnEffect;
     [Header("Gamobjects")]
     //public GameObject[] SelectedGame;
@@ -40,8 +42,8 @@ public class GamePanel : MonoBehaviour
     public PokerCard[] TableCards;
     public PokerCard[] TableExtraCards;
     public PokerPlayer[] GamePlayers;
-    public Image[] SeatPositionCups;
-    public Image[] SeatPositionCupsByOrder;
+    //public Image[] SeatPositionCups;
+    //public Image[] SeatPositionCupsByOrder;
     public RoomsListing.Room currentRoomData;
     public PlayerInfoList AllPokerPlayerInfo;
     public WaitingListPanel waitingListPanel;
@@ -65,14 +67,14 @@ public class GamePanel : MonoBehaviour
     public Image imgDealer;
     public Image imgstraddleTimer;
     public Image imgRunItTwiceTimer;
-    public Sprite[] imgTables;
-    public Sprite[] imgBackgrounds;
-    public Sprite[] imgTableLogo;
+    //public Sprite[] imgTables;
+    //public Sprite[] imgBackgrounds;
+    //public Sprite[] imgTableLogo;
 
 
     [Header("Buttons")]
-    public Button[] Seats;
-    public Button[] SeatsByOrder;
+    //public Button[] Seats;
+    //public Button[] SeatsByOrder;
     public Button btnChat;
     public Button btnRebuyinTournament;
     //public Button btnRebuyin;
@@ -92,51 +94,51 @@ public class GamePanel : MonoBehaviour
 
     [Header("Two Player")]
     public PokerPlayer[] twoByTwoGamePlayers;
-    public Button[] TwoByTwoSeats;
-    public Button[] TwoByTwoSeatsByOrder;
-    public Image[] TwoByTwoSeatPositionCupsByOrder;
+    //public Button[] TwoByTwoSeats;
+    //public Button[] TwoByTwoSeatsByOrder;
+    //public Image[] TwoByTwoSeatPositionCupsByOrder;
 
     [Header("Three Player")]
     public PokerPlayer[] threeByThreeGamePlayers;
-    public Button[] ThreeByThreeSeats;
-    public Button[] ThreeByThreeSeatsByOrder;
-    public Image[] ThreeByThreeSeatPositionCupsByOrder;
+    //public Button[] ThreeByThreeSeats;
+    //public Button[] ThreeByThreeSeatsByOrder;
+    //public Image[] ThreeByThreeSeatPositionCupsByOrder;
 
     [Header("Four Player")]
     public PokerPlayer[] fourByfourGamePlayers;//new
-    public Button[] fourByfourSeats;
-    public Button[] fourByfourSeatsByOrder;
-    public Image[] fourByfourSeatPositionCupsByOrder;
+    //public Button[] fourByfourSeats;
+    //public Button[] fourByfourSeatsByOrder;
+    //public Image[] fourByfourSeatPositionCupsByOrder;
 
     [Header("Five Player")]
     public PokerPlayer[] FiveByFiveGamePlayers;
-    public Button[] FiveByFiveSeats;
-    public Button[] FiveByFiveSeatsByOrder;
-    public Image[] FiveByFiveSeatPositionCupsByOrder;
+    //public Button[] FiveByFiveSeats;
+    //public Button[] FiveByFiveSeatsByOrder;
+    //public Image[] FiveByFiveSeatPositionCupsByOrder;
 
     [Header("Six Player")]
     public PokerPlayer[] sixBysixGamePlayers;//new
-    public Button[] sixBysixSeats;
-    public Button[] sixBysixSeatsByOrder;
-    public Image[] sixBysixSeatPositionCupsByOrder;
+    //public Button[] sixBysixSeats;
+    //public Button[] sixBysixSeatsByOrder;
+    //public Image[] sixBysixSeatPositionCupsByOrder;
 
     [Header("Seven Player")]
     public PokerPlayer[] sevenBysevenGamePlayers;//new
-    public Button[] sevenBysevenSeats;
-    public Button[] sevenBysevenSeatsByOrder;
-    public Image[] sevenBysevenSeatPositionCupsByOrder;
+    //public Button[] sevenBysevenSeats;
+    //public Button[] sevenBysevenSeatsByOrder;
+    //public Image[] sevenBysevenSeatPositionCupsByOrder;
 
     [Header("Eight Player")]
     public PokerPlayer[] eightByeightGamePlayers;//new
-    public Button[] eightByeightSeats;
-    public Button[] eightByeightSeatsByOrder;
-    public Image[] eightByeightSeatPositionCupsByOrder;
+    //public Button[] eightByeightSeats;
+    //public Button[] eightByeightSeatsByOrder;
+    //public Image[] eightByeightSeatPositionCupsByOrder;
 
     [Header("Nine Player")]
     public PokerPlayer[] NineByNineGamePlayers;
-    public Button[] NineByNineSeats;
-    public Button[] NineByNineSeatsByOrder;
-    public Image[] NineByNineSeatPositionCupsByOrder;
+    //public Button[] NineByNineSeats;
+    //public Button[] NineByNineSeatsByOrder;
+    //public Image[] NineByNineSeatPositionCupsByOrder;
 
 
     [Header("Text")]
@@ -247,6 +249,12 @@ public class GamePanel : MonoBehaviour
         _rebuyinButtons.Init(this);
         _pockerRoomCustomization.Init();
         _customizationPopup.Init(_pockerRoomCustomization);
+        _playerContainer.Init();
+    }
+
+    public void SetActiveOpenSeatButton(int index, bool active)
+    {
+        _playerContainer.SetActiveOpenSeatButton(index, active);
     }
 
     void OnEnable()
@@ -405,93 +413,109 @@ public class GamePanel : MonoBehaviour
 
         if (currentRoomData.isTournament)
         {
+            _playerContainer.SetActivePlayerPlace(9);
+            
             GamePlayers = NineByNineGamePlayers;
-            Seats = NineByNineSeats;
-            SeatsByOrder = NineByNineSeatsByOrder;
-            SeatPositionCups = NineByNineSeatPositionCupsByOrder;
-            SeatPositionCupsByOrder = NineByNineSeatPositionCupsByOrder;
+            //Seats = NineByNineSeats;
+            //SeatsByOrder = NineByNineSeatsByOrder;
+            //SeatPositionCups = NineByNineSeatPositionCupsByOrder;
+            //SeatPositionCupsByOrder = NineByNineSeatPositionCupsByOrder;
         }
         else
         {
             if (currentRoomData.maxPlayers == 2)
             {
                 GamePlayers = twoByTwoGamePlayers;
-                Seats = TwoByTwoSeats;
-                SeatsByOrder = TwoByTwoSeatsByOrder;
-                SeatPositionCups = TwoByTwoSeatPositionCupsByOrder;
-                SeatPositionCupsByOrder = TwoByTwoSeatPositionCupsByOrder;
+                _playerContainer.SetActivePlayerPlace(2);
+                //Seats = TwoByTwoSeats;
+                //SeatsByOrder = TwoByTwoSeatsByOrder;
+                //SeatPositionCups = TwoByTwoSeatPositionCupsByOrder;
+                //SeatPositionCupsByOrder = TwoByTwoSeatPositionCupsByOrder;
             }
             else if (currentRoomData.maxPlayers == 3)
             {
                 GamePlayers = threeByThreeGamePlayers;
-                Seats = ThreeByThreeSeats;
-                SeatsByOrder = ThreeByThreeSeatsByOrder;
-                SeatPositionCups = ThreeByThreeSeatPositionCupsByOrder;
-                SeatPositionCupsByOrder = ThreeByThreeSeatPositionCupsByOrder;
+                _playerContainer.SetActivePlayerPlace(3);
+
+                //Seats = ThreeByThreeSeats;
+                //SeatsByOrder = ThreeByThreeSeatsByOrder;
+                //SeatPositionCups = ThreeByThreeSeatPositionCupsByOrder;
+                //SeatPositionCupsByOrder = ThreeByThreeSeatPositionCupsByOrder;
             }
             else if (currentRoomData.maxPlayers == 4)//new
             {
                 GamePlayers = fourByfourGamePlayers;
-                Seats = fourByfourSeats;
-                SeatsByOrder = fourByfourSeatsByOrder;
-                SeatPositionCups = fourByfourSeatPositionCupsByOrder;
-                SeatPositionCupsByOrder = fourByfourSeatPositionCupsByOrder;
+                _playerContainer.SetActivePlayerPlace(4);
+
+                //Seats = fourByfourSeats;
+                //SeatsByOrder = fourByfourSeatsByOrder;
+                //SeatPositionCups = fourByfourSeatPositionCupsByOrder;
+                //SeatPositionCupsByOrder = fourByfourSeatPositionCupsByOrder;
             }
             else if (currentRoomData.maxPlayers == 5)
             {
                 GamePlayers = FiveByFiveGamePlayers;
-                Seats = FiveByFiveSeats;
-                SeatsByOrder = FiveByFiveSeatsByOrder;
-                SeatPositionCups = FiveByFiveSeatPositionCupsByOrder;
-                SeatPositionCupsByOrder = FiveByFiveSeatPositionCupsByOrder;
+                _playerContainer.SetActivePlayerPlace(5);
+
+                //Seats = FiveByFiveSeats;
+                //SeatsByOrder = FiveByFiveSeatsByOrder;
+                //SeatPositionCups = FiveByFiveSeatPositionCupsByOrder;
+                //SeatPositionCupsByOrder = FiveByFiveSeatPositionCupsByOrder;
             }
             else if (currentRoomData.maxPlayers == 6)//new
             {
                 GamePlayers = sixBysixGamePlayers;
-                Seats = sixBysixSeats;
-                SeatsByOrder = sixBysixSeatsByOrder;
-                SeatPositionCups = sixBysixSeatPositionCupsByOrder;
-                SeatPositionCupsByOrder = sixBysixSeatPositionCupsByOrder;
+                _playerContainer.SetActivePlayerPlace(6);
+                //Seats = sixBysixSeats;
+                //SeatsByOrder = sixBysixSeatsByOrder;
+                //SeatPositionCups = sixBysixSeatPositionCupsByOrder;
+                //SeatPositionCupsByOrder = sixBysixSeatPositionCupsByOrder;
             }
             else if (currentRoomData.maxPlayers == 7)//new
             {
                 GamePlayers = sevenBysevenGamePlayers;
-                Seats = sevenBysevenSeats;
-                SeatsByOrder = sevenBysevenSeatsByOrder;
-                SeatPositionCups = sevenBysevenSeatPositionCupsByOrder;
-                SeatPositionCupsByOrder = sevenBysevenSeatPositionCupsByOrder;
+                _playerContainer.SetActivePlayerPlace(7);
+                //Seats = sevenBysevenSeats;
+                //SeatsByOrder = sevenBysevenSeatsByOrder;
+                //SeatPositionCups = sevenBysevenSeatPositionCupsByOrder;
+                //SeatPositionCupsByOrder = sevenBysevenSeatPositionCupsByOrder;
             }
             else if (currentRoomData.maxPlayers == 8)//new
             {
                 GamePlayers = eightByeightGamePlayers;
-                Seats = eightByeightSeats;
-                SeatsByOrder = eightByeightSeatsByOrder;
-                SeatPositionCups = eightByeightSeatPositionCupsByOrder;
-                SeatPositionCupsByOrder = eightByeightSeatPositionCupsByOrder;
+                _playerContainer.SetActivePlayerPlace(8);
+
+                //Seats = eightByeightSeats;
+                //SeatsByOrder = eightByeightSeatsByOrder;
+                //SeatPositionCups = eightByeightSeatPositionCupsByOrder;
+                //SeatPositionCupsByOrder = eightByeightSeatPositionCupsByOrder;
             }
             else
             {
                 GamePlayers = NineByNineGamePlayers;
-                Seats = NineByNineSeats;
-                SeatsByOrder = NineByNineSeatsByOrder;
-                SeatPositionCups = NineByNineSeatPositionCupsByOrder;
-                SeatPositionCupsByOrder = NineByNineSeatPositionCupsByOrder;
+                _playerContainer.SetActivePlayerPlace(9);
+                //Seats = NineByNineSeats;
+                //SeatsByOrder = NineByNineSeatsByOrder;
+                //SeatPositionCups = NineByNineSeatPositionCupsByOrder;
+                //SeatPositionCupsByOrder = NineByNineSeatPositionCupsByOrder;
             }
         }
 
-        for (int i = 0; i < SeatPositionCupsByOrder.Length; i++)
+        /*for (int i = 0; i < SeatPositionCupsByOrder.Length; i++)
         {
             SeatPositionCupsByOrder[i].Close();
-        }
+        }*/
 
-        for (int i = 0; i < SeatsByOrder.Length; i++)
+        /*for (int i = 0; i < SeatPositionCupsByOrder.Length; i++)
         {
             int newSeatIndex = i;
-            SeatsByOrder[i].name = "Image-Seat-" + newSeatIndex;
-            SeatsByOrder[i].onClick.RemoveAllListeners();
-            SeatsByOrder[i].onClick.AddListener(() => { OnSeatButtonTap(newSeatIndex); });
-            SeatPositionCupsByOrder[i].Open();
-        }
+            //SeatsByOrder[i].name = "Image-Seat-" + newSeatIndex;
+            //SeatsByOrder[i].onClick.RemoveAllListeners();
+            //SeatsByOrder[i].onClick.AddListener(() => { OnSeatButtonTap(newSeatIndex); });
+            //SeatPositionCupsByOrder[i].Open();
+        }*/
+        
+        _playerContainer.InitOpenSeatButtons(OnSeatButtonTap);
 
         /* for (int i = 0; i < SeatsByOrder.Length; i++)
          {
@@ -646,18 +670,21 @@ public class GamePanel : MonoBehaviour
             ownPlayer.BuyInAmount = 0;
         }
 
-        for (int i = 0; i < Seats.Length; i++)
+        /*for (int i = 0; i < Seats.Length; i++)
         {
             Seats[i].Close();
         }
-        for (int i = 0; i < SeatPositionCupsByOrder.Length; i++)
+        */
+        _playerContainer.SetActiveOpenSeatButtons(false);
+
+        /*for (int i = 0; i < SeatPositionCupsByOrder.Length; i++)
         {
             SeatPositionCupsByOrder[i].Close();
         }
         for (int i = 0; i < SeatPositionCups.Length; i++)
         {
             SeatPositionCups[i].Close();
-        }
+        }*/
         DestoryStuff();
         btnChat.interactable = HasJoinedRoom;
 
@@ -1106,7 +1133,8 @@ public class GamePanel : MonoBehaviour
                     {
                         if (!currentRoomData.isTournament)
                         {
-                            Seats[i].Open();
+                            _playerContainer.SetActiveOpenSeatButton(i, true);
+                            //Seats[i].Open();
                         }
                     }
                 }
@@ -1114,11 +1142,12 @@ public class GamePanel : MonoBehaviour
             if (currentRoomData.maxPlayers == playerInfo.playerInfo.Count)
             {
                 //Debug.Log("sub in ===");
-                for (int i = 0; i < Seats.Length; i++)
+                /*for (int i = 0; i < Seats.Length; i++)
                 {
                     //Debug.Log("sub in ");
                     Seats[i].Close();
-                }
+                }*/
+                _playerContainer.SetActiveOpenSeatButtons(false);
             }
         }
         catch (System.Exception e)
@@ -1198,7 +1227,8 @@ public class GamePanel : MonoBehaviour
                 {
                     if (!currentRoomData.isTournament)
                     {
-                        Seats[i].Open();
+                        _playerContainer.SetActiveOpenSeatButton(i, true);
+                        //Seats[i].Open();
                     }
                 }
             }
@@ -1229,7 +1259,8 @@ public class GamePanel : MonoBehaviour
                 {
                     if (!currentRoomData.isTournament)
                     {
-                        Seats[i].Open();
+                        _playerContainer.SetActiveOpenSeatButton(i, true);
+                        //Seats[i].Open();
                     }
                 }
             }
@@ -2922,10 +2953,11 @@ public class GamePanel : MonoBehaviour
         if (currentRoomData.maxPlayers == AllPokerPlayerInfo.playerInfo.Count)
         {
             Debug.Log("sub in ===");
-            for (int i = 0; i < Seats.Length; i++)
+            /*for (int i = 0; i < Seats.Length; i++)
             {
                 Seats[i].Close();
-            }
+            }*/
+            _playerContainer.SetActiveOpenSeatButtons(false);
 
         }
         //  return; //OnSubscribeRoom broadcast integrated. dont need to run following lines.
@@ -4165,8 +4197,8 @@ public class GamePanel : MonoBehaviour
                 GamePlayers[newSeatIndex].ProfilePic.Open();
                 GamePlayers[newSeatIndex].isDealer = SpadePlayerData.dealerPlayerId == plr.id;
 
-
-                Seats[newSeatIndex].Close();
+                _playerContainer.SetActiveOpenSeatButton(newSeatIndex, false);
+                //Seats[newSeatIndex].Close();
 
                 if (plr.status.ToEnum<PlayerStatus>() != PlayerStatus.Waiting)
                 {
@@ -4318,24 +4350,21 @@ public class GamePanel : MonoBehaviour
 
             if (HasJoin && !currentRoomData.isTournament)
             {
-                foreach (Button Seats in Seats)
-                {
-                    Seats.gameObject.SetActive(!HasJoin);
-                }
+                _playerContainer.SetActiveOpenSeatButtons(!HasJoin);
             }
 
-            for (int k = 0; k < Seats.Length; k++)
+            for (int k = 0; k < _playerContainer.GetPlayerPlaceCount(); k++)
             {
                 if (UIManager.Instance.selectedGameType == GameType.cash)
                 {
                     if (GamePlayers[k].gameObject.activeSelf)
                     {
-                        Seats[k].Close();
+                        _playerContainer.SetActiveOpenSeatButton(k, false);
                     }
                 }
                 else
                 {
-                    Seats[k].Close();
+                    _playerContainer.SetActiveOpenSeatButton(k, false);
                 }
             }
             GamePlayers[newSeatIndex].Dealer.gameObject.SetActive(SpadePlayerData.dealerPlayerId == plr.id);
@@ -4348,23 +4377,20 @@ public class GamePanel : MonoBehaviour
             DestroyInstantiatedObjects();
         }
 
+        var playerPlaceCount = _playerContainer.GetPlayerPlaceCount();
         int count = ownPlayerSeatIndex;
-        for (int i = 0; i < SeatsByOrder.Length - ownPlayerSeatIndex; i++)
+        for (int i = 0; i < playerPlaceCount - ownPlayerSeatIndex; i++)
         {
             int newSeatIndex = count;
-            SeatsByOrder[i].onClick.RemoveAllListeners();
-            SeatsByOrder[i].onClick.AddListener(() => { OnSeatButtonTap(newSeatIndex); });
+            _playerContainer.InitOpenSeatButton(i, () => OnSeatButtonTap(newSeatIndex));
             count++;
-            SeatsByOrder[i].name = "Image-Seat-" + newSeatIndex;
         }
         count = 0;
-        for (int i = SeatsByOrder.Length - ownPlayerSeatIndex; i < SeatsByOrder.Length; i++)
+        for (int i = playerPlaceCount - ownPlayerSeatIndex; i < playerPlaceCount; i++)
         {
             int newSeatIndex = count;
-            SeatsByOrder[i].onClick.RemoveAllListeners();
-            SeatsByOrder[i].onClick.AddListener(() => { OnSeatButtonTap(newSeatIndex); });
+            _playerContainer.InitOpenSeatButton(i, () => OnSeatButtonTap(newSeatIndex));
             count++;
-            SeatsByOrder[i].name = "Image-Seat-" + newSeatIndex;
         }
     }
 
@@ -4647,25 +4673,10 @@ public class GamePanel : MonoBehaviour
     {
         if (gameObject.activeInHierarchy)
         {
-            if (SeatIndex.Equals(10))
-
-            {
-                for (int i = 0; i < Seats.Length; i++)
-                {
-                    Seats[i].Close();
-                }
-                return;
-            }
-            else
-            {
-                for (int i = 0; i < Seats.Length; i++)
-                {
-                    Seats[i].Close();
-                }
-                Seats[SeatIndex].Close();
-            }
+            _playerContainer.SetActiveOpenSeatButtons(false);
         }
     }
+    
     public void reconnectResetData()
     {
         TournamentBreakTableMessage = "";

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class SaveComponent
 {
-    private TableCustomizationsScriptableObject _tableCustomizationsScriptableObject;
+    private RoomPresetScriptableObject _roomPresetScriptableObject;
     private Dictionary<RoomGameType, TableCustomizationData> _tableCustomizationsData;
 
     public SaveComponent()
@@ -10,9 +10,9 @@ public class SaveComponent
         _tableCustomizationsData = new Dictionary<RoomGameType, TableCustomizationData>();
     }
 
-    public void Init(TableCustomizationsScriptableObject tableCustomizationsScriptableObject) //move to container or context
+    public void Init(RoomPresetScriptableObject roomPresetScriptableObject) //move to container or context
     {
-        _tableCustomizationsScriptableObject = tableCustomizationsScriptableObject;
+        _roomPresetScriptableObject = roomPresetScriptableObject;
     }
 
     public TableCustomizationData GetTableCustomization(RoomGameType gameType)
@@ -28,7 +28,6 @@ public class SaveComponent
         var tableCustomizationsData = JsonUtility.FromJson<TableCustomizationData>(tableCustomizationsDataJson);
         _tableCustomizationsData.Add(gameType, tableCustomizationsData);
         
-        //Debug.LogError("table_customization_" + gameType + " : " + tableCustomizationsDataJson);//debug
         return tableCustomizationsData;
     }
 
@@ -43,7 +42,7 @@ public class SaveComponent
     
     private string GetDefaultTableCustomizations(RoomGameType gameType)
     {
-        var tableCustomizationData = _tableCustomizationsScriptableObject.GetTableCustomization(gameType);
+        var tableCustomizationData = _roomPresetScriptableObject.GetTableCustomization(gameType);
         return JsonUtility.ToJson(tableCustomizationData);
     }
 }

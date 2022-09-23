@@ -125,11 +125,11 @@ public class WaitingListPanel : MonoBehaviour
                 {
                     if (!UIManager.Instance.GameScreeen.GamePlayers[i].gameObject.activeInHierarchy)
                     {
-                        UIManager.Instance.GameScreeen.Seats[i].Open();
+                        UIManager.Instance.GameScreeen.SetActiveOpenSeatButton(i, true);
                     }
                     else
                     {
-                        UIManager.Instance.GameScreeen.Seats[i].Close();
+                        UIManager.Instance.GameScreeen.SetActiveOpenSeatButton(i, false);
                     }
                 }
             }

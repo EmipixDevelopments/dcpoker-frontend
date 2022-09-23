@@ -5,10 +5,13 @@ using UnityEngine.UI;
 
 public class PockerRoomCustomization : MonoBehaviour
 {
-    [SerializeField] private TableBackgroundReferenceScriptableObject _tableBackgroundReferenceScriptableObject;
-    [SerializeField] private TableCustomizationsScriptableObject _tableCustomizationsScriptableObject;
+    [SerializeField] private RoomBackgroundReferenceScriptableObject _roomBackgroundReferenceScriptableObject;
+    [SerializeField] private RoomTableReferenceScriptableObject _roomTableReferenceScriptableObject;
+    
+    [SerializeField] private RoomPresetScriptableObject _roomPresetScriptableObject;
 
     [SerializeField] private Image _backgroundImage;
+    [SerializeField] private Image _tableImage;
     
     private SaveComponent _saveComponent;
     private TableCustomizationData _currentTableCustomizationData;
@@ -17,7 +20,7 @@ public class PockerRoomCustomization : MonoBehaviour
     public void Init()
     {
         _saveComponent = new SaveComponent(); // move from here
-        _saveComponent.Init(_tableCustomizationsScriptableObject);
+        _saveComponent.Init(_roomPresetScriptableObject);
     }
 
     public TableCustomizationData GetCurrentCustomizationData()
@@ -43,53 +46,34 @@ public class PockerRoomCustomization : MonoBehaviour
         _saveComponent.SaveTableCustomizationData(_currentGameType);
     }
 
-    public void UpdateRoom() => UpdateRoom(_currentTableCustomizationData);
-
-    public void UpdateRoom(TableCustomizationData tableCustomizationData)
+    public void UpdateRoom()
     {
-        switch (tableCustomizationData.RoomColor)
+        UpdateBackground(_currentTableCustomizationData);
+        UpdateTable(_currentTableCustomizationData);
+    }
+    
+    public void UpdateBackground(TableCustomizationData tableCustomizationData)
+    {
+        var index = (int) tableCustomizationData.RoomColor;
+        var colorCount = _roomBackgroundReferenceScriptableObject.Colors.Count;
+        
+        if (index > colorCount - 1)
         {
-            case RoomColor.Blue:
-                _backgroundImage.sprite = null;
-                _backgroundImage.color = _tableBackgroundReferenceScriptableObject.Colors[0];
-                break;
-            case RoomColor.DarkBlue:
-                _backgroundImage.sprite = null;
-                _backgroundImage.color = _tableBackgroundReferenceScriptableObject.Colors[1];
-                break;
-            case RoomColor.Green:
-                _backgroundImage.sprite = null;
-                _backgroundImage.color = _tableBackgroundReferenceScriptableObject.Colors[2];
-                break;
-            case RoomColor.Red:
-                _backgroundImage.sprite = null;
-                _backgroundImage.color = _tableBackgroundReferenceScriptableObject.Colors[3];
-                break;
-            case RoomColor.Gold:
-                _backgroundImage.sprite = null;
-                _backgroundImage.color = _tableBackgroundReferenceScriptableObject.Colors[4];
-                break;
-            
-            case RoomColor.PatternBlue:
-                _backgroundImage.sprite = _tableBackgroundReferenceScriptableObject.BackgroundsImages[0];
-                _backgroundImage.color = Color.white;
-                break;
-            case RoomColor.PatternDarkBlue:
-                _backgroundImage.sprite = _tableBackgroundReferenceScriptableObject.BackgroundsImages[1];
-                _backgroundImage.color = Color.white;
-                break;
-            case RoomColor.PatternRed:
-                _backgroundImage.sprite = _tableBackgroundReferenceScriptableObject.BackgroundsImages[2];
-                _backgroundImage.color = Color.white;
-                break;
-            case RoomColor.PatternGreen:
-                _backgroundImage.sprite = _tableBackgroundReferenceScriptableObject.BackgroundsImages[3];
-                _backgroundImage.color = Color.white;
-                break;
-            case RoomColor.PatternGold:
-                _backgroundImage.sprite = _tableBackgroundReferenceScriptableObject.BackgroundsImages[4];
-                _backgroundImage.color = Color.white;
-                break;
+            var backgroundImageIndex = index - colorCount;
+
+            _backgroundImage.color = Color.white;
+            _backgroundImage.sprite = _roomBackgroundReferenceScriptableObject.BackgroundsImages[backgroundImageIndex];
         }
+        else
+        {
+            _backgroundImage.sprite = null;
+            _backgroundImage.color = _roomBackgroundReferenceScriptableObject.Colors[index];
+        }
+    }
+
+    public void UpdateTable(TableCustomizationData tableCustomizationData)
+    {
+        var index = (int) tableCustomizationData.TableColor;
+        _tableImage.sprite = _roomTableReferenceScriptableObject.TableImages[index];
     }
 }

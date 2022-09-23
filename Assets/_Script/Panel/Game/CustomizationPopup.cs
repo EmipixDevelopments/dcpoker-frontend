@@ -88,12 +88,13 @@ public class CustomizationPopup : MonoBehaviour
     private void OnSelectRoomColor(int index)
     {
         _currentCustomizationData.RoomColor = (RoomColor)index;
-        _pockerRoomCustomization.UpdateRoom(_currentCustomizationData);
+        _pockerRoomCustomization.UpdateBackground(_currentCustomizationData);
     }
 
     private void OnSelectTableColor(int index)
     {
-        
+        _currentCustomizationData.TableColor = (TableColor)index;
+        _pockerRoomCustomization.UpdateTable(_currentCustomizationData);
     }
 
     private void OnSelectCardsColor(int index)

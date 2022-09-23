@@ -14,34 +14,3 @@ public class TableCustomizationData
         CardsColor = tableCustomizationData.CardsColor;
     }
 }
-
-public enum RoomColor
-{
-    Blue,
-    DarkBlue,
-    Green,
-    Red,
-    Gold,
-    PatternBlue,
-    PatternDarkBlue,
-    PatternGreen,
-    PatternRed,
-    PatternGold
-}
-
-public enum TableColor
-{
-    Blue,
-    DarkBlue,
-    Green,
-    Red,
-    Black
-}
-
-public enum CardsColor
-{
-    Blue,
-    DarkBlue,
-    Green,
-    Red
-}
