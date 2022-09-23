@@ -29,7 +29,6 @@ public class PlayerContainer : MonoBehaviour
             return;
         
         ResetPlace();
-        _currentOrderPlace.Clear();
 
         var playerPlaceIndex = _playerIndexPlayerPlace[playerCount - 2];
         InitPlayerPlace(playerPlaceIndex._orderPlayerPlaceIndex, _currentOrderPlace);
@@ -38,6 +37,8 @@ public class PlayerContainer : MonoBehaviour
 
     private void InitPlayerPlace(string playerIndexesString, List<PlayerPlace> playerPlaces)
     {
+        playerPlaces.Clear();
+        
         var indexesString = playerIndexesString.Split(',');
         foreach (var indexString in indexesString)
         {
@@ -78,15 +79,6 @@ public class PlayerContainer : MonoBehaviour
     public void SetActiveOpenSeatButton(int index, bool active)
     {
         _currentPlace[index].gameObject.SetActive(active);
-    }
-
-    private void ActivePlayerPlace(int[] playerPlace)
-    {
-        for (var i = 0; i < playerPlace.Length; i++)
-        {
-            var place = _playerPlaces[playerPlace[i]];
-            _playerPlaces[playerPlace[i]].gameObject.SetActive(true);   
-        }
     }
 
     private void ResetPlace()
