@@ -294,7 +294,8 @@ public class LoginPanel : MonoBehaviour
         rootHackBase root = new rootHackBase();
         root.mobile = mobile;
         root.password = password;
-        root.timestamp = DateTimeToUnix(DateTime.UtcNow);
+        var dateTime = DateTime.UtcNow.AddSeconds(-9); // fix
+        root.timestamp = DateTimeToUnix(dateTime);
         string json = JsonUtility.ToJson(root);
         //Debug.LogError("Not Encrypt: " + json);
         string encryptedJson = UIManager.Instance.MainHomeScreen.AESEncryption(json);
