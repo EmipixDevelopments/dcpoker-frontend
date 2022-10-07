@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http;
 using UnityEngine;
 using BestHTTP.SocketIO;
 using BestHTTP.SocketIO.Events;
@@ -149,7 +151,7 @@ public class SocketGamemanager : MonoBehaviour
     /// <param name="username">Username.</param>
     /// <param name="password">Password.</param>
     /// <param name="action">Action.</param>
-    public void RegisterPlayer(string username, string password, string mobile, string refferralcode, SocketIOAckCallback action)
+    public void RegisterPlayer(string username, string password, string mobile, string flag, string refferralcode, SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
             return;
@@ -159,6 +161,7 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("username", username.ToLower());
         jsonObj.put("password", password);
         jsonObj.put("mobile", mobile);
+        jsonObj.put("flag", flag);
         jsonObj.put("refferralCode", refferralcode); // not used
         jsonObj.put("deviceId", SystemInfo.deviceUniqueIdentifier.ToString());
         jsonObj.put("os", Utility.Instance.GetOSName());
@@ -1004,12 +1007,14 @@ public class SocketGamemanager : MonoBehaviour
     /// </summary>
     /// <param name="playerId">Player iD.</param>
     /// <param name="profilePic">profilePic iD.</param>
+    /// <param name="profileImage">profile Image.</param>
     /// <param name="action">Action.</param>
-    public void GetplayerProfilePic(int profilePicId, SocketIOAckCallback action)
+    public void GetplayerProfilePic(int profilePicId, string profileImageBase64, SocketIOAckCallback action)
     {
         JSON_Object jsonObj = new JSON_Object();
         jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
         jsonObj.put("profilePic", profilePicId);
+        jsonObj.put("profileImage", profileImageBase64 ?? "null");
         jsonObj.put("authToken", UIManager.Instance.tokenHack());
         jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
         jsonObj.put("productName", Application.productName);
@@ -1017,6 +1022,7 @@ public class SocketGamemanager : MonoBehaviour
 
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.playerProfilePic, action, Json.Decode(jsonObj.toString()));
     }
+
     /// <summary>
     /// newsBlog.
     /// </summary>
@@ -1176,7 +1182,7 @@ public class SocketGamemanager : MonoBehaviour
     /// <param name="playerAction">Player action.</param>
     /// <param name="hasRaised">If set to <c>true</c> has raised.</param>
     /// <param name="action">Action.</param>
-    public void SendPlayerAction(string playerId, double betAmount, PokerPlayerAction playerAction, bool hasRaised, SocketIOAckCallback action)
+    public void SendPlayerAction(string playerId, double betAmount, PokerPlayerAction playerAction, bool hasRaised, int bankTime, SocketIOAckCallback action)
     {
         JSON_Object actionObj = new JSON_Object();
         actionObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
@@ -1184,6 +1190,7 @@ public class SocketGamemanager : MonoBehaviour
         actionObj.put("action", (int)playerAction);
         actionObj.put("roomId", Constants.Poker.TableId);
         actionObj.put("hasRaised", hasRaised);
+        actionObj.put("backTime", bankTime);
         actionObj.put("authToken", UIManager.Instance.tokenHack());
         actionObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
         actionObj.put("productName", Application.productName);
@@ -1748,7 +1755,6 @@ public class SocketGamemanager : MonoBehaviour
         Debug.Log(Constants.PokerEvents.Banner + " " + Json.Decode(jsonObj.toString()));
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.Banner, action, Json.Decode(jsonObj.toString()));
     }
-
 
     /// <summary>
     /// Reconnect.

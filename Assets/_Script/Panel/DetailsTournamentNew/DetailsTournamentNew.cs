@@ -55,6 +55,8 @@ public class DetailsTournamentNew : MonoBehaviour
     private string _nameSpaceStr = "";
     private long   _rebuyAmount;
     private double totalSeconds;
+
+    private Coroutine _updateDataCoroutine;
     
     private DetailsTournamentData _detailsTournamentData;
 
@@ -118,6 +120,9 @@ public class DetailsTournamentNew : MonoBehaviour
         
         uiManager.LobbyPanelNew.RemoveOnSwitchLobbyPanelListener(OnSwitchLobbyPanel);
         _detailsTournamentData.HighlightTableElement.SetHighlight(false);
+        
+        if(_updateDataCoroutine!=null)
+            StopCoroutine(_updateDataCoroutine);
     }
 
     private void OnSwitchLobbyPanel(LobbyPanelNew.LobbyPanel lobbyPanel)
@@ -167,12 +172,25 @@ public class DetailsTournamentNew : MonoBehaviour
 
         _detailsTournamentData = detailsTournamentData;
 
-        UpdateData();
-        
         detailsTournamentData.HighlightTableElement.SetHighlight(true);
-        
-        if(!gameObject.activeSelf)
+
+        if (!gameObject.activeSelf)
+        {
             gameObject.SetActive(true);
+            StartCoroutine(updateDataEnumerator());
+            return;
+        }
+        
+        UpdateData();
+    }
+
+    private IEnumerator updateDataEnumerator()
+    {
+        while (true)
+        {
+            UpdateData();
+            yield return new WaitForSeconds(5);
+        }
     }
 
     private void UpdateButton()
@@ -210,6 +228,7 @@ public class DetailsTournamentNew : MonoBehaviour
     {
         _detailsTournamentData.ButtonAction?.Invoke();
         _detailsTournamentData.HighlightTableElement.UpdateData();
+        UpdateData();
     }
 
     private void ResetButton()
@@ -222,9 +241,12 @@ public class DetailsTournamentNew : MonoBehaviour
 
     private void UpdateData()
     {
+        ResetData();
+        
         var tournamentInfoData = _detailsTournamentData.TournamentInfoData;
         _statusText.text = tournamentInfoData.status;
         _buyInText.text = tournamentInfoData.buyIn;
+        _blindTimeText.text = tournamentInfoData.blindTime + " min.";
         _playersText.text = tournamentInfoData.players.ToString();
         _limitText.text = tournamentInfoData.gameType;
         _prizePoolText.text = tournamentInfoData.prizePool.ConvertToCommaSeparatedValue();
@@ -276,27 +298,34 @@ public class DetailsTournamentNew : MonoBehaviour
         }
         */
         
-        var dateString = _detailsTournamentData.NormalTournamentData.tournamentStartTime;
+        var dateString = _detailsTournamentData.NormalTournamentData?.tournamentStartTime;
         
         if (string.IsNullOrEmpty(dateString))
         {
             // 3. Турнир не начался из за того, что нет минимального количества игроков (время пустое)
-            _startInText.text = $"Will start when <b>{tournamentInfoData.min_players - tournamentInfoData.players} playeres will join</b>";
-            _playersText.text = $"{tournamentInfoData.players}/{tournamentInfoData.max_players}";
+
+            var needPlayerToStart = tournamentInfoData.min_players - tournamentInfoData.players;
+            
+            if(needPlayerToStart <= 0)
+                return;
+            
+            _startInText.text = $"Will start when <b>{needPlayerToStart} playeres will join</b>";
+            _playersText.text = $"{tournamentInfoData.players}/{tournamentInfoData.min_players}";
         }
         else
         {
             var dateTime = DateTime.Parse(dateString);
+            var currentTime = DateTime.UtcNow.AddHours(3); // Europe/Lisbon (idk 3)
 
             int lastTileForRegister = tournamentInfoData.lateRegistrationLevel * tournamentInfoData.bindLevelRizeTime;
             // 2. Турнир не начался по времени (время есть)
-            if (dateTime > DateTime.Now)
+            if (dateTime > currentTime)
             {
-                TimeSpan lastTime = dateTime.Subtract(DateTime.UtcNow);
+                TimeSpan lastTime = dateTime.Subtract(currentTime);
                 _startInText.text = $"Will start in <b>{lastTime.Days} Days : {lastTime.Hours} Hours : {lastTime.Minutes} Minutes</b>";
             }
             // 1. Турнир начался, и не прошло разрешенное время
-            else if (dateTime.AddMinutes(lastTileForRegister) > DateTime.UtcNow)
+            else if (dateTime.AddMinutes(lastTileForRegister) > currentTime)
             {
                 _startInText.gameObject.SetActive(false);
             }

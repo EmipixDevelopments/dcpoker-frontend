@@ -119,9 +119,11 @@ public class WaitingListPanel : MonoBehaviour
             btnLeaveWaitingList.Close();
             //Debug.Log("Here3");
             this.Close();
-            if (UIManager.Instance.GameScreeen.gameObject.activeInHierarchy)
+            var gamePanel = UIManager.Instance.GameScreeen;
+            if (gamePanel.gameObject.activeInHierarchy)
             {
-                for (int i = 0; i < UIManager.Instance.GameScreeen.GamePlayers.Length; i++)
+                gamePanel.UpdateOpenSeatButton();
+                /*for (int i = 0; i < UIManager.Instance.GameScreeen.GamePlayers.Length; i++)
                 {
                     if (!UIManager.Instance.GameScreeen.GamePlayers[i].gameObject.activeInHierarchy)
                     {
@@ -131,7 +133,7 @@ public class WaitingListPanel : MonoBehaviour
                     {
                         UIManager.Instance.GameScreeen.SetActiveOpenSeatButton(i, false);
                     }
-                }
+                }*/
             }
         }
         //if (isMyInWaiting && !result.enableJoinWaitingListButton)

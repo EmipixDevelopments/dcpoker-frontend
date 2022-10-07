@@ -91,13 +91,14 @@ public class SitNGoTableElement : MonoBehaviour, IHighlightTableElement
                 return;
 
             ResetButton();
-            
+
             if(!_tournamentData.isRegistered)
             {
                 _registerButtonGameObject.gameObject.SetActive(true);
                 _rightButton.onClick.AddListener(OnRegisterButton);
                 _detailsTournamentData.TournamentButtonState = TournamentButtonState.Register;
                 _detailsTournamentData.ButtonAction = OnRegisterButton;
+                return;
             }
             else
             {
@@ -107,18 +108,19 @@ public class SitNGoTableElement : MonoBehaviour, IHighlightTableElement
                     _rightButton.onClick.AddListener(OnOpenTournamentRoom); 
                     _detailsTournamentData.TournamentButtonState = TournamentButtonState.Open;
                     _detailsTournamentData.ButtonAction = OnOpenTournamentRoom;
-
                     return;
                 }
-                
-                _unregisterButtonGameObject.gameObject.SetActive(true);
-                _rightButton.onClick.AddListener(OnUnregisterButton);
-                _detailsTournamentData.TournamentButtonState = TournamentButtonState.Unregister;
-                _detailsTournamentData.ButtonAction = OnUnregisterButton;
-
             }
-            
+
+            ResetTournamentDetailsData();
+
         });
+    }
+
+    private void ResetTournamentDetailsData()
+    {
+        _detailsTournamentData.TournamentButtonState = TournamentButtonState.None;
+        _detailsTournamentData.ButtonAction = null;
     }
     
     private void ResetButton()

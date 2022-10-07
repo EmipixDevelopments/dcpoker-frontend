@@ -55,6 +55,7 @@ public class PlayerLoginResponse
     public string token;
     public string timeZone;
     public int profilePic; // used in server
+    public string profileImage;
     public int winningCount;
     public int winningToken;
     public int winningTotal;
@@ -117,6 +118,7 @@ public class RoomsListing
         public string namespaceString = "cash_texas";
         public string pokerGameType = "texas";
         public string pokerGameFormat = "cash";
+        //public bool isCash;
 
         public string tableNumber = "";
         public string name = "";
@@ -231,6 +233,9 @@ public class PlayerInfoList
         public string absoluteTimeSartTime;
         public PlayerProfile player;
         public WaitForBigBlindData waitForBigBlindData = null;
+
+        public string profileImage;
+        public string flag;
     }
 
     public PlayerSidePot PlayerSidePot = null;
@@ -662,6 +667,7 @@ public class OnTurnTimer
     public string roomId = "";
     public ButtonAction buttonAction;
     public bool isLimitGame = false;
+    public float bankTimer;
 }
 [Serializable]
 public class ButtonAction
@@ -1164,6 +1170,7 @@ public class getTournamentInfoData
     public long rebuyAmount;
     internal int lateRegistrationLevel;
     internal int bindLevelRizeTime;
+    public string blindTime;
 }
 
 [Serializable]

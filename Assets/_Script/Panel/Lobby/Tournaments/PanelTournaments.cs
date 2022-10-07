@@ -14,9 +14,10 @@ public class PanelTournaments : MonoBehaviour
     [SerializeField] private RectTransform _content;
 
     private TableContainer<TournamentTableElement> _tableContainer;
-    private int _delayUpdateTableMilliseconds = 8000;
+    private int _delayUpdateTableSeconds = 5;
     private int _oldTableContainerAmount;
-    private bool _isNeedUpdate;
+    private Coroutine _updateTableListCoroutine;
+    
 
     private void Start()
     {
@@ -30,21 +31,20 @@ public class PanelTournaments : MonoBehaviour
 
     private void OnEnable()
     {
-        StartUpdateTableAsync();
+        _updateTableListCoroutine = StartCoroutine(UpdateTableList());
     }
 
     private void OnDisable()
     {
-        _isNeedUpdate = false;
+        StopCoroutine(_updateTableListCoroutine);
     }
 
-    private async void StartUpdateTableAsync()
+    private IEnumerator UpdateTableList()
     {
-        _isNeedUpdate = true;
-        while (_isNeedUpdate)
+        while (true)
         {
             UpdateTable();
-            await Task.Delay(_delayUpdateTableMilliseconds);
+            yield return new WaitForSeconds(_delayUpdateTableSeconds);
         }
     }
 

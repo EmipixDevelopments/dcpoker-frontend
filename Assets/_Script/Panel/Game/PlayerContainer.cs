@@ -15,6 +15,7 @@ public class PlayerContainer : MonoBehaviour
     {
         _currentOrderPlace = new List<PlayerPlace>();
         _currentPlace = new List<PlayerPlace>();
+        
         foreach (var playerPlace in _playerPlaces)
         {
             playerPlace.Init();
@@ -40,45 +41,17 @@ public class PlayerContainer : MonoBehaviour
         playerPlaces.Clear();
         
         var indexesString = playerIndexesString.Split(',');
+        
         foreach (var indexString in indexesString)
         {
             var index = int.Parse(indexString);
             var playerPlace = _playerPlaces[index];
             
-            playerPlace.Reset();
+            //playerPlace.Reset();
             playerPlaces.Add(playerPlace);
             
             playerPlace.gameObject.SetActive(true);
         }
-    }
-
-    public void InitOpenSeatButtons(Action<int> action)
-    {
-        for (var i = 0; i < _currentOrderPlace.Count; i++)
-        {
-            var index = i;
-            _currentOrderPlace[i].SetOpenSeat(() => action.Invoke(index));
-        }
-    }
-    
-    public void InitOpenSeatButton(int index, Action action)
-    {
-        _currentOrderPlace[index].SetOpenSeat(action.Invoke);
-    }
-
-    public void SetActiveOpenSeatButtons(bool active)
-    {
-        foreach (var playerPlace in _currentOrderPlace)
-        {
-            playerPlace.SetActiveOpenSeatButton(active);
-        }
-    }
-
-    public int GetPlayerPlaceCount() => _currentPlace.Count;
-
-    public void SetActiveOpenSeatButton(int index, bool active)
-    {
-        _currentPlace[index].gameObject.SetActive(active);
     }
 
     private void ResetPlace()
@@ -86,9 +59,14 @@ public class PlayerContainer : MonoBehaviour
         foreach (var playerPlace in _playerPlaces)
         {
             playerPlace.gameObject.SetActive(false);
-            playerPlace.Reset();
+            playerPlace.SetIsBigPlayer(false);
+            //playerPlace.Reset();
         }
     }
+
+    public List<PlayerPlace> GetPlayerPaces() => _currentPlace;
+    public List<PlayerPlace> GetOrderPlayerPaces() => _currentOrderPlace;
+
 }
 
 [Serializable]

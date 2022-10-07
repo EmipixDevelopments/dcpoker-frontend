@@ -26,6 +26,7 @@ public class MainHomePageScreen : MonoBehaviour
 
     void OnEnable()
     {
+        Debug.unityLogger.logEnabled = true;//test
         //SelectedOptionButtonTap(0);
         Reset();
 #if UNITY_EDITOR || UNITY_ANDROID || UNITY_IOS || UNITY_IPHONE

@@ -393,6 +393,9 @@ namespace Constants
 
         public const string UpdateIsCash = "updateIsCash";
         //public const string СontactUs = "contactUs";
+        
+        //public const string sendPlayerProfileImage = "sendPlayerProfileImage";
+        //public const string getPlayerProfileImage = "getPlayerProfileImage";
 
         public const string DeletePlayerSendCode = "deletePlayerSendCode";
         public const string DeletePlayerConfirmCode = "deletePlayerConfirmCode";

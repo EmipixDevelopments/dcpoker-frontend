@@ -10,12 +10,8 @@ public class ToggleImageNormal : MonoBehaviour
     [SerializeField] private Sprite _on;
     [SerializeField] private Sprite _off;
 
-    private Toggle _toggle;
+   [SerializeField] private Toggle _toggle;
 
-    private void OnEnable()
-    {
-        _toggle = GetComponent<Toggle>();
-    }
 
     private void Start()
     {

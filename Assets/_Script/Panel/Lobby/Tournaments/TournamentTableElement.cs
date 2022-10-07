@@ -184,7 +184,7 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
     {
         UIManager.Instance.SocketGameManager.getTournamentInfo(_data.tournamentId, _data.pokerGameType, (socket, packet, args) =>
         {
-            Debug.Log("getSngTournamentInfo  : " + packet.ToString());
+            Debug.Log("getTournamentInfo  : " + packet.ToString());
             UIManager.Instance.HideLoader();
             JSONArray arr = new JSONArray(packet.ToString());
             var source = arr.getString(arr.length() - 1);
@@ -199,6 +199,30 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
 
             ResetButton();
             
+            switch (_data.status)
+            {
+                case "Running":
+                    if (_tournamentData.isRegistered)
+                        SetButtonToOpen();
+                    break;
+                case "Waiting":
+                    if (_tournamentData.isRegistered)
+                        SetButtonToUnregister();
+                    else// if(_data.isJoinable) //it's not work 
+                        SetButtonToRegister();
+                    break;
+                case "Late Register":
+                    if (_tournamentData.isRegistered)
+                        SetButtonToOpen();
+                    else //if(_data.isJoinable)
+                        SetButtonToLateRegister();
+                    break;
+                default:
+                    ResetDetailsTournamentData();
+                    break;
+                //case "Cancel": break;
+            }
+/*
             if (_tournamentData.status == "Running")
             {
                 if (_tournamentData.isRegistered)
@@ -242,9 +266,48 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
                 _detailsTournamentData.TournamentButtonState = TournamentButtonState.Unregister;
                 _detailsTournamentData.ButtonAction = OnUnregisterButton;
             }
-
+*/
         });
     }
+
+    private void SetButtonToOpen()
+    {
+        _openButtonGameObject.gameObject.SetActive(true);
+        _rightButton.onClick.AddListener(OnOpenTournamentRoom);
+        _detailsTournamentData.TournamentButtonState = TournamentButtonState.Open;
+        _detailsTournamentData.ButtonAction = OnOpenTournamentRoom;
+    }
+
+    private void SetButtonToLateRegister()
+    {
+        _rightButton.onClick.AddListener(OnRegisterButton);
+        _lateRegisterButtonGameObject.gameObject.SetActive(true);
+        _detailsTournamentData.TournamentButtonState = TournamentButtonState.LateRegister;
+        _detailsTournamentData.ButtonAction = OnRegisterButton;
+    }
+
+    private void SetButtonToUnregister()
+    {
+        _unregisterButtonGameObject.gameObject.SetActive(true);
+        _rightButton.onClick.AddListener(OnUnregisterButton);
+        _detailsTournamentData.TournamentButtonState = TournamentButtonState.Unregister;
+        _detailsTournamentData.ButtonAction = OnUnregisterButton;
+    }
+
+    private void SetButtonToRegister()
+    {
+        _registerButtonGameObject.gameObject.SetActive(true);
+        _rightButton.onClick.AddListener(OnRegisterButton);
+        _detailsTournamentData.TournamentButtonState = TournamentButtonState.Register;
+        _detailsTournamentData.ButtonAction = OnRegisterButton;
+    }
+
+    private void ResetDetailsTournamentData()
+    {
+        _detailsTournamentData.TournamentButtonState = TournamentButtonState.None;
+        _detailsTournamentData.ButtonAction = null;
+    }
+
 
     private bool IsLateRegister()
     {
@@ -302,9 +365,15 @@ public class TournamentTableElement : MonoBehaviour, IHighlightTableElement
     private void OnRegisterButton()
     {
         var uiManager = UIManager.Instance;
-        
-        if(!uiManager.PopupDepositeOrClose.Open(GetAmountBuyIn()))
+
+        if (_data.buyIn == "Freeroll")
+        {
+            Register();
             return;
+        }
+        //if(!_data.isFreeRoll) 
+        if(!uiManager.PopupDepositeOrClose.Open(GetAmountBuyIn()))
+                return;
         
         _popupConfirmTournamentData.ConfirmAction = Register;
         

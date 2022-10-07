@@ -1,4 +1,5 @@
-﻿using BestHTTP.SocketIO;
+﻿using System.Collections;
+using BestHTTP.SocketIO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,9 +12,10 @@ public class PanelSitNGo : MonoBehaviour
     [SerializeField] private RectTransform _content;
     
     private TableContainer<SitNGoTableElement> _tableContainer;
-    private int _delayUpdateTableMilliseconds = 8000;
-    private bool _isNeedUpdate;
+    private int _delayUpdateTableSeconds = 5;
     private int _oldTableContainerAmount;
+
+    private Coroutine _updateTablesCoroutine;
 
     private void Start()
     {
@@ -28,24 +30,23 @@ public class PanelSitNGo : MonoBehaviour
 
     private void OnEnable()
     {
-        StartUpdateTableAsync();
+        _updateTablesCoroutine = StartCoroutine(UpdateTablesEnumerator());
     }
 
     private void OnDisable()
     {
-        _isNeedUpdate = false;
+        StopCoroutine(_updateTablesCoroutine);
     }
 
-    private async void StartUpdateTableAsync()
+    private IEnumerator UpdateTablesEnumerator()
     {
-        _isNeedUpdate = true;
-        while (_isNeedUpdate)
+        while (true)
         {
             UpdateTable();
-            await Task.Delay(_delayUpdateTableMilliseconds);
+            yield return new WaitForSeconds(_delayUpdateTableSeconds);
         }
     }
-    
+
     public void UpdateTable()
     {
         if (UIManager.Instance)

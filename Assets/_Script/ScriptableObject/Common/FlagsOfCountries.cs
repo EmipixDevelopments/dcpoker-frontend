@@ -10,10 +10,12 @@ public class FlagsOfCountries : ScriptableObject
 
     [SerializeField] FlagOfCountrieElement[] flags = new FlagOfCountrieElement[0];
 
-    public Sprite GetSpriteByName(string spriteName) 
+    private Dictionary<string, Sprite> _flags;
+
+    public Sprite GetSpriteByName(string flag) 
     {
-        Sprite sprite = null;
-        foreach (var flag in flags)
+        Sprite sprite;
+        /*foreach (var flag in flags)
         {
             if (flag.Name == spriteName)
             {
@@ -24,9 +26,24 @@ public class FlagsOfCountries : ScriptableObject
         if (sprite == null)
         {
             sprite = defaultFlag.Sprite;
+        }*/
+        if(!_flags.TryGetValue(flag,  out sprite))
+        {
+            sprite = defaultFlag.Sprite;
         }
+        
         return sprite;
 
+    }
+
+    public void Init()
+    {
+        _flags = new Dictionary<string, Sprite>();
+        
+        foreach (var flag in flags)
+        {
+            _flags.Add(flag.Name, flag.Sprite);
+        }
     }
 }
 

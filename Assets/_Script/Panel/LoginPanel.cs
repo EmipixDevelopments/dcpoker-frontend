@@ -19,14 +19,25 @@ public class LoginPanel : MonoBehaviour
 
     private PhoneCodeAndFlagListData _phoneAndCodeList = new PhoneCodeAndFlagListData();
 
-    void OnEnable()
+    private void Start()
     {
+        _flags.Init();
         _phoneAndCodeList.InitializeUsingSettings();
         // or download JSON online
         //string url = "https://drive.google.com/uc?export=download&id=1Qs9VTpx-n8IT2FpXI_jhIJwomLbsuo_P";
         //StartCoroutine(GetData(url));
 
         AddOptionToDropdown(_phoneAndCodeList);
+    }
+
+    void OnEnable()
+    {
+        //_phoneAndCodeList.InitializeUsingSettings();
+        // or download JSON online
+        //string url = "https://drive.google.com/uc?export=download&id=1Qs9VTpx-n8IT2FpXI_jhIJwomLbsuo_P";
+        //StartCoroutine(GetData(url));
+
+        //AddOptionToDropdown(_phoneAndCodeList);
         LoadFieldsState();
     }
 
@@ -294,12 +305,14 @@ public class LoginPanel : MonoBehaviour
         rootHackBase root = new rootHackBase();
         root.mobile = mobile;
         root.password = password;
-        var dateTime = DateTime.UtcNow.AddSeconds(-9); // fix
+        var dateTime = DateTime.UtcNow;//.AddSeconds(-9); // fix: not work
+        Debug.LogError("Data: " + dateTime.ToString());
         root.timestamp = DateTimeToUnix(dateTime);
+        Debug.LogError("Timestamp: " + root.timestamp);
         string json = JsonUtility.ToJson(root);
-        //Debug.LogError("Not Encrypt: " + json);
+        Debug.LogError("Not Encrypt: " + json);
         string encryptedJson = UIManager.Instance.MainHomeScreen.AESEncryption(json);
-        //Debug.LogError("Encrypt: " + encryptedJson);
+        Debug.LogError("Encrypt: " + encryptedJson);
 
         syndicate = encryptedJson;
         //syndicate = System.Uri.EscapeDataString(syndicate);

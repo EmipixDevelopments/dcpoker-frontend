@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PanelTable : MonoBehaviour
 {
@@ -13,12 +14,16 @@ public class PanelTable : MonoBehaviour
     [SerializeField] private TableFilterPanel _filtersPanel;
     [SerializeField] private TableElement _texasHoldemPrefab;
     [SerializeField] private Transform _content;
-    private int _updatePanelAfterSecconds = 8;
-    private List<TableElement> _tableElements = new List<TableElement>();
+    private int _updatePanelAfterSeconds = 5;
+    private TableContainer<TableElement> _tableContainer;
+    //private List<TableElement> _tableElements = new List<TableElement>();
+    private RectTransform _rectTransform;
 
     private void Start()
     {
         _filtersPanel.FilterChanged = OnEnable;
+        _tableContainer = new TableContainer<TableElement>(_content, _texasHoldemPrefab, null);
+        _rectTransform = GetComponent<RectTransform>();
     }
     private void OnDestroy()
     {
@@ -36,16 +41,8 @@ public class PanelTable : MonoBehaviour
         while (true)
         {
             UpdateTable();
-            yield return new WaitForSeconds(_updatePanelAfterSecconds);
+            yield return new WaitForSeconds(_updatePanelAfterSeconds);
         }
-    }
-    private void RemoveAllRow()
-    {
-        for (int i = 0; i < _content.childCount; i++)
-        {
-            Destroy(_content.GetChild(i).gameObject);
-        }
-        _tableElements.Clear();
     }
 
     private void UpdateTable()
@@ -101,31 +98,14 @@ public class PanelTable : MonoBehaviour
 
             if (tableData != null)
             {
-                // if the number of rows in the table has not changed, update them
-                if (_tableElements.Count == tableData.Count)
+                for (int i = 0; i < tableData.Count; i++)
                 {
-                    for (int i = 0; i < tableData.Count; i++)
-                    {
-                        var rowTableData = tableData[i];
-                        _tableElements[i].SetData(rowTableData);
-                    }
+                    _tableContainer.GetElement(i).SetData(tableData[i]);
                 }
-                else // remove all rows and create new rows
-                {
-                    RemoveAllRow();
-                    // create new row
-                    foreach (var item in tableData)
-                    {
-                        TableElement row = Instantiate(_texasHoldemPrefab, _content);
-                        row.SetData(item);
-                        _tableElements.Add(row);
-                    }
-                    
-                    //SetEmptyTableElements();
-
-                    // update all UI
-                    UIManager.Instance.LobbyPanelNew.UpdatePanel();
-                }
+                _tableContainer.HideFromIndex(tableData.Count);
+                
+                LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
+                UIManager.Instance.LobbyPanelNew.UpdateUi();
             }
         }
     }

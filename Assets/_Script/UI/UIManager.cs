@@ -8,6 +8,7 @@ using BestHTTP.SocketIO.Events;
 using UnityEngine.Events;
 using System;
 using BestHTTP;
+using IngameDebugConsole;
 using UnityEngine.Networking;
 
 public class UIManager : MonoBehaviour
@@ -63,6 +64,9 @@ public class UIManager : MonoBehaviour
     public PopupConfirmTournament PopupConfirmTournament;
     public PopupDepositeOrClose PopupDepositeOrClose;
 
+    public UrlSpriteContainer _avatarUrlSpriteContainer;
+    public UrlSprite _avatarUrlSprite;
+
     [Header("Public Variables")]
     public bool isLogAllEnabled = false;
     public bool IsMultipleTableAllowed;
@@ -108,12 +112,15 @@ public class UIManager : MonoBehaviour
         Debug.Log("Application.persistentDataPath = > " + Application.persistentDataPath);
         Instance = this;
         SaveLoad.LoadGame();
+        
     }
     // Use this for initialization
     void Start()
     {
+        _avatarUrlSpriteContainer = new UrlSpriteContainer(36);
+        _avatarUrlSprite = new UrlSprite();
         GameScreeen.Init();
-        
+
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Application.runInBackground = true;
         //print("width =>" + Screen.width);
@@ -829,8 +836,13 @@ public class UIManager : MonoBehaviour
         set
         {
             _profilePic = value;
-
             assetOfGame.SavedLoginData.SelectedAvatar = _profilePic;
+
+            if (_profilePic == -1)
+            {
+               return;
+            }
+            
             LobbyScreeen.ProfileScreen.PanelMyAccount.ProfilePanel.PlayerProfile.sprite = assetOfGame.profileAvatarList.profileAvatarSprite[_profilePic];
             LobbyScreeen.profilePicLeft.sprite = assetOfGame.profileAvatarList.profileAvatarSprite[_profilePic];
         }

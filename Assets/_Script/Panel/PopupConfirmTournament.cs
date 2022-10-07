@@ -9,7 +9,11 @@ public class PopupConfirmTournament : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _text;
     [SerializeField] private Button _confirmButton;
     [SerializeField] private Button _cancelButton;
-    private PopupConfirmTournamentData _data;
+    
+    private PopupConfirmTournamentData _tournamentData;
+    private PopupConfirmCashData _cashData;
+
+    private Action _confirmButtonAction;
 
     private void Start()
     {
@@ -30,14 +34,14 @@ public class PopupConfirmTournament : MonoBehaviour
     
     private void OnConfirmButton()
     {
-        _data?.ConfirmAction?.Invoke();
+        _confirmButtonAction?.Invoke();
         OnCloseButton();
     }
 
     public void OpenPopup(PopupConfirmTournamentData data)
     {
-        _data = data;
-        if(_data == null)
+        _tournamentData = data;
+        if(_tournamentData == null)
             return;
 
         if (!gameObject.activeSelf)
@@ -46,11 +50,32 @@ public class PopupConfirmTournament : MonoBehaviour
         }
 
         UpdateData();
+        _confirmButtonAction = _tournamentData.ConfirmAction;
+    }
+    
+    public void OpenPopup(PopupConfirmCashData data)
+    {
+        _cashData = data;
+        if(_cashData == null)
+            return;
+
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
+
+        UpdateCashData();
+        _confirmButtonAction = _cashData.ConfirmAction;
+    }
+
+    private void UpdateCashData()
+    {
+        _text.text = string.Format(_text.text, $" ${_cashData.BuyIn:0.00}", $" ${_cashData.BuyIn:0.00} ");
     }
 
     private void UpdateData()
     {
-        var values = _data.BuyInText.Split('+');
+        var values = _tournamentData.BuyInText.Split('+');
         
         var fistParam = "";
         float totalSum = 0;
@@ -69,4 +94,10 @@ public class PopupConfirmTournamentData
 {
     public Action ConfirmAction;
     public string BuyInText;
+}
+
+public class PopupConfirmCashData
+{
+    public Action ConfirmAction;
+    public double BuyIn;
 }

@@ -18,7 +18,12 @@ public class GamePanel : MonoBehaviour
     [SerializeField] private Button _gameCustomizationButton;
 
     [SerializeField] private PlayerContainer _playerContainer;
-    
+
+    private List<PlayerPlace> _playerPlaces;
+    private List<PlayerPlace> _orderPlayerPlaces;
+
+    [SerializeField] private Button _lobbyButton;
+
     [Space] [Space]
     #region PUBLIC_VARIABLES
 
@@ -41,7 +46,7 @@ public class GamePanel : MonoBehaviour
     [Header("ScriptableObjects")]
     public PokerCard[] TableCards;
     public PokerCard[] TableExtraCards;
-    public PokerPlayer[] GamePlayers;
+    //public PokerPlayer[] GamePlayers;
     //public Image[] SeatPositionCups;
     //public Image[] SeatPositionCupsByOrder;
     public RoomsListing.Room currentRoomData;
@@ -92,50 +97,50 @@ public class GamePanel : MonoBehaviour
     public Button btnClockOpen;
     [SerializeField] private RebuyinButtons _rebuyinButtons; 
 
-    [Header("Two Player")]
-    public PokerPlayer[] twoByTwoGamePlayers;
+    //[Header("Two Player")]
+    //public PokerPlayer[] twoByTwoGamePlayers;
     //public Button[] TwoByTwoSeats;
     //public Button[] TwoByTwoSeatsByOrder;
     //public Image[] TwoByTwoSeatPositionCupsByOrder;
 
-    [Header("Three Player")]
-    public PokerPlayer[] threeByThreeGamePlayers;
+    //[Header("Three Player")]
+    //public PokerPlayer[] threeByThreeGamePlayers;
     //public Button[] ThreeByThreeSeats;
     //public Button[] ThreeByThreeSeatsByOrder;
     //public Image[] ThreeByThreeSeatPositionCupsByOrder;
 
-    [Header("Four Player")]
-    public PokerPlayer[] fourByfourGamePlayers;//new
+    //[Header("Four Player")]
+    //public PokerPlayer[] fourByfourGamePlayers;//new
     //public Button[] fourByfourSeats;
     //public Button[] fourByfourSeatsByOrder;
     //public Image[] fourByfourSeatPositionCupsByOrder;
 
-    [Header("Five Player")]
-    public PokerPlayer[] FiveByFiveGamePlayers;
+    //[Header("Five Player")]
+    //public PokerPlayer[] FiveByFiveGamePlayers;
     //public Button[] FiveByFiveSeats;
     //public Button[] FiveByFiveSeatsByOrder;
     //public Image[] FiveByFiveSeatPositionCupsByOrder;
 
-    [Header("Six Player")]
-    public PokerPlayer[] sixBysixGamePlayers;//new
+    //[Header("Six Player")]
+    //public PokerPlayer[] sixBysixGamePlayers;//new
     //public Button[] sixBysixSeats;
     //public Button[] sixBysixSeatsByOrder;
     //public Image[] sixBysixSeatPositionCupsByOrder;
 
-    [Header("Seven Player")]
-    public PokerPlayer[] sevenBysevenGamePlayers;//new
+    //[Header("Seven Player")]
+    //public PokerPlayer[] sevenBysevenGamePlayers;//new
     //public Button[] sevenBysevenSeats;
     //public Button[] sevenBysevenSeatsByOrder;
     //public Image[] sevenBysevenSeatPositionCupsByOrder;
 
-    [Header("Eight Player")]
-    public PokerPlayer[] eightByeightGamePlayers;//new
+    //[Header("Eight Player")]
+    //public PokerPlayer[] eightByeightGamePlayers;//new
     //public Button[] eightByeightSeats;
     //public Button[] eightByeightSeatsByOrder;
     //public Image[] eightByeightSeatPositionCupsByOrder;
 
-    [Header("Nine Player")]
-    public PokerPlayer[] NineByNineGamePlayers;
+    //[Header("Nine Player")]
+    //public PokerPlayer[] NineByNineGamePlayers;
     //public Button[] NineByNineSeats;
     //public Button[] NineByNineSeatsByOrder;
     //public Image[] NineByNineSeatPositionCupsByOrder;
@@ -157,7 +162,7 @@ public class GamePanel : MonoBehaviour
     public TextMeshProUGUI txtAppVersionOnTable;
     public TextMeshProUGUI txtTournamentBreakTableMessage;
     public Text txtChatPanel;
-    public TextMeshProUGUI txtTotalChips;
+    //public TextMeshProUGUI txtTotalChips;
     public Text txtTwiceTimerText;
     public Text txtStraddleTimerText;
     public Text txtClockTimerText;
@@ -231,6 +236,9 @@ public class GamePanel : MonoBehaviour
     private string[] remainingclockTime;
     public clockResult ClockData;
 
+    private int _bankTimer;
+    public int GetBankTimer() => _bankTimer;
+
     #endregion
 
     #region UNITY_CALLBACKS
@@ -240,25 +248,57 @@ public class GamePanel : MonoBehaviour
         txtAppVersionOnTable.text = Utility.Instance.GetApplicationVersionWithOS();
         
         _gameCustomizationButton.onClick.AddListener( _customizationPopup.OpenClose);
+        _lobbyButton.onClick.AddListener(BackButtonTap);
     }
 
     public void Init()
     {
         _currentRoomData = new RoomData();
         
+        _playerContainer.Init();
+        
         _rebuyinButtons.Init(this);
         _pockerRoomCustomization.Init();
         _customizationPopup.Init(_pockerRoomCustomization);
-        _playerContainer.Init();
+        Bet.Init(this);
+
+        _playerPlaces = _playerContainer.GetPlayerPaces();
+        _orderPlayerPlaces = _playerContainer.GetOrderPlayerPaces();
+        
     }
 
-    public void SetActiveOpenSeatButton(int index, bool active)
+    /*public void SetActiveOpenSeatButton(int index, bool active)
     {
-        _playerContainer.SetActiveOpenSeatButton(index, active);
+        //todo: Set active Open Seat or place?
+        _playerPlaces[index].openSeatButton.gameObject.SetActive(active);
+        //_playerPlaces[index].gameObject.SetActive(active);
+    }*/
+
+    public void UpdateOpenSeatButton()
+    {
+        /*for (int i = 0; i < _playerPlaces.Count; i++)
+        {
+            if (!_playerPlaces[i].pokerPlayer.gameObject.activeInHierarchy)
+            {
+                UIManager.Instance.GameScreeen.SetActiveOpenSeatButton(i, true);
+            }
+            else
+            {
+                UIManager.Instance.GameScreeen.SetActiveOpenSeatButton(i, false);
+            }
+        }*/
+
+        foreach (var playerPlace in _playerPlaces)
+        {
+            playerPlace.openSeatButton.gameObject.SetActive(
+                !playerPlace.pokerPlayer.gameObject.activeInHierarchy);
+        }
     }
 
     void OnEnable()
     {
+        //_playerContainer.Init();
+        
         UIManager.Instance.SoundManager.stopBgSound();
         tableCardsListData.Clear();
         currentTurnEffect.gameObject.GetComponent<Image>().enabled = false;
@@ -272,7 +312,7 @@ public class GamePanel : MonoBehaviour
         SidePot2 = 0;
         MainPot1 = 0;
         MainPot2 = 0;
-        UIManager.Instance.GameScreeen.Chips = UIManager.Instance.assetOfGame.SavedLoginData.chips;
+        //UIManager.Instance.GameScreeen.Chips = UIManager.Instance.assetOfGame.SavedLoginData.chips;
         //InvokeRepeating("GetPerfectClock", 0f, 1f);
         if (UIManager.Instance.IsMultipleTableAllowed)
         {
@@ -415,7 +455,7 @@ public class GamePanel : MonoBehaviour
         {
             _playerContainer.SetActivePlayerPlace(9);
             
-            GamePlayers = NineByNineGamePlayers;
+            //GamePlayers = NineByNineGamePlayers;
             //Seats = NineByNineSeats;
             //SeatsByOrder = NineByNineSeatsByOrder;
             //SeatPositionCups = NineByNineSeatPositionCupsByOrder;
@@ -425,7 +465,7 @@ public class GamePanel : MonoBehaviour
         {
             if (currentRoomData.maxPlayers == 2)
             {
-                GamePlayers = twoByTwoGamePlayers;
+                //GamePlayers = twoByTwoGamePlayers;
                 _playerContainer.SetActivePlayerPlace(2);
                 //Seats = TwoByTwoSeats;
                 //SeatsByOrder = TwoByTwoSeatsByOrder;
@@ -434,7 +474,7 @@ public class GamePanel : MonoBehaviour
             }
             else if (currentRoomData.maxPlayers == 3)
             {
-                GamePlayers = threeByThreeGamePlayers;
+                //GamePlayers = threeByThreeGamePlayers;
                 _playerContainer.SetActivePlayerPlace(3);
 
                 //Seats = ThreeByThreeSeats;
@@ -444,7 +484,7 @@ public class GamePanel : MonoBehaviour
             }
             else if (currentRoomData.maxPlayers == 4)//new
             {
-                GamePlayers = fourByfourGamePlayers;
+                //GamePlayers = fourByfourGamePlayers;
                 _playerContainer.SetActivePlayerPlace(4);
 
                 //Seats = fourByfourSeats;
@@ -454,7 +494,7 @@ public class GamePanel : MonoBehaviour
             }
             else if (currentRoomData.maxPlayers == 5)
             {
-                GamePlayers = FiveByFiveGamePlayers;
+                //GamePlayers = FiveByFiveGamePlayers;
                 _playerContainer.SetActivePlayerPlace(5);
 
                 //Seats = FiveByFiveSeats;
@@ -464,7 +504,7 @@ public class GamePanel : MonoBehaviour
             }
             else if (currentRoomData.maxPlayers == 6)//new
             {
-                GamePlayers = sixBysixGamePlayers;
+                //GamePlayers = sixBysixGamePlayers;
                 _playerContainer.SetActivePlayerPlace(6);
                 //Seats = sixBysixSeats;
                 //SeatsByOrder = sixBysixSeatsByOrder;
@@ -473,7 +513,7 @@ public class GamePanel : MonoBehaviour
             }
             else if (currentRoomData.maxPlayers == 7)//new
             {
-                GamePlayers = sevenBysevenGamePlayers;
+                //GamePlayers = sevenBysevenGamePlayers;
                 _playerContainer.SetActivePlayerPlace(7);
                 //Seats = sevenBysevenSeats;
                 //SeatsByOrder = sevenBysevenSeatsByOrder;
@@ -482,7 +522,7 @@ public class GamePanel : MonoBehaviour
             }
             else if (currentRoomData.maxPlayers == 8)//new
             {
-                GamePlayers = eightByeightGamePlayers;
+                //GamePlayers = eightByeightGamePlayers;
                 _playerContainer.SetActivePlayerPlace(8);
 
                 //Seats = eightByeightSeats;
@@ -492,7 +532,7 @@ public class GamePanel : MonoBehaviour
             }
             else
             {
-                GamePlayers = NineByNineGamePlayers;
+                //GamePlayers = NineByNineGamePlayers;
                 _playerContainer.SetActivePlayerPlace(9);
                 //Seats = NineByNineSeats;
                 //SeatsByOrder = NineByNineSeatsByOrder;
@@ -515,7 +555,13 @@ public class GamePanel : MonoBehaviour
             //SeatPositionCupsByOrder[i].Open();
         }*/
         
-        _playerContainer.InitOpenSeatButtons(OnSeatButtonTap);
+        //_playerContainer.InitOpenSeatButtons(OnSeatButtonTap);
+        
+        for (var i = 0; i < _orderPlayerPlaces.Count; i++)
+        {
+            var index = i;
+            _orderPlayerPlaces[i].SetOpenSeat(() => OnSeatButtonTap(index));
+        }
 
         /* for (int i = 0; i < SeatsByOrder.Length; i++)
          {
@@ -675,7 +721,11 @@ public class GamePanel : MonoBehaviour
             Seats[i].Close();
         }
         */
-        _playerContainer.SetActiveOpenSeatButtons(false);
+        foreach (var orderPlayerPlace in _orderPlayerPlaces)
+        {
+            orderPlayerPlace.openSeatButton.gameObject.SetActive(false);
+        }
+        //_playerContainer.SetActiveOpenSeatButtons(false);
 
         /*for (int i = 0; i < SeatPositionCupsByOrder.Length; i++)
         {
@@ -788,11 +838,20 @@ public class GamePanel : MonoBehaviour
         RunItTwiceRequestData RunItTwiceRequestDataResp = JsonUtility.FromJson<RunItTwiceRequestData>(resp);
         if (RunItTwiceRequestDataResp.roomId.Equals(Constants.Poker.TableId))
         {
-            foreach (PokerPlayer plr in GamePlayers)
+            /*foreach (PokerPlayer plr in GamePlayers)
             {
                 if (plr.gameObject.activeInHierarchy)
                 {
                     plr.twiceIcon.Close();
+                }
+            }*/
+
+            foreach (var playerPlace in _playerPlaces)
+            {
+                var pokerPlayer = playerPlace.pokerPlayer;
+                if (pokerPlayer.gameObject.activeInHierarchy)
+                {
+                    pokerPlayer.twiceIcon.gameObject.SetActive(false);
                 }
             }
         }
@@ -1053,13 +1112,24 @@ public class GamePanel : MonoBehaviour
             SubscribeEventInvoke();
             UIManager.Instance.tableManager.ReSubscribeMiniTables(this.currentRoomData.roomId);
         }
-        foreach (PokerPlayer plr in GamePlayers)
+        /*foreach (PokerPlayer plr in GamePlayers)
         {
             if (subscribeResp.straddlePlayerId != null && subscribeResp.straddlePlayerId.Equals(plr.PlayerId))
             {
                 plr.BetAmount = subscribeResp.straddleChips;
                 plr.BuyInAmount = subscribeResp.straddlePlayerChips;
                 plr.StraddleIcon.Open();
+            }
+        }*/
+        
+        foreach (var playerPlace in _playerPlaces)
+        {
+            var pokerPlayer = playerPlace.pokerPlayer;
+            if (subscribeResp.straddlePlayerId != null && subscribeResp.straddlePlayerId.Equals(pokerPlayer.PlayerId))
+            {
+                pokerPlayer.BetAmount = subscribeResp.straddleChips;
+                pokerPlayer.BuyInAmount = subscribeResp.straddlePlayerChips;
+                pokerPlayer.StraddleIcon.Open();
             }
         }
         PokerPlayer ownPlayer = GetOwnPlayer();
@@ -1127,13 +1197,27 @@ public class GamePanel : MonoBehaviour
 
             if (!HasJoin && !currentRoomData.isTournament)
             {
-                for (int i = 0; i < GamePlayers.Length; i++)
+                /*for (int i = 0; i < GamePlayers.Length; i++)
                 {
                     if (!GamePlayers[i].isActiveAndEnabled)
                     {
                         if (!currentRoomData.isTournament)
                         {
-                            _playerContainer.SetActiveOpenSeatButton(i, true);
+                            _playerPlaces[i].openSeatButton.gameObject.SetActive(true);
+                            //_playerContainer.SetActiveOpenSeatButton(i, true);
+                            //Seats[i].Open();
+                        }
+                    }
+                }*/
+                
+                for (int i = 0; i < _playerPlaces.Count; i++)
+                {
+                    if (!_playerPlaces[i].pokerPlayer.isActiveAndEnabled)
+                    {
+                        if (!currentRoomData.isTournament)
+                        {
+                            _playerPlaces[i].openSeatButton.gameObject.SetActive(true);
+                            //_playerContainer.SetActiveOpenSeatButton(i, true);
                             //Seats[i].Open();
                         }
                     }
@@ -1147,7 +1231,20 @@ public class GamePanel : MonoBehaviour
                     //Debug.Log("sub in ");
                     Seats[i].Close();
                 }*/
-                _playerContainer.SetActiveOpenSeatButtons(false);
+                foreach (var orderPlayerPlace in _orderPlayerPlaces)
+                {
+                    orderPlayerPlace.openSeatButton.gameObject.SetActive(false);
+                }
+                //_playerContainer.SetActiveOpenSeatButtons(false);
+            }
+            
+            foreach (var orderPlayerPlace in _orderPlayerPlaces)
+            {
+                if (orderPlayerPlace.pokerPlayer.playerInfo.id ==
+                    UIManager.Instance.assetOfGame.SavedLoginData.PlayerId)
+                {
+                    orderPlayerPlace.SetIsBigPlayer(true);
+                }
             }
         }
         catch (System.Exception e)
@@ -1221,17 +1318,32 @@ public class GamePanel : MonoBehaviour
 
         if (playerObj.getString("playerId") == UIManager.Instance.assetOfGame.SavedLoginData.PlayerId && !currentRoomData.isTournament)
         {
-            for (int i = 0; i < GamePlayers.Length; i++)
+
+            foreach (var playerPlace in _playerPlaces)
+            {
+                if (!playerPlace.pokerPlayer.isActiveAndEnabled)
+                {
+                    if (!currentRoomData.isTournament)
+                    {
+                        playerPlace.openSeatButton.gameObject.SetActive(true);
+                        //_playerContainer.SetActiveOpenSeatButton(i, true);
+                        //Seats[i].Open();
+                    }
+                }
+            }
+
+            /*for (int i = 0; i < GamePlayers.Length; i++)
             {
                 if (!GamePlayers[i].isActiveAndEnabled)
                 {
                     if (!currentRoomData.isTournament)
                     {
-                        _playerContainer.SetActiveOpenSeatButton(i, true);
+                        _playerPlaces[i].openSeatButton.gameObject.SetActive(true);
+                        //_playerContainer.SetActiveOpenSeatButton(i, true);
                         //Seats[i].Open();
                     }
                 }
-            }
+            }*/
             _rebuyinButtons.Close();
             btnAddOnTournament.Close();
             btnRebuyinTournament.Close();
@@ -1253,17 +1365,30 @@ public class GamePanel : MonoBehaviour
         }
         else if (!HasJoin && !currentRoomData.isTournament)
         {
-            for (int i = 0; i < GamePlayers.Length; i++)
+            foreach (var playerPlace in _playerPlaces)
+            {
+                if (!playerPlace.pokerPlayer.isActiveAndEnabled)
+                {
+                    if (!currentRoomData.isTournament)
+                    {
+                        playerPlace.openSeatButton.gameObject.SetActive(true);
+                        //_playerContainer.SetActiveOpenSeatButton(i, true);
+                        //Seats[i].Open();
+                    }
+                }
+            }
+            /*for (int i = 0; i < GamePlayers.Length; i++)
             {
                 if (!GamePlayers[i].isActiveAndEnabled)
                 {
                     if (!currentRoomData.isTournament)
                     {
-                        _playerContainer.SetActiveOpenSeatButton(i, true);
+                        _playerPlaces[i].openSeatButton.gameObject.SetActive(true);
+                        //_playerContainer.SetActiveOpenSeatButton(i, true);
                         //Seats[i].Open();
                     }
                 }
-            }
+            }*/
         }
     }
 
@@ -1483,7 +1608,7 @@ public class GamePanel : MonoBehaviour
         //Debug.Log(".");
         PreviousGameId = wnr.previousGameId;
         PreviousGameNumber = wnr.previousGameNumber;
-        foreach (PokerPlayer plr in GamePlayers)
+        /*foreach (PokerPlayer plr in GamePlayers)
         {
             if (plr.AllinObj.activeSelf)
             {
@@ -1493,6 +1618,12 @@ public class GamePanel : MonoBehaviour
             {
                 plr.FoldObj.SetActive(false);
             }
+        }*/
+
+        foreach (var playerPlace in _playerPlaces)
+        {
+            var pokerPlayer = playerPlace.pokerPlayer;
+            pokerPlayer.ResetObjAnimation();
         }
     }
 
@@ -1560,7 +1691,8 @@ public class GamePanel : MonoBehaviour
         if (!gameObject.activeSelf)
             return;
 
-        //Debug.Log("---------- OnTurnTimerRecieved ---------- " + packet.ToString());
+        Debug.Log("---------- OnTurnTimerRecieved ---------- " + packet.ToString());
+        
         try
         {
             JSONArray arr = new JSONArray(packet.ToString());
@@ -1573,6 +1705,7 @@ public class GamePanel : MonoBehaviour
             if (onTurnTimerCall.roomId != currentRoomData.roomId && onTurnTimerCall.roomId.Length != 0)
                 return;
 
+            _bankTimer = (int) onTurnTimerCall.bankTimer; /// Bank Timer Logic
             PokerPlayer plr = GetPlayerById(onTurnTimerCall.playerId);
 
             if (plr == null)
@@ -1939,9 +2072,17 @@ public class GamePanel : MonoBehaviour
             if (OnTableBalanceNoticeResp.isVisible)
             {
                 int activeplayers = 0;
-                foreach (PokerPlayer plr in GamePlayers)
+                /*foreach (PokerPlayer plr in GamePlayers)
                 {
                     if (plr.gameObject.activeInHierarchy)
+                    {
+                        activeplayers++;
+                    }
+                }*/
+
+                foreach (var playerPlace in _playerPlaces)
+                {
+                    if (playerPlace.pokerPlayer.gameObject.activeInHierarchy)
                     {
                         activeplayers++;
                     }
@@ -2740,7 +2881,7 @@ public class GamePanel : MonoBehaviour
                 return;
 
             TotalTablePotAmount = onGameBootResp.totalTablePotAmount;
-            foreach (PokerPlayer plr in GamePlayers)
+            /*foreach (PokerPlayer plr in GamePlayers)
             {
                 if (plr.PlayerId != null)
                 {
@@ -2761,6 +2902,32 @@ public class GamePanel : MonoBehaviour
                         plr.BetAmount = onGameBootResp.straddleChips;
                         plr.BuyInAmount = onGameBootResp.straddlePlayerChips;
                         plr.StraddleIcon.Open();
+                    }
+                }
+            }*/
+
+            foreach (var playerPlace in _playerPlaces)
+            {
+                var pokerPlayer = playerPlace.pokerPlayer;
+                if (pokerPlayer.PlayerId != null)
+                {
+                    pokerPlayer.isDealer = pokerPlayer.PlayerId.Equals(onGameBootResp.dealerPlayerId);
+                    pokerPlayer.Dealer.gameObject.SetActive(pokerPlayer.isDealer);
+                    if (onGameBootResp.smallBlindPlayerId.Equals(pokerPlayer.PlayerId))
+                    {
+                        pokerPlayer.BetAmount = onGameBootResp.smallBlindChips;
+                        pokerPlayer.BuyInAmount = onGameBootResp.smallBlindPlayerChips;
+                    }
+                    if (onGameBootResp.bigBlindPlayerId.Equals(pokerPlayer.PlayerId))
+                    {
+                        pokerPlayer.BetAmount = onGameBootResp.bigBlindChips;
+                        pokerPlayer.BuyInAmount = onGameBootResp.bigBlindPlayerChips;
+                    }
+                    if (onGameBootResp.straddlePlayerId != null && onGameBootResp.straddlePlayerId.Equals(pokerPlayer.PlayerId))
+                    {
+                        pokerPlayer.BetAmount = onGameBootResp.straddleChips;
+                        pokerPlayer.BuyInAmount = onGameBootResp.straddlePlayerChips;
+                        pokerPlayer.StraddleIcon.Open();
                     }
                 }
             }
@@ -2957,7 +3124,11 @@ public class GamePanel : MonoBehaviour
             {
                 Seats[i].Close();
             }*/
-            _playerContainer.SetActiveOpenSeatButtons(false);
+            foreach (var orderPlayerPlace in _orderPlayerPlaces)
+            {
+                orderPlayerPlace.openSeatButton.gameObject.SetActive(false);
+            }
+            //_playerContainer.SetActiveOpenSeatButtons(false);
 
         }
         //  return; //OnSubscribeRoom broadcast integrated. dont need to run following lines.
@@ -4180,46 +4351,64 @@ public class GamePanel : MonoBehaviour
         foreach (PlayerInfoList.PlayerInfos plr in SpadePlayerData.playerInfo)
         {
             int newSeatIndex = GetSeatIndexForPlayer(plr.seatIndex);
-
-            if (!GamePlayers[newSeatIndex].gameObject.activeSelf)
+            var playerPlaceSeat = _playerPlaces[newSeatIndex];
+            var pokerPlayer = playerPlaceSeat.pokerPlayer;
+  
+            if (!pokerPlayer.gameObject.activeSelf)
             {
-                GamePlayers[newSeatIndex].Open();
+                pokerPlayer.Open();
                 //GamePlayers[newSeatIndex].status = plr.status.ToEnum<PlayerStatus>();
                 if (plr.status.Equals("ReBuyIn") || plr.status.Equals("ReBuyWait"))
                 {
-                    GamePlayers[newSeatIndex].status = PlayerStatus.Waiting;
+                    pokerPlayer.status = PlayerStatus.Waiting;
                 }
                 else
                 {
-                    GamePlayers[newSeatIndex].status = plr.status.ToEnum<PlayerStatus>();
+                    pokerPlayer.status = plr.status.ToEnum<PlayerStatus>();
                 }
-                GamePlayers[newSeatIndex].ProfilePic.sprite = UIManager.Instance.assetOfGame.profileAvatarList.profileAvatarSprite[plr.avatar];
-                GamePlayers[newSeatIndex].ProfilePic.Open();
-                GamePlayers[newSeatIndex].isDealer = SpadePlayerData.dealerPlayerId == plr.id;
 
-                _playerContainer.SetActiveOpenSeatButton(newSeatIndex, false);
+                var profilePic = plr.avatar;
+                if (profilePic == -1)
+                {
+                    playerPlaceSeat.SetImage(plr.profileImage);
+                }
+                else
+                {
+                    playerPlaceSeat.SetAvatar(profilePic);
+                }
+                
+                playerPlaceSeat.SetFlag(plr.flag);
+                
+                playerPlaceSeat.SetName(plr.username);
+                playerPlaceSeat.SetChip(plr.chips);
+                //pokerPlayer.ProfilePic.sprite = UIManager.Instance.assetOfGame.profileAvatarList.profileAvatarSprite[profilePic];
+                //pokerPlayer.GetProfilePicImage().Open();
+                pokerPlayer.isDealer = SpadePlayerData.dealerPlayerId == plr.id;
+
+                _playerPlaces[newSeatIndex].openSeatButton.gameObject.SetActive(false);
+                //_playerContainer.SetActiveOpenSeatButton(newSeatIndex, false);
                 //Seats[newSeatIndex].Close();
 
                 if (plr.status.ToEnum<PlayerStatus>() != PlayerStatus.Waiting)
                 {
                     if (plr.allIn)
                     {
-                        GamePlayers[newSeatIndex].status = PlayerStatus.Allin;
+                        pokerPlayer.status = PlayerStatus.Allin;
                         plr.status = PlayerStatus.Allin.ToString();
                     }
 
                     if (plr.folded)
                     {
-                        GamePlayers[newSeatIndex].status = PlayerStatus.Fold;
+                        pokerPlayer.status = PlayerStatus.Fold;
                         plr.status = PlayerStatus.Fold.ToString();
                     }
                     if (plr.status.Equals("ReBuyIn") || plr.status.Equals("ReBuyWait"))
                     {
-                        GamePlayers[newSeatIndex].status = PlayerStatus.Waiting;
+                        pokerPlayer.status = PlayerStatus.Waiting;
                     }
                     else
                     {
-                        GamePlayers[newSeatIndex].status = plr.status.ToEnum<PlayerStatus>();
+                        pokerPlayer.status = plr.status.ToEnum<PlayerStatus>();
                     }
                 }
             }
@@ -4227,27 +4416,27 @@ public class GamePanel : MonoBehaviour
             {
                 if (plr.status.Equals("ReBuyIn") || plr.status.Equals("ReBuyWait"))
                 {
-                    GamePlayers[newSeatIndex].status = PlayerStatus.Waiting;
+                    pokerPlayer.status = PlayerStatus.Waiting;
                 }
                 else
                 {
-                    GamePlayers[newSeatIndex].status = plr.status.ToEnum<PlayerStatus>();
+                    pokerPlayer.status = plr.status.ToEnum<PlayerStatus>();
                 }
             }
             //GamePlayers [newSeatIndex].txtUsername.text = plr.username;
 
-            GamePlayers[newSeatIndex].txtUsername.text = Utility.Instance.GetShortenName(plr.username);
+            pokerPlayer.txtUsername.text = Utility.Instance.GetShortenName(plr.username);
 
             if (plr.waitingGameChips > 0)
-                GamePlayers[newSeatIndex].BuyInAmount = plr.waitingGameChips;
+                pokerPlayer.BuyInAmount = plr.waitingGameChips;
             else
-                GamePlayers[newSeatIndex].BuyInAmount = plr.chips;
+                pokerPlayer.BuyInAmount = plr.chips;
 
-            GamePlayers[newSeatIndex].BetAmount = plr.betAmount;
-            GamePlayers[newSeatIndex].playerInfo = plr;
-            GamePlayers[newSeatIndex].PlayerId = plr.id;
-            GamePlayers[newSeatIndex].twiceIcon.gameObject.SetActive(plr.runItTwice);
-            if (plr.isSuperPlayer)
+            pokerPlayer.BetAmount = plr.betAmount;
+            pokerPlayer.playerInfo = plr;
+            pokerPlayer.PlayerId = plr.id;
+            pokerPlayer.twiceIcon.gameObject.SetActive(plr.runItTwice);
+            /*if (plr.isSuperPlayer)
             {
                 GamePlayers[newSeatIndex].DetailObj.sprite = GamePlayers[newSeatIndex].DetailObjsSprites[0];
             }
@@ -4255,14 +4444,14 @@ public class GamePanel : MonoBehaviour
             {
                 GamePlayers[newSeatIndex].DetailObj.sprite = GamePlayers[newSeatIndex].DetailObjsSprites[0];
             }
-
+*/
 
             if (plr.idealPlayer)
             {
-                GamePlayers[newSeatIndex].canvasGroup.alpha = 0.4f;
+                pokerPlayer.canvasGroup.alpha = 0.4f;
             }
 
-            if (GamePlayers[newSeatIndex].PlayerId.Equals(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId))
+            if (pokerPlayer.PlayerId.Equals(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId))
             {
                 btnIAmBack.gameObject.SetActive(plr.idealPlayer);
 
@@ -4350,46 +4539,80 @@ public class GamePanel : MonoBehaviour
 
             if (HasJoin && !currentRoomData.isTournament)
             {
-                _playerContainer.SetActiveOpenSeatButtons(!HasJoin);
+                foreach (var orderPlayerPlace in _orderPlayerPlaces)
+                {
+                    orderPlayerPlace.openSeatButton.gameObject.SetActive(!HasJoin);
+                }
+                //_playerContainer.SetActiveOpenSeatButtons(!HasJoin);
             }
 
-            for (int k = 0; k < _playerContainer.GetPlayerPlaceCount(); k++)
+            if (UIManager.Instance.selectedGameType == GameType.cash)
+            {
+                foreach (var playerPlace in _playerPlaces)
+                {
+                    if (playerPlace.pokerPlayer.gameObject.activeSelf)
+                    {
+                        playerPlace.openSeatButton.gameObject.SetActive(false);
+
+                        //_playerContainer.SetActiveOpenSeatButton(k, false);
+                    }
+                } 
+            }
+            else
+            {
+                foreach (var playerPlace in _playerPlaces)
+                {
+                    playerPlace.openSeatButton.gameObject.SetActive(false);
+                } 
+            }
+            
+            
+            /*for (int k = 0; k < _playerContainer.GetPlayerPlaceCount(); k++)
             {
                 if (UIManager.Instance.selectedGameType == GameType.cash)
                 {
                     if (GamePlayers[k].gameObject.activeSelf)
                     {
-                        _playerContainer.SetActiveOpenSeatButton(k, false);
+                        _playerPlaces[k].openSeatButton.gameObject.SetActive(false);
+
+                        //_playerContainer.SetActiveOpenSeatButton(k, false);
                     }
                 }
                 else
                 {
-                    _playerContainer.SetActiveOpenSeatButton(k, false);
+                    _playerPlaces[k].openSeatButton.gameObject.SetActive(false);
+
+                    //_playerContainer.SetActiveOpenSeatButton(k, false);
                 }
-            }
-            GamePlayers[newSeatIndex].Dealer.gameObject.SetActive(SpadePlayerData.dealerPlayerId == plr.id);
+            }*/
+            pokerPlayer.Dealer.gameObject.SetActive(SpadePlayerData.dealerPlayerId == plr.id);
         }
     }
     private void ResetSeatIndexForOwnPlayer(int ownPlayerSeatIndex)
     {
-        if (GamePlayers[0].PlayerId != UIManager.Instance.assetOfGame.SavedLoginData.PlayerId)
+        if (_playerPlaces[0].pokerPlayer.PlayerId != UIManager.Instance.assetOfGame.SavedLoginData.PlayerId)
         {
             DestroyInstantiatedObjects();
         }
 
-        var playerPlaceCount = _playerContainer.GetPlayerPlaceCount();
+        var playerPlaceCount = _playerPlaces.Count;
         int count = ownPlayerSeatIndex;
+        
         for (int i = 0; i < playerPlaceCount - ownPlayerSeatIndex; i++)
         {
             int newSeatIndex = count;
-            _playerContainer.InitOpenSeatButton(i, () => OnSeatButtonTap(newSeatIndex));
+            _orderPlayerPlaces[i].SetOpenSeat(() => OnSeatButtonTap(newSeatIndex));
+            
+            //_playerContainer.InitOpenSeatButton(i, () => OnSeatButtonTap(newSeatIndex));
             count++;
         }
         count = 0;
         for (int i = playerPlaceCount - ownPlayerSeatIndex; i < playerPlaceCount; i++)
         {
             int newSeatIndex = count;
-            _playerContainer.InitOpenSeatButton(i, () => OnSeatButtonTap(newSeatIndex));
+            _orderPlayerPlaces[i].SetOpenSeat(() => OnSeatButtonTap(newSeatIndex));
+
+            //_playerContainer.InitOpenSeatButton(i, () => OnSeatButtonTap(newSeatIndex));
             count++;
         }
     }
@@ -4562,8 +4785,10 @@ public class GamePanel : MonoBehaviour
 
         if (round.roomId == Constants.Poker.TableId || round.roomId == "")
         {
-            foreach (PokerPlayer pokerPlayer in GamePlayers)
+            foreach (var playerPlace in _playerPlaces)
             {
+                var pokerPlayer = playerPlace.pokerPlayer;
+                
                 if (pokerPlayer.SidePotAmount > 0)
                 {
                     GameObject potChipsObj = Instantiate(txtPotAmount.gameObject.transform.parent.gameObject) as GameObject;
@@ -4585,6 +4810,29 @@ public class GamePanel : MonoBehaviour
                     pokerPlayer.SidePotAmount = 0;
                 }
             }
+            /*foreach (PokerPlayer pokerPlayer in GamePlayers)
+            {
+                if (pokerPlayer.SidePotAmount > 0)
+                {
+                    GameObject potChipsObj = Instantiate(txtPotAmount.gameObject.transform.parent.gameObject) as GameObject;
+                    potChipsObj.transform.GetChild(0).GetComponent<Text>().text = pokerPlayer.SidePotAmount.ToString();
+                    Utility.Instance.UpdateHorizontalLayout(potChipsObj.transform.GetChild(0).gameObject);
+                    potChipsObj.SetActive(true);
+
+                    instantiatedObjList.Add(potChipsObj);
+
+                    Transform transformSidePot = txtSidePot1.transform.parent;
+                    potChipsObj.transform.SetParent(transformSidePot, false);
+
+                    Vector3 fromPos = pokerPlayer.txtPotAmount.transform.position;
+                    Vector3 toPos = transformSidePot.transform.position;
+
+                    StartCoroutine(SidePotAnimation(fromPos, toPos, potChipsObj));
+                    Destroy(potChipsObj, 0.5f);
+
+                    pokerPlayer.SidePotAmount = 0;
+                }
+            }*/
 
             if (round.topMainPot > 0)
             {
@@ -4673,7 +4921,11 @@ public class GamePanel : MonoBehaviour
     {
         if (gameObject.activeInHierarchy)
         {
-            _playerContainer.SetActiveOpenSeatButtons(false);
+            foreach (var orderPlayerPlace in _orderPlayerPlaces)
+            {
+                orderPlayerPlace.openSeatButton.gameObject.SetActive(false);
+            }
+            //_playerContainer.SetActiveOpenSeatButtons(false);
         }
     }
     
@@ -4684,7 +4936,22 @@ public class GamePanel : MonoBehaviour
         TotalTablePotAmount = 0;
         BuyInAmountPanel.Close();
         showBetPanel = false;
-        foreach (PokerPlayer plr in GamePlayers)
+
+        foreach (var playerPlace in _playerPlaces)
+        {
+            var pokerPlayer = playerPlace.pokerPlayer;
+            
+            pokerPlayer.txtUsername.text = "";
+            pokerPlayer.PlayerId = "";
+            pokerPlayer.txtChips.text = "";
+            pokerPlayer.txtPotAmount.text = "";
+            pokerPlayer.PlayerActionStatus.ResetData();
+            pokerPlayer.PlayerActionStatus.Close();
+            pokerPlayer.Dealer.Close();
+            pokerPlayer.Close();
+            pokerPlayer.playerInfo = null;
+        }
+        /*foreach (PokerPlayer plr in GamePlayers)
         {
             plr.txtUsername.text = "";
             plr.PlayerId = "";
@@ -4695,7 +4962,7 @@ public class GamePanel : MonoBehaviour
             plr.Dealer.Close();
             plr.Close();
             plr.playerInfo = null;
-        }
+        }*/
         BreakTimerPanel.Close();
         btnIAmBack.Close();
         HasJoin = false;
@@ -4711,7 +4978,23 @@ public class GamePanel : MonoBehaviour
     {
         TournamentBreakTableMessage = "";
         showBetPanel = false;
-        foreach (PokerPlayer plr in GamePlayers)
+
+        foreach (var playerPlace in _playerPlaces)
+        {
+            var pokerPlayer = playerPlace.pokerPlayer;
+            if (isPlayerOnly || pokerPlayer.status == PlayerStatus.Waiting || pokerPlayer.status == PlayerStatus.None)
+            {
+                pokerPlayer.txtUsername.text = "";
+                pokerPlayer.PlayerId = "";
+                pokerPlayer.txtChips.text = "";
+                pokerPlayer.txtPotAmount.text = "";
+                pokerPlayer.PlayerActionStatus.ResetData();
+                pokerPlayer.PlayerActionStatus.Close();
+                pokerPlayer.Dealer.Close();
+                pokerPlayer.Close();
+            }
+        }
+        /*foreach (PokerPlayer plr in GamePlayers)
         {
             if (isPlayerOnly || plr.status == PlayerStatus.Waiting || plr.status == PlayerStatus.None)
             {
@@ -4724,7 +5007,7 @@ public class GamePanel : MonoBehaviour
                 plr.Dealer.Close();
                 plr.Close();
             }
-        }
+        }*/
         /*
         if (!currentRoomData.isTournament) {
             foreach (Button Seats in Seats) {			
@@ -4733,10 +5016,15 @@ public class GamePanel : MonoBehaviour
         }
         */
 
-        foreach (PokerPlayer pokerPlayer in GamePlayers)
+        foreach (var playerPlace in _playerPlaces)
         {
+            var pokerPlayer = playerPlace.pokerPlayer;
             pokerPlayer.txtSidePot.transform.parent.gameObject.SetActive(false);
         }
+        /*foreach (PokerPlayer pokerPlayer in GamePlayers)
+        {
+            pokerPlayer.txtSidePot.transform.parent.gameObject.SetActive(false);
+        }*/
         if (isPlayerOnly)
         {
             return;
@@ -4960,6 +5248,7 @@ public class GamePanel : MonoBehaviour
 
         if (index != -1)
         {
+            var pokerPlayer = _playerPlaces[index].pokerPlayer;
             //			UIManager.Instance.historyPanel.AddPlayerLeftLog(GamePlayers[index].playerInfo.username);
             //			PokerPlayer plr = GetPlayerById (playerId);
             //			string Message = plr.txtUsername.text + " is " + Constants.Poker.PokerPlayerStatusLeft;
@@ -4970,7 +5259,7 @@ public class GamePanel : MonoBehaviour
                 BuyInAmountPanel.Close();
                 btnIAmBack.gameObject.SetActive(false);
                 UIManager.Instance.assetOfGame.SavedLoginData.chips += GetOwnPlayer().BuyInAmount;
-                GamePlayers[index].BuyInAmount = 0;
+                pokerPlayer.BuyInAmount = 0;
                 HasJoinedRoom = false;
                 chatPanel.SetActive(false);
                 btnChat.interactable = HasJoin;
@@ -4992,22 +5281,31 @@ public class GamePanel : MonoBehaviour
                     }
                 }
             }
-            GamePlayers[index].Close();
-            GamePlayers[index].playerInfo = null;
-            GamePlayers[index].PlayerId = "";
-            GamePlayers[index].status = PlayerStatus.None;
+            pokerPlayer.Close();
+            pokerPlayer.playerInfo = null;
+            pokerPlayer.PlayerId = "";
+            pokerPlayer.status = PlayerStatus.None;
         }
     }
 
     private void RemoveAllPlayersFromTable()
     {
-        foreach (PokerPlayer player in GamePlayers)
+        foreach (var playerPlace in _playerPlaces)
+        {
+            var pokerPlayer = playerPlace.pokerPlayer;
+            
+            pokerPlayer.Close();
+            pokerPlayer.playerInfo = null;
+            pokerPlayer.PlayerId = "";
+            pokerPlayer.status = PlayerStatus.None;
+        }
+        /*foreach (PokerPlayer player in GamePlayers)
         {
             player.Close();
             player.playerInfo = null;
             player.PlayerId = "";
             player.status = PlayerStatus.None;
-        }
+        }*/
     }
 
     private void ResetMatchedTableCards()
@@ -5070,9 +5368,18 @@ public class GamePanel : MonoBehaviour
     private int GetActivePlayerCount()
     {
         int count = 0;
-        for (int i = 0; i < GamePlayers.Length; i++)
+        
+        /*for (int i = 0; i < GamePlayers.Length; i++)
         {
             if (GamePlayers[i].isActiveAndEnabled)
+            {
+                count++;
+            }
+        }*/
+        
+        foreach (var playerPlace in _playerPlaces)
+        {
+            if (playerPlace.pokerPlayer.isActiveAndEnabled)
             {
                 count++;
             }
@@ -5342,16 +5649,26 @@ public class GamePanel : MonoBehaviour
     private IEnumerator SitPlayersAll()
     {
         yield return new WaitForSeconds(2.5f);
-        for (int i = 0; i < GamePlayers.Length; i++)
+        /*for (int i = 0; i < GamePlayers.Length; i++)
+        {
+            OnSeatButtonTap(i);
+            yield return new WaitForSeconds(0.2f);
+        }*/
+        for (int i = 0; i < _playerPlaces.Count; i++)
         {
             OnSeatButtonTap(i);
             yield return new WaitForSeconds(0.2f);
         }
 
         yield return new WaitForSeconds(0.2f);
-        for (int i = 0; i < GamePlayers.Length; i++)
+        /*for (int i = 0; i < GamePlayers.Length; i++)
         {
             GamePlayers[i].BetAmount = 2000;
+            yield return new WaitForSeconds(0.2f);
+        }*/
+        for (int i = 0; i < _playerPlaces.Count; i++)
+        {
+            _playerPlaces[i].pokerPlayer.BetAmount = 2000;
             yield return new WaitForSeconds(0.2f);
         }
         StartCoroutine("MovepotToAnimation");
@@ -5359,9 +5676,15 @@ public class GamePanel : MonoBehaviour
 
     IEnumerator MovepotToAnimation()
     {
-        for (int i = 0; i < GamePlayers.Length; i++)
+        /*for (int i = 0; i < GamePlayers.Length; i++)
         {
             GamePlayers[i].StartCoroutine(GamePlayers[i].TransferBetAmountToPot(2000));
+            yield return new WaitForSeconds(0.2f);
+        }*/
+        for (int i = 0; i < _playerPlaces.Count; i++)
+        {
+            var pokerPlayer = _playerPlaces[i].pokerPlayer;
+            pokerPlayer.StartCoroutine(pokerPlayer.TransferBetAmountToPot(2000));
             yield return new WaitForSeconds(0.2f);
         }
 
@@ -5951,7 +6274,7 @@ public class GamePanel : MonoBehaviour
                 {
                     //PokerPlayer fromPlayer = GetPlayerById (wnrObj.sidePotPlayerId); //following line is commented to solve leave user side pot issue
                     //PokerPlayer fromPlayer = GamePlayers [wnrObj.winnerSeatIndex];
-                    PokerPlayer fromPlayer = GamePlayers[wnrObj.sidePotPlayerIndex];
+                    PokerPlayer fromPlayer = _playerPlaces[wnrObj.sidePotPlayerIndex].pokerPlayer;
                     PokerPlayer fromMainPlayer = GetPlayerById(getplayerBysidePotPlayerID(wnrObj.sidePotPlayerIndex));
                     if (fromMainPlayer != null)
                         fromPos = fromMainPlayer.txtSidePot.transform.parent.position;
@@ -6255,15 +6578,17 @@ public class GamePanel : MonoBehaviour
     private IEnumerator OnNextTurnHighlightsPlayerEffect(string nextTurnPlayerId)
     {
 
-        foreach (PokerPlayer p in UIManager.Instance.GameScreeen.GamePlayers)
+        //foreach (PokerPlayer p in UIManager.Instance.GameScreeen.GamePlayers)
+        foreach (var playerPlace in _playerPlaces)
         {
-            if (p.PlayerId.Equals(nextTurnPlayerId) && p.gameObject.activeSelf)
+            var pokerPlayer = playerPlace.pokerPlayer;
+            if (pokerPlayer.PlayerId.Equals(nextTurnPlayerId) && pokerPlayer.gameObject.activeSelf)
             {
                 float turnoffset = 0f;
                 while (turnoffset < 1f)
                 {
                     turnoffset += Time.deltaTime * 6f;
-                    var newRotation = Quaternion.LookRotation(currentTurnEffect.transform.position - p.ProfilePic.transform.position, Vector3.back);
+                    var newRotation = Quaternion.LookRotation(currentTurnEffect.transform.position - pokerPlayer.GetProfilePicImage().transform.position, Vector3.back);
                     newRotation.x = 0.0f;
                     newRotation.y = 0.0f;
                     currentTurnEffect.transform.rotation = Quaternion.Slerp(currentTurnEffect.transform.rotation, newRotation, turnoffset);
@@ -6366,11 +6691,11 @@ public class GamePanel : MonoBehaviour
             }
         }
 
-        int newSeatIndex = ownPlayerSeatIndex + (GamePlayers.Length - index);
-        if (newSeatIndex > GamePlayers.Length - 1)
+        int newSeatIndex = ownPlayerSeatIndex + (_playerPlaces.Count - index);
+        if (newSeatIndex > _playerPlaces.Count - 1)
         {
             //	Debug.Log ("if new trrue");
-            newSeatIndex = newSeatIndex - GamePlayers.Length;
+            newSeatIndex = newSeatIndex - _playerPlaces.Count;
         }
         //Debug.Log ("Opponent index => " + ownPlayerSeatIndex);
         //Debug.Log ("Opponent index => " + newSeatIndex);
@@ -6381,12 +6706,20 @@ public class GamePanel : MonoBehaviour
     public PokerPlayer GetOwnPlayer()
     {
         PokerPlayer pp = null;
-
-        foreach (PokerPlayer p in GamePlayers)
+        
+       /* foreach (PokerPlayer p in GamePlayers)
         {
             if (p.PlayerId.Equals(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId))
                 pp = p;
+        }*/
+        
+        foreach (var playerPlace in _playerPlaces)
+        {
+            var pokerPlayer = playerPlace.pokerPlayer;
+            if (pokerPlayer.PlayerId.Equals(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId))
+                pp = pokerPlayer;
         }
+
         return pp;
     }
 
@@ -6394,11 +6727,19 @@ public class GamePanel : MonoBehaviour
     {
         PokerPlayer plr = null;
 
-        foreach (PokerPlayer p in GamePlayers)
+        /*foreach (PokerPlayer p in GamePlayers)
         {
             if (p.PlayerId.Equals(playerId) &&
                 p.gameObject.activeSelf)
                 plr = p;
+        }*/
+        
+        foreach (var playerPlace in _playerPlaces)
+        {
+            var pokerPlayer = playerPlace.pokerPlayer;
+            if (pokerPlayer.PlayerId.Equals(playerId) &&
+                pokerPlayer.gameObject.activeSelf)
+                plr = pokerPlayer;
         }
         return plr;
     }
@@ -6407,12 +6748,21 @@ public class GamePanel : MonoBehaviour
     {
         string plrname = null;
 
-        foreach (PokerPlayer p in GamePlayers)
+        foreach (var playerPlace in _playerPlaces)
+        {
+            var pokerPlayer = playerPlace.pokerPlayer;
+            if (pokerPlayer.PlayerId.Equals(playerId) &&
+                pokerPlayer.gameObject.activeSelf)
+                plrname = pokerPlayer.txtUsername.text.ToString();
+        }
+        /*foreach (PokerPlayer p in GamePlayers)
         {
             if (p.PlayerId.Equals(playerId) &&
                 p.gameObject.activeSelf)
                 plrname = p.txtUsername.text.ToString();
-        }
+        }*/
+        
+        
         return plrname;
     }
 
@@ -6421,10 +6771,17 @@ public class GamePanel : MonoBehaviour
     {
         PokerPlayer plr = null;
 
-        foreach (PokerPlayer p in GamePlayers)
+        /*foreach (PokerPlayer p in GamePlayers)
         {
             if (p.SeatIndex == SeatId)
                 plr = p;
+        }*/
+        
+        foreach (var playerPlace in _playerPlaces)
+        {
+            var pokerPlayer = playerPlace.pokerPlayer;
+            if (pokerPlayer.SeatIndex == SeatId)
+                plr = pokerPlayer;
         }
         return plr;
     }
@@ -6477,24 +6834,40 @@ public class GamePanel : MonoBehaviour
     public int GetActivePlayersCount()
     {
         int activePlayers = 0;
-        foreach (PokerPlayer plr in GamePlayers)
+        foreach (var playerPlace in _playerPlaces)
+        {
+            var pokerPlayer = playerPlace.pokerPlayer;
+            if (pokerPlayer.gameObject.activeSelf && (pokerPlayer.status.Equals(PlayerStatus.Playing) || pokerPlayer.status == PlayerStatus.Allin))
+                activePlayers++;
+        }
+        /*foreach (PokerPlayer plr in GamePlayers)
         {
             if (plr.gameObject.activeSelf && (plr.status.Equals(PlayerStatus.Playing) || plr.status == PlayerStatus.Allin))
                 activePlayers++;
-        }
+        }*/
 
         return activePlayers;
     }
 
     public int GetPlayerIndexByPlayerId(string playerId)
     {
-        for (int i = 0; i < GamePlayers.Length; i++)
+        /*for (int i = 0; i < GamePlayers.Length; i++)
         {
             if (GamePlayers[i].PlayerId != null && GamePlayers[i].PlayerId.Equals(playerId))
             {
                 return i;
             }
+        }*/
+        
+        for (int i = 0; i < _playerPlaces.Count; i++)
+        {
+            var pokerPlayer = _playerPlaces[i].pokerPlayer;
+            if (pokerPlayer.PlayerId != null && pokerPlayer.PlayerId.Equals(playerId))
+            {
+                return i;
+            }
         }
+        
         return -1;
     }
 
@@ -6528,11 +6901,17 @@ public class GamePanel : MonoBehaviour
 
             if (_sidePotAmountListNew.sidePot == null)
             {
-                for (int i = 0; i < GamePlayers.Length; i++)
+                foreach (var playerPlace in _playerPlaces)
+                {
+                    var pokerPlayer = playerPlace.pokerPlayer;
+                    pokerPlayer.txtSidePot.text = "0";
+                    pokerPlayer.txtSidePot.transform.parent.gameObject.SetActive(false);
+                }
+                /*for (int i = 0; i < GamePlayers.Length; i++)
                 {
                     GamePlayers[i].txtSidePot.text = "0";
                     GamePlayers[i].txtSidePot.transform.parent.gameObject.SetActive(false);
-                }
+                }*/
                 return;
             }
 
@@ -6801,14 +7180,14 @@ public class GamePanel : MonoBehaviour
             }
         }
     }
-    public double Chips
+    /*public double Chips
     {
         set
         {
             txtTotalChips.text = value.ConvertToCommaSeparatedValueColor();
             txtTotalChips.transform.parent.gameObject.SetActive(value > 0);
         }
-    }
+    }*/
     /* private bool IsLetterValid()
      {
          string str = inputfieldChat.text;
