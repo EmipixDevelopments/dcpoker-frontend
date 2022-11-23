@@ -17,8 +17,9 @@ public class RegisterPanel : MonoBehaviour
     [SerializeField] private Toggle _showRepeatPassword;
     [SerializeField] private TMP_Text _massageText;
 
-    [Header("Other user name panel")]
-    [SerializeField] private OtherUserNamePanel _otherUserNamePanel; // need created class and logic
+    [Header("Other user name panel")] [SerializeField]
+    private OtherUserNamePanel _otherUserNamePanel; // need created class and logic
+
     [SerializeField] private TMP_Text _userNameTaken;
 
     private PhoneCodeAndFlagListData _phoneAndCodeList = new PhoneCodeAndFlagListData();
@@ -52,6 +53,7 @@ public class RegisterPanel : MonoBehaviour
             optionData.image = _flags.GetSpriteByName(item.FlagName);
             _phoneCode.options.Add(optionData);
         }
+
         _phoneCode.options.Add(new TMP_Dropdown.OptionData());
     }
 
@@ -77,6 +79,7 @@ public class RegisterPanel : MonoBehaviour
         {
             _password.contentType = TMP_InputField.ContentType.Password;
         }
+
         _password.ForceLabelUpdate();
     }
 
@@ -90,10 +93,11 @@ public class RegisterPanel : MonoBehaviour
         {
             _repeatPassword.contentType = TMP_InputField.ContentType.Password;
         }
+
         _repeatPassword.ForceLabelUpdate();
     }
 
-    public void OnClickLoginButton() 
+    public void OnClickLoginButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         UIManager.Instance.MainHomeScreen.LoginScreen.Open();
@@ -105,7 +109,6 @@ public class RegisterPanel : MonoBehaviour
         UIManager.Instance.SoundManager.OnButtonClick();
         this.Close();
     }
-
 
     public void OnRegisterButtonTap()
     {
@@ -148,7 +151,7 @@ public class RegisterPanel : MonoBehaviour
                     }
                     else if (registrationResp.message == "Username already taken.")
                     {
-                        ShowOtherUserNameWindow(registrationResp.result);
+//                        ShowOtherUserNameWindow(registrationResp.result);
                     }
                     else
                     {
@@ -159,7 +162,7 @@ public class RegisterPanel : MonoBehaviour
         }
     }
 
-    private void ShowOtherUserNameWindow(string otherNames) 
+    private void ShowOtherUserNameWindow(string otherNames)
     {
         _userNameTaken.gameObject.SetActive(true);
 
@@ -219,6 +222,7 @@ public class RegisterPanel : MonoBehaviour
             StartCoroutine(textempti());
             return false;
         }
+
         return true;
     }
 
@@ -230,8 +234,10 @@ public class RegisterPanel : MonoBehaviour
         {
             return false;
         }
+
         return true;
     }
+
     IEnumerator textempti()
     {
         yield return new WaitForSeconds(4.3f);

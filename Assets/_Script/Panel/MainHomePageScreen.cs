@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -10,24 +11,42 @@ using UnityEngine.UI;
 
 public class MainHomePageScreen : MonoBehaviour
 {
+<<<<<<< Updated upstream
     [SerializeField] private ToggleImage _soundToggle;
+=======
+    [SerializeField] private TMP_Text textAppVersion;
+    [SerializeField] private Background _background;
+    [SerializeField] private ToggleImageNormal _soundToggle;
+>>>>>>> Stashed changes
     [SerializeField] private FreeTournamentTable _tournamentTable;
     [SerializeField] private HomePageTournamentTable _texasHoldemTable;
     [SerializeField] private HomePageTournamentTable _omahaOrPLO5Table;
-    [Space]
-    public GameObject PanelTournamentUnlogin;
+    [Space] public GameObject PanelTournamentUnlogin;
+
     public LoginPanel LoginScreen;
-    public RegisterPanel registerScreen;
+
+//    public RegisterPanel registerScreen;
+    public RegisterPanelNew registerScreen;
     public PanelForgotPassword ForgotPasswordScreen;
     public GameObject PanelHowToPlay;
+
     public GameObject PanelAbout;
+<<<<<<< Updated upstream
     public GameObject PanelSupport;
+=======
+
+    //public GameObject PanelSupport;
+>>>>>>> Stashed changes
     public GameObject PanelTermsOfService;
     public GameObject PanelPrivacyPolicy;
     public GameObject PanelResponsibleGaming;
 
     void OnEnable()
     {
+<<<<<<< Updated upstream
+=======
+        Debug.unityLogger.logEnabled = true; //test
+>>>>>>> Stashed changes
         //SelectedOptionButtonTap(0);
         Reset();
 #if UNITY_EDITOR || UNITY_ANDROID || UNITY_IOS || UNITY_IPHONE
@@ -35,6 +54,7 @@ public class MainHomePageScreen : MonoBehaviour
         {
             PlayerPrefs.SetInt("gameRules", 0);
         }
+
         if (PlayerPrefs.GetInt("gameRules").Equals(0))
         {
             UIManager.Instance.TandCondPopup.SetDataOpen();
@@ -42,9 +62,14 @@ public class MainHomePageScreen : MonoBehaviour
         }
 #endif
     }
+<<<<<<< Updated upstream
     void Start() 
     {
+=======
+>>>>>>> Stashed changes
 
+    void Start()
+    {
         ///--- Test zone ---///
         FreeTournamentTableElementData[] elements = new FreeTournamentTableElementData[1];
         elements[0] = new FreeTournamentTableElementData();
@@ -110,7 +135,7 @@ public class MainHomePageScreen : MonoBehaviour
         elements2[0].BlindsCurrent = 4;
         elements2[0].BlindsMaximum = 4;
         elements2[0].BuyIn = 10;
-                
+
         elements2[1] = new HomePageTournamentElementData();
         elements2[1].Limit = "No Limit";
         elements2[1].SeatsCurrent = 4;
@@ -118,7 +143,7 @@ public class MainHomePageScreen : MonoBehaviour
         elements2[1].BlindsCurrent = 3;
         elements2[1].BlindsMaximum = 5;
         elements2[1].BuyIn = 1000;
-                
+
         elements2[2] = new HomePageTournamentElementData();
         elements2[2].Limit = "No Limit";
         elements2[2].SeatsCurrent = 1;
@@ -126,7 +151,7 @@ public class MainHomePageScreen : MonoBehaviour
         elements2[2].BlindsCurrent = 12;
         elements2[2].BlindsMaximum = 14;
         elements2[2].BuyIn = 1000;
-                
+
         elements2[3] = new HomePageTournamentElementData();
         elements2[3].Limit = "No Limit";
         elements2[3].SeatsCurrent = 1;
@@ -134,7 +159,7 @@ public class MainHomePageScreen : MonoBehaviour
         elements2[3].BlindsCurrent = 2;
         elements2[3].BlindsMaximum = 12;
         elements2[3].BuyIn = 10000;
-                
+
         elements2[4] = new HomePageTournamentElementData();
         elements2[4].Limit = "No Limit";
         elements2[4].SeatsCurrent = 3;
@@ -145,10 +170,22 @@ public class MainHomePageScreen : MonoBehaviour
 
         _omahaOrPLO5Table?.Init(elements2, () => { OnClickloginButton(); });
         /// Test zone end ///
+        textAppVersion.text = "v" + Application.version;
     }
 
+<<<<<<< Updated upstream
 
 
+=======
+    private void OnToogleSoundChange(bool active)
+    {
+        var uiManager = UIManager.Instance;
+
+        if (uiManager)
+            uiManager.SoundManager.SetSoundActive(active);
+        ;
+    }
+>>>>>>> Stashed changes
 
 
     //public void SelectedOptionButtonTap(int SelectedOption)
@@ -170,7 +207,7 @@ public class MainHomePageScreen : MonoBehaviour
     }
 
 
-    private void CloseAllWindow() 
+    private void CloseAllWindow()
     {
         PanelTournamentUnlogin.SetActive(false);
         LoginScreen.gameObject.SetActive(false);
@@ -186,12 +223,23 @@ public class MainHomePageScreen : MonoBehaviour
 
 
     #region Buttons / Toggls method
+
     // PanelTopButtons
-    public void OnClickMacauGoldLogo() 
+    public void OnClickMacauGoldLogo()
     {
+<<<<<<< Updated upstream
         UIManager.Instance.SoundManager.OnButtonClick();
         CloseAllWindow();
         PanelTournamentUnlogin.SetActive(true);
+=======
+        OnClickloginButton();
+        Reset();
+        _background.SetActiveBackgroundPanel(false);
+
+        //UIManager.Instance.SoundManager.OnButtonClick();
+        //CloseAllWindow();
+        //PanelTournamentUnlogin.SetActive(true);
+>>>>>>> Stashed changes
     }
 
     public void OnClickHowToPlayButton()
@@ -200,12 +248,14 @@ public class MainHomePageScreen : MonoBehaviour
         CloseAllWindow();
         PanelHowToPlay.SetActive(true);
     }
+
     public void OnClickAboutButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         CloseAllWindow();
         PanelAbout.SetActive(true);
     }
+
     public void OnClickSupportButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
@@ -214,16 +264,24 @@ public class MainHomePageScreen : MonoBehaviour
         //UIManager.Instance.SoundManager.OnButtonClick();
         //Utility.Instance.OpenLink("https://support.macau-gold.com");
     }
+
     public void SoundToggleCallBack()
     {
         Debug.Log($"toggleState");
     }
-    public void OnClickBanner() 
+
+    public void OnClickBanner()
     {
         //StartCoroutine(GetBannerUrl("https://httpbin.org/ip"));
         Utility.Instance.OpenLink("https://google.com");
     }
+<<<<<<< Updated upstream
     IEnumerator GetBannerUrl(string url) 
+=======
+
+    //Old
+    IEnumerator GetBannerUrl(string url)
+>>>>>>> Stashed changes
     {
         UnityWebRequest infoRequest = UnityWebRequest.Get(url);
         yield return infoRequest.SendWebRequest();
@@ -232,82 +290,103 @@ public class MainHomePageScreen : MonoBehaviour
             Debug.LogError(infoRequest.error);
             yield break;
         }
-        
+
         Debug.Log(infoRequest.downloadHandler.text);
         //Utility.Instance.OpenLink(infoRequest.downloadHandler.text);
     }
+
     // PanelMenu
     public void OnClickTournamentsButton()
     {
         OnClickloginButton();
     }
+
     public void OnClickSitNGoButton()
     {
         OnClickloginButton();
     }
+
     public void OnClickTexasHoldemButton()
     {
         OnClickloginButton();
     }
+
     public void OnClickOmahaButton()
     {
         OnClickloginButton();
     }
+
     public void OnClickPLO5Button()
     {
         OnClickloginButton();
     }
+
     public void OnClickCreateAccountButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         registerScreen.Open();
     }
+
     public void OnClickloginButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         Reset();
         LoginScreen.Open();
     }
+
     // Free Tournament panel
-    public void OnClickTournamentToggleAll() 
+    public void OnClickTournamentToggleAll()
     {
         Debug.Log("OnClickTournamentToggleAll");
     }
+
     public void OnClickTournamentToggleLow()
     {
         Debug.Log("OnClickTournamentToggleLow");
     }
+
     public void OnClickTournamentToggleMedium()
     {
         Debug.Log("OnClickTournamentToggleMedium");
     }
+
     public void OnClickTournamentToggleHigh()
     {
         Debug.Log("OnClickTournamentToggleHigh");
     }
+
     public void OnClickTournamentToggleFreeroll()
     {
         Debug.Log("OnClickTournamentToggleFreeroll");
     }
+
     // the bottom panel
     public void OnClickTermsOfServiceButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
+<<<<<<< Updated upstream
+=======
+        _background.SetActiveBackgroundPanel(true);
+
+>>>>>>> Stashed changes
         CloseAllWindow();
         PanelTermsOfService.SetActive(true);
     }
+
     public void OnClickPrivacyPolicyButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         CloseAllWindow();
         PanelPrivacyPolicy.SetActive(true);
     }
+
     public void OnClickResponsibleGaming()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         CloseAllWindow();
         PanelResponsibleGaming.SetActive(true);
     }
+
     #endregion
 
     void OnDisable()
@@ -316,57 +395,32 @@ public class MainHomePageScreen : MonoBehaviour
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // need remove old logic
 
 
-    [Header("Old Logic")]
-    [Space(100)]
-    public bool TrashIsHere;
+    [Header("Old Logic")] public bool TrashIsHere;
 
 
     #region PUBLIC_VARIABLES
 
-    [Header("Gamobjects")]
-    public GameObject[] SelectedGame;
+    [Header("Gamobjects")] public GameObject[] SelectedGame;
+
     //[Header ("Transforms")]
-
-
     [Header("ScriptableObjects")]
-
     //public ResendEmailPasswordPanel ResendEmailPasswordScreen;
-
     //[Header ("DropDowns")]
-
-
     //[Header ("Images")]
-
-
     [Header("Text")]
     //public Text txtTimer;
     //public Text txtjackpotAmount;
     //public Text txtonlinePlayers;
     //[Header ("Prefabs")]
     //[Header ("Enums")]
-
-
     [Header("Variables")]
     public int SelectedGames;
+
     public int loginPageFocusCounter = 0;
+
     #endregion
 
     #region PRIVATE_VARIABLES
@@ -374,6 +428,7 @@ public class MainHomePageScreen : MonoBehaviour
     #endregion
 
     #region UNITY_CALLBACKS
+
     // Use this for initialization
 
 
@@ -383,14 +438,15 @@ public class MainHomePageScreen : MonoBehaviour
         string s = System.DateTime.Now.Day.ToString() + " " + System.DateTime.Now.ToString("MMMM") + " " + System.DateTime.Now.ToShortTimeString();
         txtTimer.text = s;
     }*/
+
     #endregion
 
     #region DELEGATE_CALLBACKS
 
-
     #endregion
 
     #region PUBLIC_METHODS
+
     public bool ShowLoader()
     {
         if (loginPageFocusCounter > 0)
@@ -408,22 +464,22 @@ public class MainHomePageScreen : MonoBehaviour
         UIManager.Instance.SoundManager.OnButtonClick();
         Utility.Instance.OpenLink("https://support.macau-gold.com");
     }
+
     public void loginbuttonTap() // used
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         LoginScreen.Open();
     }
+
     public void RegisterbuttonTap() // used
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         registerScreen.Open();
     }
 
-
     #endregion
 
     #region PRIVATE_METHODS
-
 
     public void SetObject(int GameSelect)
     {
@@ -441,12 +497,11 @@ public class MainHomePageScreen : MonoBehaviour
 
     #region COROUTINES
 
-
-
     #endregion
 
 
     #region GETTER_SETTER
+
     public string AESEncryption(string inputData)
     {
         AesCryptoServiceProvider AEScryptoProvider = new AesCryptoServiceProvider();
@@ -465,7 +520,4 @@ public class MainHomePageScreen : MonoBehaviour
     }
 
     #endregion
-
-
-
 }

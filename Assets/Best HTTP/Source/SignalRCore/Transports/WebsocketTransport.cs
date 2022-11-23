@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using BestHTTP.Extensions;
 using BestHTTP.PlatformSupport.Memory;
 using BestHTTP.SignalRCore.Messages;
 
@@ -10,7 +11,7 @@ namespace BestHTTP.SignalRCore.Transports
 {
     /// <summary>
     /// WebSockets transport implementation.
-    /// https://github.com/aspnet/SignalR/blob/dev/specs/TransportProtocols.md#websockets-full-duplex
+    /// https://github.com/dotnet/aspnetcore/blob/master/src/SignalR/docs/specs/TransportProtocols.md#websockets-full-duplex
     /// </summary>
     internal sealed class WebSocketTransport : TransportBase
     {
@@ -25,29 +26,39 @@ namespace BestHTTP.SignalRCore.Transports
 
         public override void StartConnect()
         {
-            HTTPManager.Logger.Verbose("WebSocketTransport", "StartConnect");
+            HTTPManager.Logger.Verbose("WebSocketTransport", "StartConnect", this.Context);
 
             if (this.webSocket == null)
             {
-                Uri uri = BuildUri(this.connection.Uri);
+                Uri uri = this.connection.Uri;
+                string scheme = Connections.HTTPProtocolFactory.IsSecureProtocol(uri) ? "wss" : "ws";
+                int port = uri.Port != -1 ? uri.Port : (scheme.Equals("wss", StringComparison.OrdinalIgnoreCase) ? 443 : 80);
+
+                // Somehow if i use the UriBuilder it's not the same as if the uri is constructed from a string...
+                uri = new Uri(scheme + "://" + uri.Host + ":" + port + uri.GetRequestPathAndQueryURL());
+
+                uri = BuildUri(uri);
 
                 // Also, if there's an authentication provider it can alter further our uri.
                 if (this.connection.AuthenticationProvider != null)
                     uri = this.connection.AuthenticationProvider.PrepareUri(uri) ?? uri;
 
-                HTTPManager.Logger.Verbose("WebSocketTransport", "StartConnect connecting to Uri: " + uri.ToString());
+                HTTPManager.Logger.Verbose("WebSocketTransport", "StartConnect connecting to Uri: " + uri.ToString(), this.Context);
 
                 this.webSocket = new WebSocket.WebSocket(uri);
+                this.webSocket.Context.Add("Transport", this.Context);
             }
 
 #if !UNITY_WEBGL || UNITY_EDITOR
+            this.webSocket.StartPingThread = true;
+
             // prepare the internal http request
             if (this.connection.AuthenticationProvider != null)
-                this.connection.AuthenticationProvider.PrepareRequest(webSocket.InternalRequest);
+                webSocket.OnInternalRequestCreated = (ws, internalRequest) => this.connection.AuthenticationProvider.PrepareRequest(internalRequest);
 #endif
             this.webSocket.OnOpen += OnOpen;
             this.webSocket.OnMessage += OnMessage;
-            this.webSocket.OnBinary += OnBinary;
+            this.webSocket.OnBinaryNoAlloc += OnBinaryNoAlloc;
             this.webSocket.OnError += OnError;
             this.webSocket.OnClosed += OnClosed;
 
@@ -58,8 +69,13 @@ namespace BestHTTP.SignalRCore.Transports
 
         public override void Send(BufferSegment msg)
         {
-            if (this.webSocket == null)
+            if (this.webSocket == null || !this.webSocket.IsOpen)
+            {
+                BufferPool.Release(msg.Data);
+
+                //this.OnError(this.webSocket, "Send called while the websocket is null or isn't open! Transport's State: " + this.State);
                 return;
+            }
 
             this.webSocket.Send(msg.Data, (ulong)msg.Offset, (ulong)msg.Count);
 
@@ -69,15 +85,18 @@ namespace BestHTTP.SignalRCore.Transports
         // The websocket connection is open
         private void OnOpen(WebSocket.WebSocket webSocket)
         {
-            HTTPManager.Logger.Verbose("WebSocketTransport", "OnOpen");
+            HTTPManager.Logger.Verbose("WebSocketTransport", "OnOpen", this.Context);
 
-            // https://github.com/aspnet/SignalR/blob/dev/specs/HubProtocol.md#overview
+            // https://github.com/dotnet/aspnetcore/blob/master/src/SignalR/docs/specs/HubProtocol.md#overview
             // When our websocket connection is open, send the 'negotiation' message to the server.
             (this as ITransport).Send(JsonProtocol.WithSeparator(string.Format("{{\"protocol\":\"{0}\", \"version\": 1}}", this.connection.Protocol.Name)));
         }
 
         private void OnMessage(WebSocket.WebSocket webSocket, string data)
         {
+            if (this.State == TransportStates.Closing)
+                return;
+
             if (this.State == TransportStates.Connecting)
             {
                 HandleHandshakeResponse(data);
@@ -108,7 +127,7 @@ namespace BestHTTP.SignalRCore.Transports
             }
             catch (Exception ex)
             {
-                HTTPManager.Logger.Exception("WebSocketTransport", "OnMessage(string)", ex);
+                HTTPManager.Logger.Exception("WebSocketTransport", "OnMessage(string)", ex, this.Context);
             }
             finally
             {
@@ -116,11 +135,14 @@ namespace BestHTTP.SignalRCore.Transports
             }
         }
 
-        private void OnBinary(WebSocket.WebSocket webSocket, byte[] data)
+        private void OnBinaryNoAlloc(WebSocket.WebSocket webSocket, BufferSegment data)
         {
+            if (this.State == TransportStates.Closing)
+                return;
+
             if (this.State == TransportStates.Connecting)
             {
-                HandleHandshakeResponse(System.Text.Encoding.UTF8.GetString(data, 0, data.Length));
+                HandleHandshakeResponse(System.Text.Encoding.UTF8.GetString(data.Data, data.Offset, data.Count));
 
                 return;
             }
@@ -128,25 +150,23 @@ namespace BestHTTP.SignalRCore.Transports
             this.messages.Clear();
             try
             {
-                this.connection.Protocol.ParseMessages(new BufferSegment(data, 0, data.Length), ref this.messages);
+                this.connection.Protocol.ParseMessages(data, ref this.messages);
 
                 this.connection.OnMessages(this.messages);
             }
             catch (Exception ex)
             {
-                HTTPManager.Logger.Exception("WebSocketTransport", "OnMessage(byte[])", ex);
+                HTTPManager.Logger.Exception("WebSocketTransport", "OnMessage(byte[])", ex, this.Context);
             }
             finally
             {
                 this.messages.Clear();
-
-                BufferPool.Release(data);
             }
         }
 
         private void OnError(WebSocket.WebSocket webSocket, string reason)
         {
-            HTTPManager.Logger.Verbose("WebSocketTransport", "OnError: " + reason);
+            HTTPManager.Logger.Verbose("WebSocketTransport", "OnError: " + reason, this.Context);
 
             if (this.State == TransportStates.Closing)
             {
@@ -161,7 +181,7 @@ namespace BestHTTP.SignalRCore.Transports
 
         private void OnClosed(WebSocket.WebSocket webSocket, ushort code, string message)
         {
-            HTTPManager.Logger.Verbose("WebSocketTransport", "OnClosed: " + code + " " + message);
+            HTTPManager.Logger.Verbose("WebSocketTransport", "OnClosed: " + code + " " + message, this.Context);
 
             this.webSocket = null;
 
@@ -170,9 +190,9 @@ namespace BestHTTP.SignalRCore.Transports
 
         public override void StartClose()
         {
-            HTTPManager.Logger.Verbose("WebSocketTransport", "StartClose");
+            HTTPManager.Logger.Verbose("WebSocketTransport", "StartClose", this.Context);
 
-            if (this.webSocket != null)
+            if (this.webSocket != null && this.webSocket.IsOpen)
             {
                 this.State = TransportStates.Closing;
                 this.webSocket.Close();

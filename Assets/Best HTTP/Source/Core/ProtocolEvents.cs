@@ -1,8 +1,11 @@
-﻿using BestHTTP.Extensions;
-using BestHTTP.Logger;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+
+using BestHTTP.Logger;
+
+// Required for ConcurrentQueue.Clear extension.
+using BestHTTP.Extensions;
 
 namespace BestHTTP.Core
 {
@@ -25,7 +28,7 @@ namespace BestHTTP.Core
         }
     }
 
-    internal static class ProtocolEventHelper
+    public static class ProtocolEventHelper
     {
         private static ConcurrentQueue<ProtocolEventInfo> protocolEvents = new ConcurrentQueue<ProtocolEventInfo>();
         private static List<IProtocol> ActiveProtocols = new List<IProtocol>(2);
@@ -36,6 +39,9 @@ namespace BestHTTP.Core
 
         public static void EnqueueProtocolEvent(ProtocolEventInfo @event)
         {
+            if (HTTPManager.Logger.Level == Loglevels.All)
+                HTTPManager.Logger.Information("ProtocolEventHelper", "Enqueue protocol event: " + @event.ToString(), @event.Source.LoggingContext);
+
             protocolEvents.Enqueue(@event);
         }
 
@@ -50,7 +56,7 @@ namespace BestHTTP.Core
             while (protocolEvents.TryDequeue(out protocolEvent))
             {
                 if (HTTPManager.Logger.Level == Loglevels.All)
-                    HTTPManager.Logger.Information("ProtocolEventHelper", "Processing protocol event: " + protocolEvent.ToString());
+                    HTTPManager.Logger.Information("ProtocolEventHelper", "Processing protocol event: " + protocolEvent.ToString(), protocolEvent.Source.LoggingContext);
 
                 if (OnEvent != null)
                 {
@@ -60,7 +66,7 @@ namespace BestHTTP.Core
                     }
                     catch (Exception ex)
                     {
-                        HTTPManager.Logger.Exception("ProtocolEventHelper", "ProcessQueue", ex);
+                        HTTPManager.Logger.Exception("ProtocolEventHelper", "ProcessQueue", ex, protocolEvent.Source.LoggingContext);
                     }
                 }
 
@@ -74,7 +80,7 @@ namespace BestHTTP.Core
 
                     HostManager.GetHost(protocol.ConnectionKey.Host)
                         .GetHostDefinition(protocol.ConnectionKey.Connection)
-                        .DecreaseActiveConnectionCount();
+                        .TryToSendQueuedRequests();
 
                     protocol.Dispose();
                 }

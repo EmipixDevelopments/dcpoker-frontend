@@ -1,6 +1,10 @@
+<<<<<<< Updated upstream
 ﻿
 using UnityEngine;
 using System.Collections;
+=======
+﻿using UnityEngine;
+>>>>>>> Stashed changes
 
 namespace Constants
 {
@@ -24,6 +28,7 @@ namespace Constants
     {
         public static PokerPlayerInfo PlayerInfo;
     }
+
     /// <summary>
     /// Message title.
     /// </summary>
@@ -39,7 +44,6 @@ namespace Constants
     /// </summary>
     public class Tag
     {
-
     }
 
     /// <summary>
@@ -61,7 +65,6 @@ namespace Constants
     /// </summary>
     public class Messages
     {
-
         public const string RoomToCloseOneHour = "Room will be close in next one hour.";
         public const string RoomToCloseHalfHour = "Room will be close in next half hour";
         public const string Update_Profile_Error = "Profile not updated. Please try again.";
@@ -148,16 +151,13 @@ namespace Constants
         /// </summary>
         public class Game
         {
-
             public const string NotEnoughChipsToPlayThisTable = "You do not have enough chips to play in this table.";
             public const string RedirectToLobbyConfirmation = "Are you sure you want to quit? Quitting may reset your win streak.";
             public const string BeforeGamePlayText = "Make sure to be at the table before the tournament begins! If you are not present at the table, you will not be permitted into the tournament and lose your TC entry.";
             public const string AfterGamePlayText = "If you leave the tournament, you will not be allowed back in.";
             public const string LeaveGamePlayText = "Are you sure you want to quit?\u0003\u0003\u0003\u0003\u0003 Quitting may reset your win streak.\u0003";
             public const string NotEnoughChips = "You do not have enough chips.";
-
         }
-
 
 
         /// <summary>
@@ -183,8 +183,8 @@ namespace Constants
                 {
                     case SERVER.Macau:
                         return MacauBaseUrl;
-                    case SERVER.Club:
-                        return clubBaseUrl;
+//                    case SERVER.Club:
+//                        return clubBaseUrl;
                     //case SERVER.Staging:
                     //    return StagingUrl;
                     case SERVER.Developer:
@@ -192,7 +192,8 @@ namespace Constants
                     case SERVER.Custom:
                         return UIManager.Instance.CustormUrl;
                 }
-                return StagingUrl;
+
+                return MacauBaseUrl;
             }
         }
 
@@ -207,9 +208,11 @@ namespace Constants
         public static string EssentialLiveUrl = "https://mgl2020.com";
 
 
-        public static string MacauBaseUrl = "https://macau-gold.com";
-        public static string clubBaseUrl = "https://macau.aistechnolabs.club";
-        public static string StagingUrl = "https://pokerbet.aistechnolabs.pro";
+//        public static string MacauBaseUrl = "https://macau-gold.com";
+        public static string MacauBaseUrl = "https://dcpoker.io";
+
+//        public static string clubBaseUrl = "https://macau.aistechnolabs.club";
+//        public static string StagingUrl = "https://pokerbet.aistechnolabs.pro";
         public static string DevelopmentBaseUrl = "http://localhost:401"; //"https://pokerbet.aistechnolabs.in";
 
 
@@ -300,6 +303,7 @@ namespace Constants
         /// The refresh table interval in seconds.
         /// </summary>
         public const int RefreshTableInterval = 15;
+
         /// <summary>
         /// The refresh tournamentRegistretedtable interval in seconds.
         /// </summary>
@@ -308,6 +312,14 @@ namespace Constants
         public const string PokerPlayerStatusLeft = "Left";
     }
 
+<<<<<<< Updated upstream
+=======
+    public class PokerStatus
+    {
+        public static string RunningStatus = "Running";
+    }
+
+>>>>>>> Stashed changes
     /// <summary>
     /// Poker events
     /// </summary>
@@ -315,7 +327,10 @@ namespace Constants
     {
         public const string Connect = "connect";
         public const string Disconnect = "disconnect";
+
         public const string Login = "LoginPlayer";
+
+//        public const string Login = "LoginPlayerTest";
         public const string VerifyIdentifierToken = "VerifyIdentifierToken";
         public const string RoomPlayerDetails = "RoomPlayerDetails";
         public const string ReconnectPlayer = "ReconnectPlayer";
@@ -323,6 +338,8 @@ namespace Constants
         public const string GetCheckRunningGame = "CheckRunningGame";
         public const string GetRunningGameList = "GetRunningGameList";
         public const string Register = "RegisterPlayer";
+        public const string Phrase = "ValidatePlayerPhrase";
+        public const string UserWalletBalance = "UserWalletBalance";
         public const string GetStacks = "GetStacks";
         public const string StaticTournament = "StaticTournament";
         public const string Banner = "Banner";
@@ -389,7 +406,14 @@ namespace Constants
         public const string PrivateRoomLogin = "PrivateRoomLogin";
 
         public const string UpdateIsCash = "updateIsCash";
+<<<<<<< Updated upstream
         public const string СontactUs = "contactUs";
+=======
+        //public const string СontactUs = "contactUs";
+
+        //public const string sendPlayerProfileImage = "sendPlayerProfileImage";
+        //public const string getPlayerProfileImage = "getPlayerProfileImage";
+>>>>>>> Stashed changes
 
         public const string DeletePlayerSendCode = "deletePlayerSendCode";
         public const string DeletePlayerConfirmCode = "deletePlayerConfirmCode";
@@ -424,7 +448,9 @@ namespace Constants
         public const string PlayerAction = "PlayerAction";
         public const string PlayersCards = "PlayersCards";
         public const string ShowFoldedPlayerCards = "ShowFoldedPlayerCards";
+
         public const string PlayerOnline = "PlayerOnline";
+
         //		public const string PlayerActionNew = "PlayerActionNew";
         public const string InviteFriend = "InviteFriend";
         public const string UpdateAutoBuyIn = "UpdateAutoBuyIn";
@@ -444,6 +470,13 @@ namespace Constants
         public const string ShowCardResult = "ShowCardResult";
         public const string WaitForBigBlind = "WaitForBigBlind";
         public const string GamePopupNotification = "GamePopupNotification";
+<<<<<<< Updated upstream
+=======
+
+        public const string SendContactUs = "sendContactUs";
+        public const string ContactUs = "contactUs";
+        public const string ReadContactUs = "readContactUs";
+>>>>>>> Stashed changes
 
         public const string RoundStarted = "NewRoundStarted";
         public const string GameStarted = "GameStarted";
@@ -487,7 +520,6 @@ namespace Constants
         public const string BanPlayerTournament = "BanPlayerTournament";
         public const string RoomDeleted = "RoomDeleted";
         public const string TableBalanceNotice = "TableBalanceNotice";
-
 
 
         public const string OnWaitingJoinRoom = "OnWaitingJoinRoom";
@@ -540,25 +572,33 @@ namespace Constants
         public static string clubTablesResult = "clubTablesResult";
         public static string TournamentLeaderboard = "TournamentLeaderboard";
     }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
     /// <summary>
     /// keys for save/load data
     /// </summary>
-    public enum TablePlayerPrefsKeys 
+    public enum TablePlayerPrefsKeys
     {
         // Regular Tournament
         TournamentTableSettingsPlayerPerTableFilter,
         TournamentTableSettingsGameFilter,
         TournamentTableSettingsPriceFilter,
+
         // Taxes holdem
         TaxesHoldemTableSettingsPriceFilter,
         TaxesHoldemTableSettingsPlayerPerTableFilter,
+
         // Omaha
         OmahaTableSettingsPriceFilter,
         OmahaTableSettingsPlayerPerTableFilter,
+
         // Plo5
         Plo5TableSettingsPriceFilter,
         Plo5TableSettingsPlayerPerTableFilter,
+
         // Regular Tournament
         SitNGoTableSettingsPlayerPerTableFilter,
         SitNGoTableSettingsGameFilter,
@@ -648,10 +688,12 @@ public enum SERVER
 {
     Macau,
     Club,
+
     //Staging,
     Developer,
     Custom
 }
+
 public enum GameType
 {
     cash,
@@ -679,6 +721,7 @@ public enum LimitType
     No_Limit, //2
     Pot_Limit //3
 }
+
 public enum PlayerPerTableStuff
 {
     All = 9,

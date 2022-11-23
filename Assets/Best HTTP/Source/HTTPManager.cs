@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 #if !BESTHTTP_DISABLE_CACHING
@@ -7,10 +6,15 @@ using BestHTTP.Caching;
 #endif
 
 using BestHTTP.Core;
-
 using BestHTTP.Extensions;
 using BestHTTP.Logger;
 using BestHTTP.PlatformSupport.Memory;
+
+#if !BESTHTTP_DISABLE_COOKIES
+using BestHTTP.Cookies;
+#endif
+
+using BestHTTP.Connections;
 
 namespace BestHTTP
 {
@@ -21,9 +25,16 @@ namespace BestHTTP
         Immediate
     }
 
+#if !BESTHTTP_DISABLE_ALTERNATE_SSL && (!UNITY_WEBGL || UNITY_EDITOR)
+    public delegate Connections.TLS.AbstractTls13Client TlsClientFactoryDelegate(HTTPRequest request, List<SecureProtocol.Org.BouncyCastle.Tls.ProtocolName> protocols);
+#endif
+
+    public delegate System.Security.Cryptography.X509Certificates.X509Certificate ClientCertificateSelector(HTTPRequest request, string targetHost, System.Security.Cryptography.X509Certificates.X509CertificateCollection localCertificates, System.Security.Cryptography.X509Certificates.X509Certificate remoteCertificate, string[] acceptableIssuers);
+
     /// <summary>
     ///
     /// </summary>
+    [BestHTTP.PlatformSupport.IL2CPP.Il2CppEagerStaticClassConstructionAttribute]
     public static partial class HTTPManager
     {
         // Static constructor. Setup default values
@@ -35,7 +46,7 @@ namespace BestHTTP
             MaxConnectionIdleTime = TimeSpan.FromSeconds(20);
 
 #if !BESTHTTP_DISABLE_COOKIES
-#if UNITY_WEBGL
+#if UNITY_WEBGL && !UNITY_EDITOR
             // Under webgl when IsCookiesEnabled is true, it will set the withCredentials flag for the XmlHTTPRequest
             //  and that's different from the default behavior.
             // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials
@@ -51,17 +62,16 @@ namespace BestHTTP
             RequestTimeout = TimeSpan.FromSeconds(60);
 
             // Set the default logger mechanism
-            logger = new BestHTTP.Logger.DefaultLogger();
+            logger = new BestHTTP.Logger.ThreadedLogger();
 
 #if !BESTHTTP_DISABLE_ALTERNATE_SSL && (!UNITY_WEBGL || UNITY_EDITOR)
-            DefaultCertificateVerifyer = null;
             UseAlternateSSLDefaultValue = true;
 #endif
 
 #if NETFX_CORE
             IOService = new PlatformSupport.FileSystem.NETFXCOREIOService();
-#elif UNITY_WEBGL && !UNITY_EDITOR
-            IOService = new PlatformSupport.FileSystem.WebGLIOService();
+//#elif UNITY_WEBGL && !UNITY_EDITOR
+//            IOService = new PlatformSupport.FileSystem.WebGLIOService();
 #else
             IOService = new PlatformSupport.FileSystem.DefaultIOService();
 #endif
@@ -77,7 +87,7 @@ namespace BestHTTP
 #region Global Options
 
         /// <summary>
-        /// The maximum active TCP connections that the client will maintain to a server. Default value is 4. Minimum value is 1.
+        /// The maximum active TCP connections that the client will maintain to a server. Default value is 6. Minimum value is 1.
         /// </summary>
         public static byte MaxConnectionPerServer
         {
@@ -179,7 +189,7 @@ namespace BestHTTP
                 // Make sure that it has a valid logger instance.
                 if (logger == null)
                 {
-                    logger = new DefaultLogger();
+                    logger = new ThreadedLogger();
                     logger.Level = Loglevels.None;
                 }
 
@@ -191,15 +201,27 @@ namespace BestHTTP
         private static BestHTTP.Logger.ILogger logger;
 
 #if !BESTHTTP_DISABLE_ALTERNATE_SSL && (!UNITY_WEBGL || UNITY_EDITOR)
-        /// <summary>
-        /// The default ICertificateVerifyer implementation that the plugin will use when the request's UseAlternateSSL property is set to true.
-        /// </summary>
-        public static SecureProtocol.Org.BouncyCastle.Crypto.Tls.ICertificateVerifyer DefaultCertificateVerifyer { get; set; }
 
-        /// <summary>
-        /// The default IClientCredentialsProvider implementation that the plugin will use when the request's UseAlternateSSL property is set to true.
-        /// </summary>
-        public static SecureProtocol.Org.BouncyCastle.Crypto.Tls.IClientCredentialsProvider DefaultClientCredentialsProvider { get; set; }
+        public static TlsClientFactoryDelegate TlsClientFactory;
+
+        public static Connections.TLS.AbstractTls13Client DefaultTlsClientFactory(HTTPRequest request, List<SecureProtocol.Org.BouncyCastle.Tls.ProtocolName> protocols)
+        {
+            // http://tools.ietf.org/html/rfc3546#section-3.1
+            // -It is RECOMMENDED that clients include an extension of type "server_name" in the client hello whenever they locate a server by a supported name type.
+            // -Literal IPv4 and IPv6 addresses are not permitted in "HostName".
+
+            // User-defined list has a higher priority
+            List<SecureProtocol.Org.BouncyCastle.Tls.ServerName> hostNames = null;
+
+            // If there's no user defined one and the host isn't an IP address, add the default one
+            if (!request.CurrentUri.IsHostIsAnIPAddress())
+            {
+                hostNames = new List<SecureProtocol.Org.BouncyCastle.Tls.ServerName>(1);
+                hostNames.Add(new SecureProtocol.Org.BouncyCastle.Tls.ServerName(0, System.Text.Encoding.UTF8.GetBytes(request.CurrentUri.Host)));
+            }
+
+            return new Connections.TLS.DefaultTls13Client(request, hostNames, protocols);
+        }
 
         /// <summary>
         /// The default value for the HTTPRequest's UseAlternateSSL property.
@@ -208,18 +230,19 @@ namespace BestHTTP
 #endif
 
 #if !NETFX_CORE
-        public static Func<HTTPRequest, System.Security.Cryptography.X509Certificates.X509Certificate, System.Security.Cryptography.X509Certificates.X509Chain, bool> DefaultCertificationValidator { get; set; }
+        public static Func<HTTPRequest, System.Security.Cryptography.X509Certificates.X509Certificate, System.Security.Cryptography.X509Certificates.X509Chain, System.Net.Security.SslPolicyErrors, bool> DefaultCertificationValidator;
+        public static ClientCertificateSelector ClientCertificationProvider;
 #endif
 
         /// <summary>
         /// TCP Client's send buffer size.
         /// </summary>
-        public static int SendBufferSize = 65 * 1024;
+        public static int? SendBufferSize;
 
         /// <summary>
         /// TCP Client's receive buffer size.
         /// </summary>
-        public static int ReceiveBufferSize = 65 * 1024;
+        public static int? ReceiveBufferSize;
 
         /// <summary>
         /// An IIOService implementation to handle filesystem operations.
@@ -235,13 +258,16 @@ namespace BestHTTP
         /// <summary>
         /// User-agent string that will be sent with each requests.
         /// </summary>
-        public static string UserAgent = "BestHTTP 2.0.3";
+        public static string UserAgent = "BestHTTP/2 v2.7.0";
 
+        /// <summary>
+        /// It's true if the application is quitting and the plugin is shutting down itself.
+        /// </summary>
+        public static bool IsQuitting { get { return _isQuitting; } private set { _isQuitting = value; } }
+        private static volatile bool _isQuitting;
 #endregion
 
 #region Manager variables
-
-        internal static bool IsQuitting { get; private set; }
 
         private static bool IsSetupCalled;
 
@@ -254,10 +280,10 @@ namespace BestHTTP
             if (IsSetupCalled)
                 return;
             IsSetupCalled = true;
-
-            HTTPManager.Logger.Information("HTTPManager", "Setup called!");
-
             IsQuitting = false;
+
+            HTTPManager.Logger.Information("HTTPManager", "Setup called! UserAgent: " + UserAgent);
+
             HTTPUpdateDelegator.CheckInstance();
 
 #if !BESTHTTP_DISABLE_CACHING
@@ -294,13 +320,39 @@ namespace BestHTTP
 
         public static HTTPRequest SendRequest(HTTPRequest request)
         {
-            if (request.IsCancellationRequested || IsQuitting)
-                return request;
-
             if (!IsSetupCalled)
                 Setup();
 
-            RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(request, RequestEvents.Resend));
+            if (request.IsCancellationRequested || IsQuitting)
+                return request;
+
+#if !BESTHTTP_DISABLE_CACHING
+            // If possible load the full response from cache.
+            if (Caching.HTTPCacheService.IsCachedEntityExpiresInTheFuture(request))
+            {
+                DateTime started = DateTime.Now;
+                PlatformSupport.Threading.ThreadedRunner.RunShortLiving<HTTPRequest>((req) =>
+                {
+                    if (Connections.ConnectionHelper.TryLoadAllFromCache("HTTPManager", req, req.Context))
+                    {
+                        req.Timing.Add("Full Cache Load", DateTime.Now - started);
+                        req.State = HTTPRequestStates.Finished;
+                    }
+                    else
+                    {
+                        // If for some reason it couldn't load we place back the request to the queue.
+
+                        request.State = HTTPRequestStates.Queued;
+                        RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(request, RequestEvents.Resend));
+                    }
+                }, request);
+            }
+            else
+#endif
+            {
+                request.State = HTTPRequestStates.Queued;
+                RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(request, RequestEvents.Resend));
+            }
 
             return request;
         }
@@ -312,7 +364,7 @@ namespace BestHTTP
         /// <summary>
         /// Will return where the various caches should be saved.
         /// </summary>
-        internal static string GetRootCacheFolder()
+        public static string GetRootCacheFolder()
         {
             try
             {
@@ -331,16 +383,21 @@ namespace BestHTTP
 #endif
         }
 
-        [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.AfterSceneLoad)]
-        static void Reset()
+#if UNITY_EDITOR
+#if UNITY_2019_3_OR_NEWER
+        [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
+#endif
+        public static void ResetSetup()
         {
             IsSetupCalled = false;
+            BufferedReadNetworkStream.ResetNetworkStats();
             HTTPManager.Logger.Information("HTTPManager", "Reset called!");
         }
+#endif
 
-        #endregion
+#endregion
 
-        #region MonoBehaviour Events (Called from HTTPUpdateDelegator)
+#region MonoBehaviour Events (Called from HTTPUpdateDelegator)
 
         /// <summary>
         /// Update function that should be called regularly from a Unity event(Update, LateUpdate). Callbacks are dispatched from this function.
@@ -369,16 +426,18 @@ namespace BestHTTP
             AbortAll();
 
 #if !BESTHTTP_DISABLE_CACHING
-            PluginEventHelper.EnqueuePluginEvent(new PluginEventInfo(PluginEvents.SaveCacheLibrary));
+            HTTPCacheService.SaveLibrary();
 #endif
 
 #if !BESTHTTP_DISABLE_COOKIES
-            PluginEventHelper.EnqueuePluginEvent(new PluginEventInfo(PluginEvents.SaveCookieLibrary));
+            CookieJar.Persist();
 #endif
 
             OnUpdate();
 
             HostManager.Clear();
+
+            Heartbeats.Clear();
         }
 
         public static void AbortAll()

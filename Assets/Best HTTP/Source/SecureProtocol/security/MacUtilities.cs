@@ -3,9 +3,12 @@
 using System;
 using System.Collections;
 using System.Globalization;
+using System.Security.Cryptography;
 
+using BestHTTP.PlatformSupport.Memory;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Iana;
+using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Misc;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Nist;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Pkcs;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Rosstandart;
@@ -37,6 +40,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Security
             algorithms[IanaObjectIdentifiers.HmacTiger.Id] = "HMAC-TIGER";
 
             algorithms[PkcsObjectIdentifiers.IdHmacWithSha1.Id] = "HMAC-SHA1";
+            algorithms[MiscObjectIdentifiers.HMAC_SHA1.Id] = "HMAC-SHA1";
             algorithms[PkcsObjectIdentifiers.IdHmacWithSha224.Id] = "HMAC-SHA224";
             algorithms[PkcsObjectIdentifiers.IdHmacWithSha256.Id] = "HMAC-SHA256";
             algorithms[PkcsObjectIdentifiers.IdHmacWithSha384.Id] = "HMAC-SHA384";
@@ -257,6 +261,14 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Security
             byte[] b = new byte[mac.GetMacSize()];
             mac.DoFinal(b, 0);
             return b;
+        }
+
+        public static BufferSegment DoFinalOptimized(IMac mac)
+        {
+            int length = mac.GetMacSize();
+            byte[] b = BufferPool.Get(length, true);
+            mac.DoFinal(b, 0);
+            return new BufferSegment(b, 0, length);
         }
 
         public static byte[] DoFinal(IMac mac, byte[] input)

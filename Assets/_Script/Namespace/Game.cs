@@ -10,9 +10,10 @@ namespace Game
 {
     public class Lobby
     {
-        [Header("Socket")]
-        public static SocketManager socketManager = null;
+        [Header("Socket")] public static SocketManager socketManager = null;
+
         public static string deviceUniqueID;
+
         //		public static Socket CashSocket;
         public static Socket RegTournamentSocket;
         public static Socket SNGTournamentSocket;
@@ -47,11 +48,11 @@ namespace Game
                     //_CashSocket = socketManager.GetSocket ("/cash_sng_texas");
                     return _CashSocket;
                 }
+
                 return _CashSocket;
             }
             set
             {
-
                 /*if (UIManager.Instance.selectedGameType == GameType.cash) {
 					_CashSocket = socketManager.GetSocket ("/cash_texas");
 				} else if (UIManager.Instance.selectedGameType == GameType.Touranment) {
@@ -65,14 +66,8 @@ namespace Game
 
         public static string SetSocketNamespace
         {
-            set
-            {
-                _CashSocket = socketManager.GetSocket("/" + value);
-            }
-            get
-            {
-                return _CashSocket.Namespace;
-            }
+            set { _CashSocket = socketManager.GetSocket("/" + value); }
+            get { return _CashSocket.Namespace; }
         }
 
 
@@ -139,7 +134,6 @@ namespace Game
                 ExternalCallClass.Instance.RequestGameData();
                 return;
             }
-
         }
 
         private static void OnReConnect(Socket Socket, Packet Packet, params object[] Args)
@@ -153,6 +147,7 @@ namespace Game
                 ReconnectPlayerCall();
                 UIManager.Instance.MainHomeScreen.loginPageFocusCounter = 0;
             }
+
             UIManager.Instance.ipLocationService.SendIPAddress("reconnect");
             //}
             //			else 
@@ -161,6 +156,7 @@ namespace Game
             //					UIManager.Instance.HideLoader ();
             //			}
         }
+
         private static void OnReConnecting(Socket socket, Packet packet, params object[] args)
         {
             Debug.Log("Re-Connecting...");
@@ -184,6 +180,7 @@ namespace Game
                 UIManager.Instance.DisplayLoader("Reconnecting...");
             }
         }
+
         private static void OnReConnectFailed(Socket socket, Packet packet, params object[] args)
         {
             Debug.Log("Re-ConnectFailed...");
@@ -211,6 +208,7 @@ namespace Game
                     UIManager.Instance.DisplayLoader("Reconnecting...");
                 }
             }
+
             //			if (!UIManager.Instance.isLogOut) 
             //			{
             //				//UIManager.Instance.DisplayMessagePanel ("You Are Not Connect to Server",OnLoginScreenTap);
@@ -304,6 +302,7 @@ namespace Game
                 {
                     ipAddress = data.getString("query");
                 }
+
                 UIManager.Instance.SocketGameManager.GetReconnect(ipAddress, (socket, packet, args) =>
                 {
                     Debug.Log("GetReconnect  : " + packet.ToString());
@@ -331,18 +330,15 @@ namespace Game
                         {
                             if (resp.status == "forceLogout")
                             {
-
                             }
                             else if (resp.message == "No Running Game Found!" || resp.message == "")
                             {
-
                             }
                             else
                             {
                                 ReconnectPlayerCall();
                             }
                         }
-
                     }
                     catch (System.Exception e)
                     {
@@ -353,6 +349,7 @@ namespace Game
             });
             httpRequest.Send();
         }
+
         public static void GetReconnectGameCall()
         {
             UIManager.Instance.DisplayLoader("");
@@ -360,6 +357,7 @@ namespace Game
             UIManager.Instance.SocketGameManager.GetReconnectGame(UIManager.Instance.GameScreeen.OnSubscribeRoomDone);
             UIManager.Instance.tableManager.ReSubscribeMiniTables();
         }
+
         IEnumerator LogoutFunction(float timer)
         {
             UIManager.Instance.assetOfGame.SavedLoginData.PlayerId = "";
@@ -372,6 +370,5 @@ namespace Game
             yield return new WaitForSeconds(timer);
             UIManager.Instance.Reset(false);
         }
-
     }
 }

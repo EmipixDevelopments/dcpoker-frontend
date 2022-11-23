@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace BestHTTP.Extensions
@@ -13,11 +13,14 @@ namespace BestHTTP.Extensions
         public readonly TimeSpan Interval;
         public readonly object Context;
 
-        public readonly Func<object, bool> OnTimer;
+        public readonly Func<DateTime, object, bool> OnTimer;
 
-        public bool IsOnTime { get { return DateTime.Now >= this.Created + this.Interval; } }
+        public bool IsOnTime(DateTime now)
+        {
+            return now >= this.Created + this.Interval;
+        }
 
-        public TimerData(TimeSpan interval, object context, Func<object, bool> onTimer)
+        public TimerData(TimeSpan interval, object context, Func<DateTime, object, bool> onTimer)
         {
             this.Created = DateTime.Now;
             this.Interval = interval;
@@ -35,7 +38,7 @@ namespace BestHTTP.Extensions
 
         public override string ToString()
         {
-            return string.Format("[TimerData Created: {0}, Interval: {1}, IsOnTime: {2}]", this.Created, this.Interval, this.IsOnTime);
+            return string.Format("[TimerData Created: {0}, Interval: {1}, IsOnTime: {2}]", this.Created.ToString(System.Globalization.CultureInfo.InvariantCulture), this.Interval, this.IsOnTime(DateTime.Now));
         }
     }
 
@@ -50,13 +53,18 @@ namespace BestHTTP.Extensions
 
         internal static void Process()
         {
+            if (Timers.Count == 0)
+                return;
+
+            DateTime now = DateTime.Now;
+
             for (int i = 0; i < Timers.Count; ++i)
             {
                 TimerData timer = Timers[i];
 
-                if (timer.IsOnTime)
+                if (timer.IsOnTime(now))
                 {
-                    bool repeat = timer.OnTimer(timer.Context);
+                    bool repeat = timer.OnTimer(now, timer.Context);
 
                     if (repeat)
                         Timers[i] = timer.CreateNew();

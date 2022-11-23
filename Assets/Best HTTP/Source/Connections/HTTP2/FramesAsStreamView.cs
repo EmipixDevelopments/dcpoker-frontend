@@ -1,4 +1,4 @@
-﻿#if (!UNITY_WEBGL || UNITY_EDITOR) && !BESTHTTP_DISABLE_ALTERNATE_SSL && !BESTHTTP_DISABLE_HTTP2
+#if (!UNITY_WEBGL || UNITY_EDITOR) && !BESTHTTP_DISABLE_ALTERNATE_SSL && !BESTHTTP_DISABLE_HTTP2
 
 using BestHTTP.PlatformSupport.Memory;
 using System;
@@ -25,7 +25,7 @@ namespace BestHTTP.Connections.HTTP2
         protected List<HTTP2FrameHeaderAndPayload> frames = new List<HTTP2FrameHeaderAndPayload>();
         protected int currentFrameIdx = -1;
         protected byte[] data;
-        protected UInt32 offset;
+        protected UInt32 dataOffset;
         protected UInt32 maxOffset;
 
         public abstract void AddFrame(HTTP2FrameHeaderAndPayload frame);
@@ -33,24 +33,24 @@ namespace BestHTTP.Connections.HTTP2
 
         public virtual int Read(byte[] buffer, int offset, int count)
         {
-            if (this.offset >= this.maxOffset && !AdvanceFrame())
+            if (this.dataOffset >= this.maxOffset && !AdvanceFrame())
                 return -1;
 
             int readCount = 0;
 
             while (count > 0)
             {
-                long copyCount = Math.Min(count, this.maxOffset - this.offset);
+                long copyCount = Math.Min(count, this.maxOffset - this.dataOffset);
 
-                Array.Copy(this.data, this.offset, buffer, readCount, copyCount);
+                Array.Copy(this.data, this.dataOffset, buffer, offset + readCount, copyCount);
 
                 count -= (int)copyCount;
                 readCount += (int)copyCount;
 
-                this.offset += (UInt32)copyCount;
+                this.dataOffset += (UInt32)copyCount;
                 this.Position += copyCount;
 
-                if (this.offset >= this.maxOffset && !AdvanceFrame())
+                if (this.dataOffset >= this.maxOffset && !AdvanceFrame())
                     break;
             }
 
@@ -59,11 +59,11 @@ namespace BestHTTP.Connections.HTTP2
 
         public virtual int ReadByte()
         {
-            if (this.offset >= this.maxOffset && !AdvanceFrame())
+            if (this.dataOffset >= this.maxOffset && !AdvanceFrame())
                 return -1;
 
-            byte data = this.data[this.offset];
-            this.offset++;
+            byte data = this.data[this.dataOffset];
+            this.dataOffset++;
             this.Position++;
 
             return data;
@@ -77,6 +77,19 @@ namespace BestHTTP.Connections.HTTP2
                 if (this.frames[i].Payload != null && !this.frames[i].DontUseMemPool)
                     BufferPool.Release(this.frames[i].Payload);
             this.frames.Clear();
+        }
+
+        public override string ToString()
+        {
+            var sb = new System.Text.StringBuilder("[CommonFrameView ");
+
+            for (int i = 0; i < this.frames.Count; ++i) {
+                sb.AppendFormat("{0} Payload: {1}\n", this.frames[i], this.frames[i].PayloadAsHex());
+            }
+
+            sb.Append("]");
+
+            return sb.ToString();
         }
     }
 
@@ -122,12 +135,12 @@ namespace BestHTTP.Connections.HTTP2
             {
                 case HTTP2FrameTypes.HEADERS:
                     var header = HTTP2FrameHelper.ReadHeadersFrame(frame);
-                    this.offset = header.HeaderBlockFragmentIdx;
-                    this.maxOffset = this.offset + header.HeaderBlockFragmentLength;
+                    this.dataOffset = header.HeaderBlockFragmentIdx;
+                    this.maxOffset = this.dataOffset + header.HeaderBlockFragmentLength;
                     break;
 
                 case HTTP2FrameTypes.CONTINUATION:
-                    this.offset = 0;
+                    this.dataOffset = 0;
                     this.maxOffset = frame.PayloadLength;
                     break;
             }
@@ -162,7 +175,7 @@ namespace BestHTTP.Connections.HTTP2
             HTTP2DataFrame dataFrame = HTTP2FrameHelper.ReadDataFrame(frame);
 
             this.data = frame.Payload;
-            this.offset = dataFrame.DataIdx;
+            this.dataOffset = dataFrame.DataIdx;
             this.maxOffset = dataFrame.DataIdx + dataFrame.DataLength;
 
             return true;
@@ -209,6 +222,11 @@ namespace BestHTTP.Connections.HTTP2
         public override long Seek(long offset, SeekOrigin origin) { throw new NotImplementedException(); }
         public override void SetLength(long value) { throw new NotImplementedException(); }
         public override void Write(byte[] buffer, int offset, int count) { throw new NotImplementedException(); }
+
+        public override string ToString()
+        {
+            return this.view.ToString();
+        }
     }
 }
 

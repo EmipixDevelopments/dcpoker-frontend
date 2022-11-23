@@ -1,7 +1,7 @@
 #if !BESTHTTP_DISABLE_SIGNALR_CORE
 using System;
 using BestHTTP.PlatformSupport.Memory;
-using LitJson;
+using BestHTTP.JSON.LitJson;
 
 namespace BestHTTP.SignalRCore.Encoders
 {
@@ -9,12 +9,13 @@ namespace BestHTTP.SignalRCore.Encoders
     {
         public LitJsonEncoder()
         {
-            LitJson.JsonMapper.RegisterImporter<int, long>((input) => input);
-            LitJson.JsonMapper.RegisterImporter<long, int>((input) => (int)input);
-            LitJson.JsonMapper.RegisterImporter<double, int>((input) => (int)(input + 0.5));
-            LitJson.JsonMapper.RegisterImporter<string, DateTime>((input) => Convert.ToDateTime((string)input).ToUniversalTime());
-            LitJson.JsonMapper.RegisterImporter<double, float>((input) => (float)input);
-            LitJson.JsonMapper.RegisterImporter<string, byte[]>((input) => Convert.FromBase64String(input));
+            BestHTTP.JSON.LitJson.JsonMapper.RegisterImporter<int, long>((input) => input);
+            BestHTTP.JSON.LitJson.JsonMapper.RegisterImporter<long, int>((input) => (int)input);
+            BestHTTP.JSON.LitJson.JsonMapper.RegisterImporter<double, int>((input) => (int)(input + 0.5));
+            BestHTTP.JSON.LitJson.JsonMapper.RegisterImporter<string, DateTime>((input) => Convert.ToDateTime((string)input).ToUniversalTime());
+            BestHTTP.JSON.LitJson.JsonMapper.RegisterImporter<double, float>((input) => (float)input);
+            BestHTTP.JSON.LitJson.JsonMapper.RegisterImporter<string, byte[]>((input) => Convert.FromBase64String(input));
+            BestHTTP.JSON.LitJson.JsonMapper.RegisterExporter<float>((f, writer) => writer.Write((double)f));
         }
 
         public T DecodeAs<T>(BufferSegment buffer)
@@ -31,14 +32,14 @@ namespace BestHTTP.SignalRCore.Encoders
             int len = System.Text.Encoding.UTF8.GetByteCount(json);
             byte[] buffer = BufferPool.Get(len + 1, true);
             System.Text.Encoding.UTF8.GetBytes(json, 0, json.Length, buffer, 0);
-            buffer[len] = 0x1e;
+            buffer[len] = (byte)JsonProtocol.Separator;
             return new BufferSegment(buffer, 0, len + 1);
         }
 
         public object ConvertTo(Type toType, object obj)
         {
-            string json = LitJson.JsonMapper.ToJson(obj);
-            return LitJson.JsonMapper.ToObject(toType, json);
+            string json = BestHTTP.JSON.LitJson.JsonMapper.ToJson(obj);
+            return BestHTTP.JSON.LitJson.JsonMapper.ToObject(toType, json);
         }
     }
 }

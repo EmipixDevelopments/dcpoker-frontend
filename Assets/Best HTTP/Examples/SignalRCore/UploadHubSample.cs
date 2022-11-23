@@ -4,24 +4,15 @@ using BestHTTP;
 using BestHTTP.Examples.Helpers;
 using BestHTTP.SignalRCore;
 using BestHTTP.SignalRCore.Encoders;
+
 using System;
 using System.Collections;
+
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace BestHTTP.Examples
 {
-    sealed class Person
-    {
-        public string Name { get; set; }
-        public long Age { get; set; }
-
-        public override string ToString()
-        {
-            return string.Format("[Person Name: '{0}', Age: {1}]", this.Name, this.Age.ToString());
-        }
-    }
-
     /// <summary>
     /// This sample demonstrates redirection capabilities. The server will redirect a few times the client before
     /// routing it to the final endpoint.
@@ -76,8 +67,28 @@ namespace BestHTTP.Examples
 
         public void OnConnectButton()
         {
+#if BESTHTTP_SIGNALR_CORE_ENABLE_MESSAGEPACK_CSHARP
+            try
+            {
+                MessagePack.Resolvers.StaticCompositeResolver.Instance.Register(
+                    MessagePack.Resolvers.DynamicEnumAsStringResolver.Instance,
+                    MessagePack.Unity.UnityResolver.Instance,
+                    //MessagePack.Unity.Extension.UnityBlitWithPrimitiveArrayResolver.Instance,
+                    //MessagePack.Resolvers.StandardResolver.Instance,
+                    MessagePack.Resolvers.ContractlessStandardResolver.Instance
+                );
+
+                var options = MessagePack.MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.StaticCompositeResolver.Instance);
+                MessagePack.MessagePackSerializer.DefaultOptions = options;
+            }
+            catch
+            { }
+#endif
+
             IProtocol protocol = null;
-#if BESTHTTP_SIGNALR_CORE_ENABLE_GAMEDEVWARE_MESSAGEPACK
+#if BESTHTTP_SIGNALR_CORE_ENABLE_MESSAGEPACK_CSHARP
+            protocol = new MessagePackCSharpProtocol();
+#elif BESTHTTP_SIGNALR_CORE_ENABLE_GAMEDEVWARE_MESSAGEPACK
             protocol = new MessagePackProtocol();
 #else
             protocol = new JsonProtocol(new LitJsonEncoder());
@@ -137,13 +148,13 @@ namespace BestHTTP.Examples
 
             var controller = hub.GetUpStreamController<string, string>("UploadWord");
             controller.OnSuccess(result =>
-                {
-                    AddText(string.Format("UploadWord completed, result: '<color=yellow>{0}</color>'", result))
-                        .AddLeftPadding(20);
-                    AddText("");
+            {
+                AddText(string.Format("UploadWord completed, result: '<color=yellow>{0}</color>'", result))
+                    .AddLeftPadding(20);
+                AddText("");
 
-                    StartCoroutine(ScoreTracker());
-                });
+                StartCoroutine(ScoreTracker());
+            });
 
             yield return new WaitForSeconds(_yieldWaitTime);
             controller.UploadParam("Hello ");
@@ -179,13 +190,13 @@ namespace BestHTTP.Examples
             var controller = hub.GetUpStreamController<string, int, int>("ScoreTracker");
 
             controller.OnSuccess(result =>
-                {
-                    AddText(string.Format("ScoreTracker completed, result: '<color=yellow>{0}</color>'", result))
-                        .AddLeftPadding(20);
-                    AddText("");
+            {
+                AddText(string.Format("ScoreTracker completed, result: '<color=yellow>{0}</color>'", result))
+                    .AddLeftPadding(20);
+                AddText("");
 
-                    StartCoroutine(ScoreTrackerWithParameterChannels());
-                });
+                StartCoroutine(ScoreTrackerWithParameterChannels());
+            });
 
             const int numScores = 5;
             for (int i = 0; i < numScores; i++)
@@ -353,7 +364,7 @@ namespace BestHTTP.Examples
 
             yield return new WaitForSeconds(_yieldWaitTime);
         }
-        
+
         /// <summary>
         /// This is called when the hub is closed after a StartClose() call.
         /// </summary>

@@ -5,6 +5,7 @@ using BestHTTP.SocketIO;
 using BestHTTP.SocketIO.Events;
 using BestHTTP.JSON;
 using UnityEngine.Purchasing;
+
 //using UnityEngine.Purchasing;
 
 public class SocketGamemanager : MonoBehaviour
@@ -28,13 +29,14 @@ public class SocketGamemanager : MonoBehaviour
     #endregion
 
     #region UNITY_CALLBACKS
+
     // Use this for initialization
     // Update is called once per frame
-
 
     #endregion
 
     #region DELEGATE_SocketEvents
+
     public void InAppPurchase(SocketIOAckCallback action)
     {
         ///		Debug.Log("TexasAndOmahaRoomLists");
@@ -81,7 +83,7 @@ public class SocketGamemanager : MonoBehaviour
     }
 
 
-    public void UpdateIsCashe( bool isCash, SocketIOAckCallback action)
+    public void UpdateIsCashe(bool isCash, SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
             return;
@@ -100,14 +102,14 @@ public class SocketGamemanager : MonoBehaviour
     /// Login player.
     /// </summary>
     /// <param name="action">Action.</param>
-    public void Login(string authset, string ipAddress, bool forceLogin, SocketIOAckCallback action)
+    public void Login(string username, string password, string authset, string ipAddress, bool forceLogin, SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
             return;
         JSON_Object jsonObj = new JSON_Object();
 
-        //jsonObj.put("username", username);
-        //jsonObj.put("password", password);
+        jsonObj.put("username", username);
+        jsonObj.put("password", password);
         jsonObj.put("auth", authset);
         jsonObj.put("forceLogin", forceLogin);
         jsonObj.put("AppId", "");
@@ -116,7 +118,7 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("fcmId", UIManager.Instance.assetOfGame.SavedLoginData.fcmRegistrationToken);
         jsonObj.put("os", Utility.Instance.GetOSName());
         jsonObj.put("appVersion", Utility.Instance.GetApplicationVersion());
-        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+//        jsonObj.put("authToken", UIManager.Instance.tokenHack());
         jsonObj.put("productName", Application.productName);
 
         Debug.Log("Login Event: " + jsonObj.toString());
@@ -156,19 +158,85 @@ public class SocketGamemanager : MonoBehaviour
 
         JSON_Object jsonObj = new JSON_Object();
         //jsonObj.put ("name", name);
-        jsonObj.put("username", username.ToLower());
+        jsonObj.put("username", username);
         jsonObj.put("password", password);
+<<<<<<< Updated upstream
         jsonObj.put("mobile", mobile);
         jsonObj.put("refferralCode", refferralcode); // not used
+=======
+//        jsonObj.put("mobile", mobile);
+//        jsonObj.put("flag", flag);
+//        jsonObj.put("refferralCode", refferralcode); // not used
+>>>>>>> Stashed changes
         jsonObj.put("deviceId", SystemInfo.deviceUniqueIdentifier.ToString());
         jsonObj.put("os", Utility.Instance.GetOSName());
         jsonObj.put("appVersion", Utility.Instance.GetApplicationVersion());
-        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+//        jsonObj.put("authToken", UIManager.Instance.tokenHack());
         jsonObj.put("productName", Application.productName);
 
         Debug.Log("Register=> " + jsonObj.toString());
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.Register, action, Json.Decode(jsonObj.toString()));
     }
+
+    public void UserWalletBalance(string username, string playerId, string publicKey, string privateKey, SocketIOAckCallback action)
+    {
+        if (!HasInternetConnection())
+            return;
+
+        JSON_Object jsonObj = new JSON_Object();
+        //jsonObj.put ("name", name);
+        jsonObj.put("username", username);
+        jsonObj.put("playerId", playerId);
+        jsonObj.put("os", Utility.Instance.GetOSName());
+        jsonObj.put("appVersion", Utility.Instance.GetApplicationVersion());
+        jsonObj.put("productName", Application.productName);
+        jsonObj.put("privatekey", privateKey);
+        jsonObj.put("publickey", publicKey);
+
+        Debug.Log("UserWalletBalance=> " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.UserWalletBalance, action, Json.Decode(jsonObj.toString()));
+    }
+
+    public void PlayerRecoveryPhraseVerification(string username, string password, string phrase, string authset, string ipAddress, bool forceLogin, SocketIOAckCallback action)
+    {
+        if (!HasInternetConnection())
+            return;
+
+        JSON_Object jsonObj = new JSON_Object();
+//        //jsonObj.put ("name", name);
+//        jsonObj.put("username", username);
+//        jsonObj.put("password", password);
+////        jsonObj.put("mobile", mobile);
+////        jsonObj.put("flag", flag);
+////        jsonObj.put("refferralCode", refferralcode); // not used
+//        jsonObj.put("deviceId", SystemInfo.deviceUniqueIdentifier.ToString());
+//        jsonObj.put("os", Utility.Instance.GetOSName());
+//        jsonObj.put("appVersion", Utility.Instance.GetApplicationVersion());
+////        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+//        jsonObj.put("productName", Application.productName);
+//
+//        Debug.Log("Phrase=> " + jsonObj.toString());
+//        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.Phrase, action, Json.Decode(jsonObj.toString()));
+
+        jsonObj.put("username", username);
+        jsonObj.put("password", password);
+        jsonObj.put("recoveryPhrase", phrase);
+        jsonObj.put("auth", authset);
+        jsonObj.put("forceLogin", forceLogin);
+        jsonObj.put("AppId", "");
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("ipAddress", ipAddress);
+        jsonObj.put("fcmId", UIManager.Instance.assetOfGame.SavedLoginData.fcmRegistrationToken);
+        jsonObj.put("os", Utility.Instance.GetOSName());
+        jsonObj.put("appVersion", Utility.Instance.GetApplicationVersion());
+//        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("productName", Application.productName);
+
+        Debug.Log("Phrase=> " + jsonObj.toString());
+
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.Phrase, action, Json.Decode(jsonObj.toString()));
+    }
+
     /// <summary>
     /// Lists the rooms.
     /// </summary>
@@ -207,8 +275,38 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
         jsonObj.put("productName", Application.productName);
 
+<<<<<<< Updated upstream
         print(Constants.PokerEvents.СontactUs + " - " + jsonObj.toString());
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.СontactUs, action, Json.Decode(jsonObj.toString()));
+=======
+        print(Constants.PokerEvents.SendContactUs + " - " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.SendContactUs, action, Json.Decode(jsonObj.toString()));
+    }
+
+    public void ContactUs(SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+
+        print(Constants.PokerEvents.ContactUs + " - " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.ContactUs, action, Json.Decode(jsonObj.toString()));
+    }
+
+    public void ReadContactUs(string messageId, SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("messageId", messageId);
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+
+        print(Constants.PokerEvents.ReadContactUs + " - " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.ReadContactUs, action, Json.Decode(jsonObj.toString()));
+>>>>>>> Stashed changes
     }
 
     /// <summary>
@@ -255,6 +353,7 @@ public class SocketGamemanager : MonoBehaviour
         //GetGameSocket(gametype).Emit(Constants.PokerEvents.SearchLobby, action, Json.Decode(jsonObj.toString()));
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.JoinTournamentRoom, action, Json.Decode(jsonObj.toString()));
     }
+
     /// <summary>
     /// Lists the rooms.
     /// </summary>
@@ -330,6 +429,7 @@ public class SocketGamemanager : MonoBehaviour
         //GetGameSocket(gametype).Emit(Constants.PokerEvents.SearchLobby, action, Json.Decode(jsonObj.toString()));
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.SngTournamentInfo, action, Json.Decode(jsonObj.toString()));
     }
+
     public void MyTournament(SocketIOAckCallback action)
     {
         ///		Debug.Log("TexasAndOmahaRoomLists");
@@ -433,6 +533,7 @@ public class SocketGamemanager : MonoBehaviour
         print(Constants.PokerEvents.TournamentBlinds + " - " + jsonObj.toString());
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.TournamentBlinds, action, Json.Decode(jsonObj.toString()));
     }
+
     ///Start sng 
     /// 
     /// <summary>
@@ -517,14 +618,15 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("pokerGameType", pokerGameType);
         jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
         jsonObj.put("authToken", UIManager.Instance.tokenHack());
-        jsonObj.put("productName", Application.productName); jsonObj.put("productName", Application.productName);
+        jsonObj.put("productName", Application.productName);
+        jsonObj.put("productName", Application.productName);
         //		Debug.Log("ListRooms  : " + jsonObj.toString());
 
         print(Constants.PokerEvents.SngTournamentBlinds + " - " + jsonObj.toString());
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.SngTournamentBlinds, action, Json.Decode(jsonObj.toString()));
     }
-    /// SNG End
 
+    /// SNG End
     public void UpdateAccNo(string title, string description, string accno, SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
@@ -736,6 +838,7 @@ public class SocketGamemanager : MonoBehaviour
         //GetGameSocket(gametype).Emit(Constants.PokerEvents.SearchLobby, action, Json.Decode(jsonObj.toString()));
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.RejectTournament, action, Json.Decode(jsonObj.toString()));
     }
+
     /// <summary>
     /// Lists the rooms.
     /// </summary>
@@ -956,7 +1059,6 @@ public class SocketGamemanager : MonoBehaviour
     }
 
 
-
     /// <summary>
     /// newsBlog.
     /// </summary>
@@ -1065,7 +1167,6 @@ public class SocketGamemanager : MonoBehaviour
     /// <param name="action">Action.</param>
     public void JoinRoom(string roomId, double buyinAmount, int seatIndex, bool isWaitingPlayer, double autoBuyin, SocketIOAckCallback action)
     {
-
         JSON_Object jsonObj = new JSON_Object();
         jsonObj.put("roomId", roomId);
         jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
@@ -1156,7 +1257,7 @@ public class SocketGamemanager : MonoBehaviour
         JSON_Object actionObj = new JSON_Object();
         actionObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
         actionObj.put("betAmount", betAmount.ToString());
-        actionObj.put("action", (int)playerAction);
+        actionObj.put("action", (int) playerAction);
         actionObj.put("roomId", Constants.Poker.TableId);
         actionObj.put("hasRaised", hasRaised);
         actionObj.put("authToken", UIManager.Instance.tokenHack());
@@ -1266,6 +1367,7 @@ public class SocketGamemanager : MonoBehaviour
 
         Game.Lobby.CashSocket.Emit(Constants.PokerEvents.SitOutNextBigBlind, action, Json.Decode(jsonObj.toString()));
     }
+
     public void onAllowMuck(string roomId, bool actionValue, SocketIOAckCallback action)
     {
         JSON_Object jsonObj = new JSON_Object();
@@ -1308,6 +1410,7 @@ public class SocketGamemanager : MonoBehaviour
         //		print("LeaveRoom  : " + jsonObj.toString());
         Game.Lobby.CashSocket.Emit(Constants.PokerEvents.LeaveRoom, action, Json.Decode(jsonObj.toString()));
     }
+
     public void Standup(int standUp, string roomId, SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
@@ -1325,6 +1428,7 @@ public class SocketGamemanager : MonoBehaviour
 
         Game.Lobby.CashSocket.Emit(Constants.PokerEvents.LeaveRoom, action, Json.Decode(jsonObj.toString()));
     }
+
     public void RunItTwiceRequest(bool twice, SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
@@ -1420,6 +1524,7 @@ public class SocketGamemanager : MonoBehaviour
         Debug.Log("RejectSeatRequest: " + jsonObj.toString());
         Game.Lobby.CashSocket.Emit(Constants.PokerEvents.RejectSeatRequest, action, Json.Decode(jsonObj.toString()));
     }
+
     public void WaitingListPlayers(SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
@@ -1448,8 +1553,8 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("productName", Application.productName);
         Debug.Log("InGamePlayerGameHistory: " + jsonObj.toString());
         Game.Lobby.CashSocket.Emit(Constants.PokerEvents.InGamePlayerGameHistory, action, Json.Decode(jsonObj.toString()));
-
     }
+
     public void clubTablesResult(SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
@@ -1464,6 +1569,7 @@ public class SocketGamemanager : MonoBehaviour
         Debug.Log("clubTablesResult: " + jsonObj.toString());
         Game.Lobby.CashSocket.Emit(Constants.PokerEvents.clubTablesResult, action, Json.Decode(jsonObj.toString()));
     }
+
     public void TournamentLeaderboard(string tournamentId, SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
@@ -1479,6 +1585,7 @@ public class SocketGamemanager : MonoBehaviour
         Debug.Log("TournamentLeaderboard: " + jsonObj.toString());
         Game.Lobby.CashSocket.Emit(Constants.PokerEvents.TournamentLeaderboard, action, Json.Decode(jsonObj.toString()));
     }
+
     /// <summary>
     /// GEt data for rebuy min max amount
     /// </summary>
@@ -1506,6 +1613,7 @@ public class SocketGamemanager : MonoBehaviour
 
         Game.Lobby.CashSocket.Emit(Constants.PokerEvents.ShowOtherPlayersCard, action, Json.Decode(jsonObj.toString()));
     }
+
     public void CheckLeaveRoomEligibility(SocketIOAckCallback action)
     {
         JSON_Object jsonObj = new JSON_Object();
@@ -1558,6 +1666,7 @@ public class SocketGamemanager : MonoBehaviour
 
         Game.Lobby.CashSocket.Emit(Constants.PokerEvents.DeclinedReBuyIn, action, Json.Decode(jsonObj.toString()));
     }
+
     public void GetReBuyInChips(string roomId, string tournamentId, SocketIOAckCallback action)
     {
         JSON_Object jsonObj = new JSON_Object();
@@ -1601,6 +1710,7 @@ public class SocketGamemanager : MonoBehaviour
 
         Game.Lobby.CashSocket.Emit(Constants.PokerEvents.BuyAddOnChips, action, Json.Decode(jsonObj.toString()));
     }
+
     /// <summary>
     /// Rebuy call 
     /// </summary>
@@ -1669,6 +1779,7 @@ public class SocketGamemanager : MonoBehaviour
         //Debug.Log (Json.Decode (jsonObj.toString ()));
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.GetStacks, action, Json.Decode(jsonObj.toString()));
     }
+
     public void LogOutPlayer(SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
@@ -1683,6 +1794,7 @@ public class SocketGamemanager : MonoBehaviour
         //Debug.Log (Json.Decode (jsonObj.toString ()));
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.LogOutPlayer, action, Json.Decode(jsonObj.toString()));
     }
+
     public void StaticTournament(SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
@@ -1696,6 +1808,7 @@ public class SocketGamemanager : MonoBehaviour
         //Debug.Log (Json.Decode (jsonObj.toString ()));
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.StaticTournament, action, Json.Decode(jsonObj.toString()));
     }
+
     public void StaticBanners(string SID, SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
@@ -1863,29 +1976,45 @@ public class SocketGamemanager : MonoBehaviour
         print("RulesofPlay: " + jsonObj.toString());
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.RulesofPlay, action, Json.Decode(jsonObj.toString()));
     }
-    #endregion
-    #region DELEGATE_CALLBACKS
+<<<<<<< Updated upstream
+=======
 
+    public void Transactions(SocketIOAckCallback action)
+    {
+        if (!HasInternetConnection())
+            return;
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+
+        print("RulesofPlay: " + jsonObj.toString());
+        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.Transactions, action, Json.Decode(jsonObj.toString()));
+    }
+
+>>>>>>> Stashed changes
+    #endregion
+
+    #region DELEGATE_CALLBACKS
 
     #endregion
 
     #region PUBLIC_METHODS
 
-
     #endregion
 
     #region PRIVATE_METHODS
-
 
     #endregion
 
     #region COROUTINES
 
-
     #endregion
 
 
     #region GETTER_SETTER
+
     /// <summary>
     /// Determines whether the app has internet connection.
     /// </summary>
@@ -1897,12 +2026,13 @@ public class SocketGamemanager : MonoBehaviour
             UIManager.Instance.DisplayMessagePanel(Constants.Messages.NoInternetConnection);
             return false;
         }
+
         return true;
     }
 
     #endregion
-
 }
+
 public enum PlayerStatus
 {
     None,

@@ -13,29 +13,33 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Pkcs
     public class Pfx
         : Asn1Encodable
     {
-        private ContentInfo	contentInfo;
-        private MacData		macData;
-
-		public Pfx(
-            Asn1Sequence seq)
+        public static Pfx GetInstance(object obj)
         {
-            BigInteger version = ((DerInteger) seq[0]).Value;
-            if (version.IntValue != 3)
-            {
+            if (obj is Pfx)
+                return (Pfx)obj;
+            if (obj == null)
+                return null;
+            return new Pfx(Asn1Sequence.GetInstance(obj));
+        }
+
+        private readonly ContentInfo contentInfo;
+        private readonly MacData macData;
+
+		private Pfx(Asn1Sequence seq)
+        {
+            DerInteger version = DerInteger.GetInstance(seq[0]);
+            if (!version.HasValue(3))
                 throw new ArgumentException("wrong version for PFX PDU");
-            }
 
-			contentInfo = ContentInfo.GetInstance(seq[1]);
+            this.contentInfo = ContentInfo.GetInstance(seq[1]);
 
-			if (seq.Count == 3)
+            if (seq.Count == 3)
             {
-                macData = MacData.GetInstance(seq[2]);
+                this.macData = MacData.GetInstance(seq[2]);
             }
         }
 
-		public Pfx(
-            ContentInfo	contentInfo,
-            MacData		macData)
+		public Pfx(ContentInfo contentInfo, MacData macData)
         {
             this.contentInfo = contentInfo;
             this.macData = macData;

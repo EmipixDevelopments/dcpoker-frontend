@@ -1,10 +1,12 @@
-﻿#if !BESTHTTP_DISABLE_SERVERSENT_EVENTS
+#if !BESTHTTP_DISABLE_SERVERSENT_EVENTS
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using BestHTTP.Core;
 using BestHTTP.Extensions;
+using BestHTTP.Logger;
 using BestHTTP.PlatformSupport.Memory;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -32,6 +34,10 @@ namespace BestHTTP.ServerSentEvents
     public delegate bool OnRetryDelegate(EventSource eventSource);
     public delegate void OnEventDelegate(EventSource eventSource, BestHTTP.ServerSentEvents.Message message);
     public delegate void OnStateChangedDelegate(EventSource eventSource, States oldState, States newState);
+
+#if !UNITY_WEBGL || UNITY_EDITOR
+    public delegate void OnCommentDelegate(EventSource eventSource, string comment);
+#endif
 
 #if UNITY_WEBGL && !UNITY_EDITOR
 
@@ -98,6 +104,7 @@ namespace BestHTTP.ServerSentEvents
         public HostConnectionKey ConnectionKey { get; private set; }
 
         public bool IsClosed { get { return this.State == States.Closed; } }
+        public LoggingContext LoggingContext { get; private set; }
 
 #if !UNITY_WEBGL || UNITY_EDITOR
         /// <summary>
@@ -109,9 +116,9 @@ namespace BestHTTP.ServerSentEvents
         public bool WithCredentials { get; set; }
 #endif
 
-        #endregion
+#endregion
 
-        #region Public Events
+#region Public Events
 
         /// <summary>
         /// Called when successfully connected to the server.
@@ -133,6 +140,11 @@ namespace BestHTTP.ServerSentEvents
         /// Called when the EventSource will try to do a retry attempt. If this function returns with false, it will cancel the attempt.
         /// </summary>
         public event OnRetryDelegate OnRetry;
+
+        /// <summary>
+        /// This event is called for comments received from the server.
+        /// </summary>
+        public event OnCommentDelegate OnComment;
 #endif
 
         /// <summary>
@@ -183,17 +195,21 @@ namespace BestHTTP.ServerSentEvents
         /// <summary>
         /// Completed messages that waiting to be dispatched
         /// </summary>
-        private List<BestHTTP.ServerSentEvents.Message> CompletedMessages = new List<BestHTTP.ServerSentEvents.Message>();
+        //private List<BestHTTP.ServerSentEvents.Message> CompletedMessages = new List<BestHTTP.ServerSentEvents.Message>();
+        private ConcurrentQueue<BestHTTP.ServerSentEvents.Message> CompletedMessages = new ConcurrentQueue<Message>();
+
 #else
         private static Dictionary<uint, EventSource> EventSources = new Dictionary<uint, EventSource>();
         private uint Id;
 #endif
 
-        #endregion
+#endregion
 
-        public EventSource(Uri uri)
+        public EventSource(Uri uri, int readBufferSizeOverride = 0)
         {
             this.Uri = uri;
+            this.LoggingContext = new LoggingContext(this);
+
             this.ReconnectionTime = TimeSpan.FromMilliseconds(2000);
 
             this.ConnectionKey = new HostConnectionKey(this.Uri.Host, HostDefinition.GetKeyFor(this.Uri
@@ -211,10 +227,13 @@ namespace BestHTTP.ServerSentEvents
             this.InternalRequest.SetHeader("Accept-Encoding", "identity");
 
             this.InternalRequest.StreamChunksImmediately = true;
+            this.InternalRequest.ReadBufferSizeOverride = readBufferSizeOverride;
             this.InternalRequest.OnStreamingData = OnData;
 
             // Disable internal retry
             this.InternalRequest.MaxRetries = 0;
+
+            this.InternalRequest.Context.Add("EventSource", this.LoggingContext);
 #else
             if (!ES_IsSupported())
               throw new NotSupportedException("This browser isn't support the EventSource protocol!");
@@ -225,7 +244,7 @@ namespace BestHTTP.ServerSentEvents
 #endif
         }
 
-        #region Public Functions
+#region Public Functions
 
         /// <summary>
         /// Start to connect to the remote server.
@@ -313,7 +332,7 @@ namespace BestHTTP.ServerSentEvents
                 }
                 catch (Exception ex)
                 {
-                    HTTPManager.Logger.Exception("EventSource", msg + " - OnError", ex);
+                    HTTPManager.Logger.Exception("EventSource", msg + " - OnError", ex, this.LoggingContext);
                 }
             }
         }
@@ -329,7 +348,7 @@ namespace BestHTTP.ServerSentEvents
                 }
                 catch(Exception ex)
                 {
-                    HTTPManager.Logger.Exception("EventSource", "CallOnRetry", ex);
+                    HTTPManager.Logger.Exception("EventSource", "CallOnRetry", ex, this.LoggingContext);
                 }
             }
 
@@ -349,7 +368,7 @@ namespace BestHTTP.ServerSentEvents
                 }
                 catch (Exception ex)
                 {
-                    HTTPManager.Logger.Exception("EventSource", msg + " - OnClosed", ex);
+                    HTTPManager.Logger.Exception("EventSource", msg + " - OnClosed", ex, this.LoggingContext);
                 }
             }
         }
@@ -379,7 +398,7 @@ namespace BestHTTP.ServerSentEvents
 #if !UNITY_WEBGL || UNITY_EDITOR
         private void OnRequestFinished(HTTPRequest req, HTTPResponse resp)
         {
-            HTTPManager.Logger.Information("EventSource", string.Format("OnRequestFinished - State: {0}, StatusCode: {1}", this.State, resp != null ? resp.StatusCode : 0));
+            HTTPManager.Logger.Information("EventSource", string.Format("OnRequestFinished - State: {0}, StatusCode: {1}", this.State, resp != null ? resp.StatusCode : 0), req.Context);
 
             if (this.State == States.Closed)
                 return;
@@ -473,6 +492,8 @@ namespace BestHTTP.ServerSentEvents
 
                 if (IsUpgraded)
                 {
+                    ProtocolEventHelper.AddProtocol(this);
+
                     if (this.OnOpen != null)
                     {
                         try
@@ -481,7 +502,7 @@ namespace BestHTTP.ServerSentEvents
                         }
                         catch (Exception ex)
                         {
-                            HTTPManager.Logger.Exception("EventSource", "OnOpen", ex);
+                            HTTPManager.Logger.Exception("EventSource", "OnOpen", ex, request.Context);
                         }
                     }
                     
@@ -498,26 +519,28 @@ namespace BestHTTP.ServerSentEvents
             if (this.State == States.Closing)
                 return true;
 
-            FeedData(dataFragment, dataFragmentLength);
+            if (FeedData(dataFragment, dataFragmentLength))
+                ProtocolEventHelper.EnqueueProtocolEvent(new ProtocolEventInfo(this));
 
             return true;
         }
 
-        #region Data Parsing
+#region Data Parsing
 
-        public void FeedData(byte[] buffer, int count)
+        public bool FeedData(byte[] buffer, int count)
         {
             if (count == -1)
                 count = buffer.Length;
 
             if (count == 0)
-                return;
+                return false;
 
             if (LineBuffer == null)
                 LineBuffer = BufferPool.Get(1024, true);
 
             int newlineIdx;
             int pos = 0;
+            bool hasMessageToSend = false;
 
             do
             {
@@ -543,7 +566,7 @@ namespace BestHTTP.ServerSentEvents
                 if (LineBuffer.Length < LineBufferPos + (copyIndex - pos))
                 {
                     int newSize = LineBufferPos + (copyIndex - pos);
-                    BufferPool.Resize(ref LineBuffer, newSize, true);
+                    BufferPool.Resize(ref LineBuffer, newSize, true, false);
                 }
 
                 Array.Copy(buffer, pos, LineBuffer, LineBufferPos, copyIndex - pos);
@@ -551,35 +574,41 @@ namespace BestHTTP.ServerSentEvents
                 LineBufferPos += copyIndex - pos;
 
                 if (newlineIdx == -1)
-                    return;
+                    return hasMessageToSend;
 
-                ParseLine(LineBuffer, LineBufferPos);
+                hasMessageToSend |= ParseLine(LineBuffer, LineBufferPos);
 
                 LineBufferPos = 0;
                 //pos += newlineIdx + skipCount;
                 pos = newlineIdx + skipCount;
 
             } while (newlineIdx != -1 && pos < count);
+
+            return hasMessageToSend;
         }
 
-        void ParseLine(byte[] buffer, int count)
+        bool ParseLine(byte[] buffer, int count)
         {
             // If the line is empty (a blank line) => Dispatch the event
             if (count == 0)
             {
                 if (CurrentMessage != null)
                 {
-                    CompletedMessages.Add(CurrentMessage);
-                    ProtocolEventHelper.EnqueueProtocolEvent(new ProtocolEventInfo(this));
+                    CompletedMessages.Enqueue(CurrentMessage);
                     CurrentMessage = null;
+
+                    return true;
                 }
 
-                return;
+                return false;
             }
 
             // If the line starts with a U+003A COLON character (:) => Ignore the line.
             if (buffer[0] == 0x3A)
-                return;
+            {
+                this.CompletedMessages.Enqueue(new Message() { IsComment = true, Data = Encoding.UTF8.GetString(buffer, 1, count - 1) });
+                return true;
+            }
 
             //If the line contains a U+003A COLON character (:)
             int colonIdx = -1;
@@ -603,7 +632,7 @@ namespace BestHTTP.ServerSentEvents
 
                 // discarded because it is not followed by a blank line
                 if (colonIdx >= count)
-                    return;
+                    return false;
 
                 value = Encoding.UTF8.GetString(buffer, colonIdx, count - colonIdx);
             }
@@ -652,13 +681,15 @@ namespace BestHTTP.ServerSentEvents
                 default:
                     break;
             }
+
+            return false;
         }
 
-        #endregion
+#endregion
 #endif
-        #endregion
+#endregion
 
-        #region EventStreamResponse Event Handlers
+#region EventStreamResponse Event Handlers
 
         private void OnMessageReceived(BestHTTP.ServerSentEvents.Message message)
         {
@@ -681,7 +712,7 @@ namespace BestHTTP.ServerSentEvents
             // 3.) If the data buffer's last character is a U+000A LINE FEED (LF) character, then remove the last character from the data buffer.
             // This step can be ignored. We constructed the string to be able to skip this step.
 
-            if (OnMessage != null)
+            if (OnMessage != null && !message.IsComment)
             {
                 try
                 {
@@ -689,9 +720,22 @@ namespace BestHTTP.ServerSentEvents
                 }
                 catch (Exception ex)
                 {
-                    HTTPManager.Logger.Exception("EventSource", "OnMessageReceived - OnMessage", ex);
+                    HTTPManager.Logger.Exception("EventSource", "OnMessageReceived - OnMessage", ex, this.LoggingContext);
                 }
             }
+#if !UNITY_WEBGL || UNITY_EDITOR
+            else if (message.IsComment && this.OnComment != null)
+            {
+                try
+                {
+                    this.OnComment(this, message.Data);
+                }
+                catch (Exception ex)
+                {
+                    HTTPManager.Logger.Exception("EventSource", "OnMessageReceived - OnComment", ex, this.LoggingContext);
+                }
+            }
+#endif
 
             if (EventTable != null && !string.IsNullOrEmpty(message.Event))
             {
@@ -706,7 +750,7 @@ namespace BestHTTP.ServerSentEvents
                         }
                         catch(Exception ex)
                         {
-                            HTTPManager.Logger.Exception("EventSource", "OnMessageReceived - action", ex);
+                            HTTPManager.Logger.Exception("EventSource", "OnMessageReceived - action", ex, this.LoggingContext);
                         }
                     }
                 }
@@ -718,11 +762,10 @@ namespace BestHTTP.ServerSentEvents
 #if !UNITY_WEBGL || UNITY_EDITOR
             if (this.State == States.Open)
             {
-                if (OnMessage != null)
-                    for (int i = 0; i < this.CompletedMessages.Count; ++i)
-                        OnMessageReceived(this.CompletedMessages[i]);
+                BestHTTP.ServerSentEvents.Message message;
+                while (this.CompletedMessages.TryDequeue(out message))
+                    OnMessageReceived(message);
             }
-            this.CompletedMessages.Clear();
 #endif
         }
 
@@ -766,9 +809,9 @@ namespace BestHTTP.ServerSentEvents
             }
         }
 #endif
-#endregion
+        #endregion
 
-#region WebGL Static Callbacks
+        #region WebGL Static Callbacks
 #if UNITY_WEBGL && !UNITY_EDITOR
 
         [AOT.MonoPInvokeCallback(typeof(OnWebGLEventSourceOpenDelegate))]
@@ -785,7 +828,7 @@ namespace BestHTTP.ServerSentEvents
                     }
                     catch(Exception ex)
                     {
-                        HTTPManager.Logger.Exception("EventSource", "OnOpen", ex);
+                        HTTPManager.Logger.Exception("EventSource", "OnOpen", ex, es.LoggingContext);
                     }
                 }
 
@@ -834,9 +877,9 @@ namespace BestHTTP.ServerSentEvents
         }
 
 #endif
-#endregion
+        #endregion
 
-#region WebGL Interface
+        #region WebGL Interface
 #if UNITY_WEBGL && !UNITY_EDITOR
 
         [DllImport("__Internal")]
@@ -855,7 +898,7 @@ namespace BestHTTP.ServerSentEvents
         static extern void ES_Release(uint id);
 
 #endif
-#endregion
+        #endregion
 
     }
 }

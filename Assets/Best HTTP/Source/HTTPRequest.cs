@@ -17,7 +17,8 @@ namespace BestHTTP
     using BestHTTP.Core;
     using BestHTTP.PlatformSupport.Memory;
     using BestHTTP.Connections;
-
+    using BestHTTP.Logger;
+    using BestHTTP.Timings;
 
     /// <summary>
     /// Possible logical states of a HTTTPRequest object.
@@ -28,6 +29,11 @@ namespace BestHTTP
         /// Initial status of a request. No callback will be called with this status.
         /// </summary>
         Initial,
+
+        /// <summary>
+        /// The request queued for processing.
+        /// </summary>
+        Queued,
 
         /// <summary>
         /// Processing of the request started. In this state the client will send the request, and parse the response. No callback will be called with this status.
@@ -66,6 +72,7 @@ namespace BestHTTP
     public delegate bool OnBeforeRedirectionDelegate(HTTPRequest originalRequest, HTTPResponse response, Uri redirectUri);
     public delegate void OnHeaderEnumerationDelegate(string header, List<string> values);
     public delegate void OnBeforeHeaderSendDelegate(HTTPRequest req);
+    public delegate void OnHeadersReceivedDelegate(HTTPRequest originalRequest, HTTPResponse response, Dictionary<string, List<string>> headers);
 
     /// <summary>
     /// Called for every fragment of data downloaded from the server. Its return value indicates whether the plugin free to reuse the dataFragment array.
@@ -93,11 +100,13 @@ namespace BestHTTP
                                                           HTTPMethods.Delete.ToString().ToUpper(),
                                                           HTTPMethods.Patch.ToString().ToUpper(),
                                                           HTTPMethods.Merge.ToString().ToUpper(),
-                                                          HTTPMethods.Options.ToString().ToUpper()
+                                                          HTTPMethods.Options.ToString().ToUpper(),
+                                                          HTTPMethods.Connect.ToString().ToUpper(),
+                                                          HTTPMethods.Query.ToString().ToUpper()
                                                       };
 
         /// <summary>
-        /// Size of the internal buffer, and upload progress will be fired when this size of data sent to the wire. It's default value is 4 KiB.
+        /// Size of the internal buffer, and upload progress will be fired when this size of data sent to the wire. Its default value is 4 KiB.
         /// </summary>
         public static int UploadChunkSize = 4 * 1024;
 
@@ -170,6 +179,9 @@ namespace BestHTTP
             }
         }
 
+        /// <summary>
+        /// It can be used with streaming. When set to true, no OnStreamingData event is called, the streamed content will be saved straight to the cache if all requirements are met(caching is enabled and there's a caching headers).
+        /// </summary>
         public bool CacheOnly
         {
             get { return cacheOnly; }
@@ -206,6 +218,11 @@ namespace BestHTTP
         public bool StreamChunksImmediately { get; set; }
 
         /// <summary>
+        /// This property can be used to force the HTTPRequest to use an exact sized read buffer.
+        /// </summary>
+        public int ReadBufferSizeOverride { get; set; }
+
+        /// <summary>
         /// Maximum unprocessed fragments allowed to queue up. 
         /// </summary>
         public int MaxFragmentQueueLength { get; set; }
@@ -216,14 +233,31 @@ namespace BestHTTP
         public OnRequestFinishedDelegate Callback { get; set; }
 
         /// <summary>
+        /// When the request is queued for processing.
+        /// </summary>
+        public DateTime QueuedAt { get; internal set; }
+
+        public bool IsConnectTimedOut { get { return this.QueuedAt != DateTime.MinValue && DateTime.UtcNow - this.QueuedAt > this.ConnectTimeout; } }
+
+        /// <summary>
         /// When the processing of the request started
         /// </summary>
-        public DateTime ProcessingStarted { get; private set; }
+        public DateTime ProcessingStarted { get; internal set; }
 
         /// <summary>
         /// Returns true if the time passed the Timeout setting since processing started.
         /// </summary>
-        public bool IsTimedOut { get { return DateTime.Now - this.ProcessingStarted > this.Timeout; } }
+        public bool IsTimedOut
+        {
+            get
+            {
+                DateTime now = DateTime.UtcNow;
+
+                return (!this.UseStreaming || (this.UseStreaming && this.EnableTimoutForStreaming)) &&
+                    ((this.ProcessingStarted != DateTime.MinValue && now - this.ProcessingStarted > this.Timeout) ||
+                     this.IsConnectTimedOut);
+            }
+        }
 
         /// <summary>
         /// Called for every fragment of data downloaded from the server. Return true if dataFrament is processed and the plugin can recycle the byte[].
@@ -233,7 +267,7 @@ namespace BestHTTP
         /// <summary>
         /// This event is called when the plugin received and parsed all headers.
         /// </summary>
-        public Action<HTTPRequest, HTTPResponse> OnHeadersReceived;
+        public OnHeadersReceivedDelegate OnHeadersReceived;
 
         /// <summary>
         /// Number of times that the plugin retried the request.
@@ -248,7 +282,7 @@ namespace BestHTTP
         /// <summary>
         /// True if Abort() is called on this request.
         /// </summary>
-        public bool IsCancellationRequested { get; private set; }
+        public bool IsCancellationRequested { get; internal set; }
 
         /// <summary>
         /// Called when new data downloaded from the server.
@@ -256,11 +290,6 @@ namespace BestHTTP
         /// <remarks>There are download modes where we can't figure out the exact length of the final content. In these cases we just guarantee that the third parameter will be at least the size of the second one.</remarks>
         /// </summary>
         public OnDownloadProgressDelegate OnDownloadProgress;
-
-        /// <summary>
-        /// Called when the current protocol is upgraded to an other. (HTTP => WebSocket for example)
-        /// </summary>
-        public OnRequestFinishedDelegate OnUpgraded;
 
         /// <summary>
         /// Indicates that the request is redirected. If a request is redirected, the connection that served it will be closed regardless of the value of IsKeepAlive.
@@ -309,7 +338,7 @@ namespace BestHTTP
         /// <summary>
         /// True, if there is a Proxy object.
         /// </summary>
-        public bool HasProxy { get { return Proxy != null; } }
+        public bool HasProxy { get { return Proxy != null && Proxy.UseProxyForAddress(this.CurrentUri); } }
 
         /// <summary>
         /// A web proxy's properties where the request must pass through.
@@ -318,16 +347,9 @@ namespace BestHTTP
 #endif
 
         /// <summary>
-        /// How many redirection supported for this request. The default is int.MaxValue. 0 or a negative value means no redirection supported.
+        /// How many redirection supported for this request. The default is 10. 0 or a negative value means no redirection supported.
         /// </summary>
         public int MaxRedirects { get; set; }
-
-#if !BESTHTTP_DISABLE_ALTERNATE_SSL && (!UNITY_WEBGL || UNITY_EDITOR)
-        /// <summary>
-        /// Use Bouncy Castle's code to handle the secure protocol instead of Mono's. You can try to set it true if you receive a "System.Security.Cryptography.CryptographicException: Unsupported hash algorithm" exception.
-        /// </summary>
-        public bool UseAlternateSSL { get; set; }
-#endif
 
 #if !BESTHTTP_DISABLE_COOKIES
 
@@ -354,7 +376,7 @@ namespace BestHTTP
 #endif
 
         /// <summary>
-        /// What form should used. Default to Automatic.
+        /// What form should used. Its default value is Automatic.
         /// </summary>
         public HTTPFormUsage FormUsage { get; set; }
 
@@ -364,14 +386,17 @@ namespace BestHTTP
         public HTTPRequestStates State {
             get { return this._state; }
             internal set {
-                if (this._state != value)
+                lock (this)
                 {
-                    if (value == HTTPRequestStates.Processing)
-                        this.ProcessingStarted = DateTime.Now;
+                    if (this._state != value)
+                    {
+                        //if (this._state >= HTTPRequestStates.Finished && value >= HTTPRequestStates.Finished)
+                        //    return;
 
-                    this._state = value;
+                        this._state = value;
 
-                    RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(this, this._state));
+                        RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(this, this._state));
+                    }
                 }
             }
         }
@@ -381,14 +406,6 @@ namespace BestHTTP
         /// How many times redirected.
         /// </summary>
         public int RedirectCount { get; internal set; }
-
-#if !NETFX_CORE
-        /// <summary>
-        /// Custom validator for an SslStream. This event will receive the original HTTPRequest, an X509Certificate and an X509Chain objects. It must return true if the certificate valid, false otherwise.
-        /// <remarks>It's called in a thread! Not available on Windows Phone!</remarks>
-        /// </summary>
-        public event System.Func<HTTPRequest, System.Security.Cryptography.X509Certificates.X509Certificate, System.Security.Cryptography.X509Certificates.X509Chain, bool> CustomCertificationValidator;
-#endif
 
         /// <summary>
         /// Maximum time we wait to establish the connection to the target server. If set to TimeSpan.Zero or lower, no connect timeout logic is executed. Default value is 20 seconds.
@@ -411,31 +428,6 @@ namespace BestHTTP
         /// </summary>
         public bool EnableSafeReadOnUnknownContentLength { get; set; }
 
-#if !BESTHTTP_DISABLE_ALTERNATE_SSL && (!UNITY_WEBGL || UNITY_EDITOR)
-        /// <summary>
-        /// The ICertificateVerifyer implementation that the plugin will use to verify the server certificates when the request's UseAlternateSSL property is set to true.
-        /// </summary>
-        public SecureProtocol.Org.BouncyCastle.Crypto.Tls.ICertificateVerifyer CustomCertificateVerifyer { get; set; }
-
-        /// <summary>
-        /// The IClientCredentialsProvider implementation that the plugin will use to send client certificates when the request's UseAlternateSSL property is set to true.
-        /// </summary>
-        public SecureProtocol.Org.BouncyCastle.Crypto.Tls.IClientCredentialsProvider CustomClientCredentialsProvider { get; set; }
-
-        /// <summary>
-        /// With this property custom Server Name Indication entries can be sent to the server while negotiating TLS. 
-        /// All added entries must conform to the rules defined in the RFC (https://tools.ietf.org/html/rfc3546#section-3.1), the plugin will not check the entries' validity!
-        /// <remarks>This list will be sent to every server that the plugin must connect to while it tries to finish the request.
-        /// So for example if redirected to an another server, that new server will receive this list too!</remarks>
-        /// </summary>
-        public List<string> CustomTLSServerNameList { get; set; }
-#endif
-
-        /// <summary>
-        ///
-        /// </summary>
-        public SupportedProtocols ProtocolHandler { get; set; }
-
         /// <summary>
         /// It's called before the plugin will do a new request to the new uri. The return value of this function will control the redirection: if it's false the redirection is aborted.
         /// This function is called on a thread other than the main Unity thread!
@@ -457,11 +449,28 @@ namespace BestHTTP
         }
         private OnBeforeHeaderSendDelegate _onBeforeHeaderSend;
 
+        /// <summary>
+        /// Logging context of the request.
+        /// </summary>
+        public LoggingContext Context { get; private set; }
+
+        /// <summary>
+        /// Timing information.
+        /// </summary>
+        public TimingCollector Timing { get; private set; }
+
 #if UNITY_WEBGL
         /// <summary>
         /// Its value will be set to the XmlHTTPRequest's withCredentials field. Its default value is HTTPManager.IsCookiesEnabled's value.
         /// </summary>
         public bool WithCredentials { get; set; }
+#endif
+
+#if !UNITY_WEBGL || UNITY_EDITOR
+        /// <summary>
+        /// Called when the current protocol is upgraded to an other. (HTTP => WebSocket for example)
+        /// </summary>
+        internal OnRequestFinishedDelegate OnUpgraded;
 #endif
 
         #region Internal Properties For Progress Report Support
@@ -494,6 +503,13 @@ namespace BestHTTP
             }
         }
 
+#if !UNITY_WEBGL || UNITY_EDITOR
+        /// <summary>
+        /// This action is called when a user calls the Abort function. Do not use it outside of the plugin!
+        /// </summary>
+        internal Action<HTTPRequest> OnCancellationRequested;
+#endif
+
         #endregion
 
         #endregion
@@ -506,7 +522,6 @@ namespace BestHTTP
         private bool cacheOnly;
 #endif
         private int streamFragmentSize;
-        private bool useStreaming;
 
         private Dictionary<string, List<string>> Headers { get; set; }
 
@@ -613,7 +628,7 @@ namespace BestHTTP
             this.MaxFragmentQueueLength = 10;
 
             this.MaxRetries = methodType == HTTPMethods.Get ? 1 : 0;
-            this.MaxRedirects = int.MaxValue;
+            this.MaxRedirects = 10;
             this.RedirectCount = 0;
 #if !BESTHTTP_DISABLE_COOKIES
             this.IsCookiesEnabled = HTTPManager.IsCookiesEnabled;
@@ -634,19 +649,12 @@ namespace BestHTTP
             this.UseUploadStreamLength = true;
             this.DisposeUploadStream = true;
 
-#if !BESTHTTP_DISABLE_ALTERNATE_SSL && (!UNITY_WEBGL || UNITY_EDITOR)
-            this.CustomCertificateVerifyer = HTTPManager.DefaultCertificateVerifyer;
-            this.CustomClientCredentialsProvider = HTTPManager.DefaultClientCredentialsProvider;
-            this.UseAlternateSSL = HTTPManager.UseAlternateSSLDefaultValue;
-#endif
-
-#if !NETFX_CORE
-            this.CustomCertificationValidator += HTTPManager.DefaultCertificationValidator;
-#endif
-
 #if UNITY_WEBGL && !BESTHTTP_DISABLE_COOKIES
             this.WithCredentials = this.IsCookiesEnabled;
 #endif
+
+            this.Context = new LoggingContext(this);
+            this.Timing = new TimingCollector(this);
         }
 
         #endregion
@@ -849,6 +857,9 @@ namespace BestHTTP
             return null;
         }
 
+        /// <summary>
+        /// Removes all headers.
+        /// </summary>
         public void RemoveHeaders()
         {
             if (Headers == null)
@@ -909,12 +920,20 @@ namespace BestHTTP
 #endif
 
             #if !BESTHTTP_DISABLE_PROXY
-            if (HasProxy && !HasHeader("Proxy-Connection"))
+            if (!HTTPProtocolFactory.IsSecureProtocol(this.CurrentUri) && HasProxy && !HasHeader("Proxy-Connection"))
                 AddHeader("Proxy-Connection", IsKeepAlive ? "Keep-Alive" : "Close");
             #endif
 
             if (!HasHeader("Connection"))
                 AddHeader("Connection", IsKeepAlive ? "Keep-Alive, TE" : "Close, TE");
+
+            if (IsKeepAlive && !HasHeader("Keep-Alive"))
+            {
+                // Send the server a slightly larger value to make sure it's not going to close sooner than the client
+                int seconds = (int)Math.Ceiling(HTTPManager.MaxConnectionIdleTime.TotalSeconds + 1);
+
+                AddHeader("Keep-Alive", "timeout=" + seconds);
+            }
 
             if (!HasHeader("TE"))
                 AddHeader("TE", "identity");
@@ -950,19 +969,21 @@ namespace BestHTTP
             // Always set the Content-Length header if possible
             // http://tools.ietf.org/html/rfc2616#section-4.4 : For compatibility with HTTP/1.0 applications, HTTP/1.1 requests containing a message-body MUST include a valid Content-Length header field unless the server is known to be HTTP/1.1 compliant.
             // 2018.06.03: Changed the condition so that content-length header will be included for zero length too.
+            // 2022.05.25: Don't send a Content-Length (: 0) header if there's an Upgrade header. Upgrade is set for websocket, and it might be not true that the client doesn't send any bytes.
             if (
 #if !UNITY_WEBGL || UNITY_EDITOR
                 contentLength >= 0
 #else
                 contentLength != -1
 #endif
-                && !HasHeader("Content-Length"))
+                && !HasHeader("Content-Length")
+                && !HasHeader("Upgrade"))
                 SetHeader("Content-Length", contentLength.ToString());
 
 #if !UNITY_WEBGL || UNITY_EDITOR
             #if !BESTHTTP_DISABLE_PROXY
             // Proxy Authentication
-            if (HasProxy && Proxy.Credentials != null)
+            if (!HTTPProtocolFactory.IsSecureProtocol(this.CurrentUri) && HasProxy && Proxy.Credentials != null)
             {
                 switch (Proxy.Credentials.Type)
                 {
@@ -1079,7 +1100,7 @@ namespace BestHTTP
                 }
                 catch(Exception ex)
                 {
-                    HTTPManager.Logger.Exception("HTTPRequest", "OnBeforeHeaderSend", ex);
+                    HTTPManager.Logger.Exception("HTTPRequest", "OnBeforeHeaderSend", ex, this.Context);
                 }
             }
 
@@ -1099,23 +1120,23 @@ namespace BestHTTP
                     if (string.IsNullOrEmpty(header) || values == null)
                         return;
 
-                    byte[] headerName = string.Concat(header, ": ").GetASCIIBytes();
+                    var headerName = string.Concat(header, ": ").GetASCIIBytes();
 
                     for (int i = 0; i < values.Count; ++i)
                     {
                         if (string.IsNullOrEmpty(values[i]))
                         {
-                            HTTPManager.Logger.Warning("HTTPRequest", string.Format("Null/empty value for header: {0}", header));
+                            HTTPManager.Logger.Warning("HTTPRequest", string.Format("Null/empty value for header: {0}", header), this.Context);
                             continue;
                         }
 
                         if (HTTPManager.Logger.Level <= Logger.Loglevels.Information)
                             VerboseLogging("Header - '" + header + "': '" + values[i] + "'");
 
-                        byte[] valueBytes = values[i].GetASCIIBytes();
+                        var valueBytes = values[i].GetASCIIBytes();
 
-                        stream.WriteArray(headerName);
-                        stream.WriteArray(valueBytes);
+                        stream.WriteBufferSegment(headerName);
+                        stream.WriteBufferSegment(valueBytes);
                         stream.WriteArray(EOL);
 
                         BufferPool.Release(valueBytes);
@@ -1185,8 +1206,10 @@ namespace BestHTTP
 
                 if (uploadStream == null)
                 {
-                    // Make stream from the data
-                    uploadStream = new BufferPoolMemoryStream(data, 0, data.Length);
+                    // Make stream from the data. A BufferPoolMemoryStream could be used here,
+                    // but because data comes from outside, we don't have control on its lifetime
+                    // and might be gets reused without our knowledge.
+                    uploadStream = new MemoryStream(data, 0, data.Length);
 
                     // Initialize progress report variable
                     UploadLength = data.Length;
@@ -1208,136 +1231,131 @@ namespace BestHTTP
         {
             // Under WEBGL EnumerateHeaders and GetEntityBody are used instead of this function.
 #if !UNITY_WEBGL || UNITY_EDITOR
-            try
-            {
-                string requestPathAndQuery =
-                #if !BESTHTTP_DISABLE_PROXY
+            string requestPathAndQuery =
+#if !BESTHTTP_DISABLE_PROXY
                     HasProxy ? this.Proxy.GetRequestPath(CurrentUri) :
-                #endif
+#endif
                     CurrentUri.GetRequestPathAndQueryURL();
 
-                string requestLine = string.Format("{0} {1} HTTP/1.1", MethodNames[(byte)MethodType], requestPathAndQuery);
+            string requestLine = string.Format("{0} {1} HTTP/1.1", MethodNames[(byte)MethodType], requestPathAndQuery);
 
-                if (HTTPManager.Logger.Level <= Logger.Loglevels.Information)
-                    HTTPManager.Logger.Information("HTTPRequest", string.Format("Sending request: '{0}'", requestLine));
+            if (HTTPManager.Logger.Level <= Logger.Loglevels.Information)
+                HTTPManager.Logger.Information("HTTPRequest", string.Format("Sending request: '{0}'", requestLine), this.Context);
 
-                // Create a buffer stream that will not close 'stream' when disposed or closed.
-                // buffersize should be larger than UploadChunkSize as it might be used for uploading user data and
-                //  it should have enough room for UploadChunkSize data and additional chunk information.
-                using (WriteOnlyBufferedStream bufferStream = new WriteOnlyBufferedStream(stream, (int)(UploadChunkSize * 1.5f)))
+            // Create a buffer stream that will not close 'stream' when disposed or closed.
+            // buffersize should be larger than UploadChunkSize as it might be used for uploading user data and
+            //  it should have enough room for UploadChunkSize data and additional chunk information.
+            using (WriteOnlyBufferedStream bufferStream = new WriteOnlyBufferedStream(stream, (int)(UploadChunkSize * 1.5f)))
+            {
+                var requestLineBytes = requestLine.GetASCIIBytes();
+                bufferStream.WriteBufferSegment(requestLineBytes);
+                bufferStream.WriteArray(EOL);
+
+                BufferPool.Release(requestLineBytes);
+
+                // Write headers to the buffer
+                SendHeaders(bufferStream);
+                bufferStream.WriteArray(EOL);
+
+                // Send remaining data to the wire
+                bufferStream.Flush();
+
+                byte[] data = RawData;
+
+                // We are sending forms? Then convert the form to a byte array
+                if (data == null && FormImpl != null)
+                    data = FormImpl.GetData();
+
+                if (data != null || UploadStream != null)
                 {
-                    byte[] requestLineBytes = requestLine.GetASCIIBytes();
-                    bufferStream.WriteArray(requestLineBytes);
-                    bufferStream.WriteArray(EOL);
+                    // Make a new reference, as we will check the UploadStream property in the HTTPManager
+                    Stream uploadStream = UploadStream;
 
-                    BufferPool.Release(requestLineBytes);
+                    long UploadLength = 0;
 
-                    // Write headers to the buffer
-                    SendHeaders(bufferStream);
-                    bufferStream.WriteArray(EOL);
-
-                    // Send remaining data to the wire
-                    bufferStream.Flush();
-
-                    byte[] data = RawData;
-
-                    // We are sending forms? Then convert the form to a byte array
-                    if (data == null && FormImpl != null)
-                        data = FormImpl.GetData();
-
-                    if (data != null || UploadStream != null)
+                    if (uploadStream == null)
                     {
-                        // Make a new reference, as we will check the UploadStream property in the HTTPManager
-                        Stream uploadStream = UploadStream;
+                        // Make stream from the data. A BufferPoolMemoryStream could be used here,
+                        // but because data comes from outside, we don't have control on it's lifetime
+                        // and might be gets reused without our knowledge.
+                        uploadStream = new MemoryStream(data, 0, data.Length);
 
-                        long UploadLength = 0;
-
-                        if (uploadStream == null)
-                        {
-                            // Make stream from the data
-                            uploadStream = new BufferPoolMemoryStream(data, 0, data.Length);
-
-                            // Initialize progress report variable
-                            UploadLength = data.Length;
-                        }
-                        else
-                            UploadLength = UseUploadStreamLength ? UploadStreamLength : -1;
-
-                        // Initialize the progress report variables
-                        long Uploaded = 0;
-
-                        // Upload buffer. First we will read the data into this buffer from the UploadStream, then write this buffer to our outStream
-                        byte[] buffer = BufferPool.Get(UploadChunkSize, true);
-
-                        // How many bytes was read from the UploadStream
-                        int count = 0;
-                        while ((count = uploadStream.Read(buffer, 0, buffer.Length)) > 0)
-                        {
-                            // If we don't know the size, send as chunked
-                            if (!UseUploadStreamLength)
-                            {
-                                byte[] countBytes = count.ToString("X").GetASCIIBytes();
-                                bufferStream.WriteArray(countBytes);
-                                bufferStream.WriteArray(EOL);
-
-                                BufferPool.Release(countBytes);
-                            }
-
-                            // write out the buffer to the wire
-                            bufferStream.Write(buffer, 0, count);
-
-                            // chunk trailing EOL
-                            if (!UseUploadStreamLength)
-                                bufferStream.WriteArray(EOL);
-
-                            // update how many bytes are uploaded
-                            Uploaded += count;
-
-                            // Write to the wire
-                            bufferStream.Flush();
-
-                            if (this.OnUploadProgress != null)
-                                RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(this, RequestEvents.UploadProgress, Uploaded, UploadLength));
-
-                            if (this.IsCancellationRequested)
-                                return;
-                        }
-
-                        BufferPool.Release(buffer);
-
-                        // All data from the stream are sent, write the 'end' chunk if necessary
-                        if (!UseUploadStreamLength)
-                        {
-                            byte[] noMoreChunkBytes = BufferPool.Get(1, true);
-                            noMoreChunkBytes[0] = (byte)'0';
-                            bufferStream.Write(noMoreChunkBytes, 0, 1);
-                            bufferStream.WriteArray(EOL);
-                            bufferStream.WriteArray(EOL);
-
-                            BufferPool.Release(noMoreChunkBytes);
-                        }
-
-                        // Make sure all remaining data will be on the wire
-                        bufferStream.Flush();
-
-                        // Dispose the MemoryStream
-                        if (UploadStream == null && uploadStream != null)
-                            uploadStream.Dispose();
+                        // Initialize progress report variable
+                        UploadLength = data.Length;
                     }
                     else
-                        bufferStream.Flush();
-                } // bufferStream.Dispose
+                        UploadLength = UseUploadStreamLength ? UploadStreamLength : -1;
 
-                HTTPManager.Logger.Information("HTTPRequest", "'" + requestLine + "' sent out");
-            }
-            finally
-            {
-                if (UploadStream != null && DisposeUploadStream)
-                    UploadStream.Dispose();
-            }
+                    // Initialize the progress report variables
+                    long Uploaded = 0;
+
+                    // Upload buffer. First we will read the data into this buffer from the UploadStream, then write this buffer to our outStream
+                    byte[] buffer = BufferPool.Get(UploadChunkSize, true);
+
+                    // How many bytes was read from the UploadStream
+                    int count = 0;
+                    while ((count = uploadStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        // If we don't know the size, send as chunked
+                        if (!UseUploadStreamLength)
+                        {
+                            var countBytes = count.ToString("X").GetASCIIBytes();
+                            bufferStream.WriteBufferSegment(countBytes);
+                            bufferStream.WriteArray(EOL);
+
+                            BufferPool.Release(countBytes);
+                        }
+
+                        // write out the buffer to the wire
+                        bufferStream.Write(buffer, 0, count);
+
+                        // chunk trailing EOL
+                        if (!UseUploadStreamLength)
+                            bufferStream.WriteArray(EOL);
+
+                        // update how many bytes are uploaded
+                        Uploaded += count;
+
+                        // Write to the wire
+                        bufferStream.Flush();
+
+                        if (this.OnUploadProgress != null)
+                            RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(this, RequestEvents.UploadProgress, Uploaded, UploadLength));
+
+                        if (this.IsCancellationRequested)
+                            return;
+                    }
+
+                    BufferPool.Release(buffer);
+
+                    // All data from the stream are sent, write the 'end' chunk if necessary
+                    if (!UseUploadStreamLength)
+                    {
+                        byte[] noMoreChunkBytes = BufferPool.Get(1, true);
+                        noMoreChunkBytes[0] = (byte)'0';
+                        bufferStream.Write(noMoreChunkBytes, 0, 1);
+                        bufferStream.WriteArray(EOL);
+                        bufferStream.WriteArray(EOL);
+
+                        BufferPool.Release(noMoreChunkBytes);
+                    }
+
+                    // Make sure all remaining data will be on the wire
+                    bufferStream.Flush();
+
+                    // Dispose the MemoryStream
+                    if (UploadStream == null && uploadStream != null)
+                        uploadStream.Dispose();
+                }
+                else
+                    bufferStream.Flush();
+            } // bufferStream.Dispose
+
+            HTTPManager.Logger.Information("HTTPRequest", "'" + requestLine + "' sent out", this.Context);
 #endif
         }
 
+#if !UNITY_WEBGL || UNITY_EDITOR
         internal void UpgradeCallback()
         {
             if (Response == null || !Response.IsUpgraded)
@@ -1350,9 +1368,10 @@ namespace BestHTTP
             }
             catch (Exception ex)
             {
-                HTTPManager.Logger.Exception("HTTPRequest", "UpgradeCallback", ex);
+                HTTPManager.Logger.Exception("HTTPRequest", "UpgradeCallback", ex, this.Context);
             }
         }
+#endif
 
         internal bool CallOnBeforeRedirection(Uri redirectUri)
         {
@@ -1370,15 +1389,6 @@ namespace BestHTTP
 
         }
 
-#if !NETFX_CORE
-        internal bool CallCustomCertificationValidator(System.Security.Cryptography.X509Certificates.X509Certificate cert, System.Security.Cryptography.X509Certificates.X509Chain chain)
-        {
-            if (CustomCertificationValidator != null)
-                return CustomCertificationValidator(this, cert, chain);
-            return true;
-        }
-#endif
-
 #endregion
 
         /// <summary>
@@ -1386,6 +1396,9 @@ namespace BestHTTP
         /// </summary>
         public HTTPRequest Send()
         {
+            this.IsCancellationRequested = false;
+            this.Exception = null;
+
             return HTTPManager.SendRequest(this);
         }
 
@@ -1396,24 +1409,41 @@ namespace BestHTTP
         {
             VerboseLogging("Abort request!");
 
-            //  1.) set IsCancellationRequested to true here
-            //  2.) in the upload/download cycles and all the other places check for this previous flag. If set, abort any operation and fail fast. 
-            //          An aborted request will fault its processing connections too(in http1.x at least, in http2 it must trigger some special things)
-            //  3.) its processing connection (if any!) must set the request's state to aborted when it's handled the abortion
-            //  4.) start a timer right after 1.) to check the request's state. If the given time has been passed, and the request's state still isn't Aborted, hard abort it.
-            //  5.) connections must be able to handle this hard abortion too by do not processing it further when this state is detected
-            // A cancellation request means that the processing 
+            lock (this)
+            {
+                if (this.State >= HTTPRequestStates.Finished)
+                    return;
 
-            this.IsCancellationRequested = true;
+                this.IsCancellationRequested = true;
 
-            // If the response is an IProtocol implementation, call the protocol's cancellation.
-            IProtocol protocol = this.Response as IProtocol;
-            if (protocol != null)
-                protocol.CancellationRequested();
+                // If the response is an IProtocol implementation, call the protocol's cancellation.
+                IProtocol protocol = this.Response as IProtocol;
+                if (protocol != null)
+                    protocol.CancellationRequested();
 
-            // If processing of the request isn't started yet, set its state.
-            if (this.State < HTTPRequestStates.Processing)
-                this.State = this.IsTimedOut ? HTTPRequestStates.TimedOut : HTTPRequestStates.Aborted;
+                // There's a race-condition here, another thread might set it too.
+                this.Response = null;
+
+                // There's a race-condition here too, another thread might set it too.
+                //  In this case, both state going to be queued up that we have to handle in RequestEvents.cs.
+                if (this.IsTimedOut)
+                {
+                    this.State = this.IsConnectTimedOut ? HTTPRequestStates.ConnectionTimedOut : HTTPRequestStates.TimedOut;
+                }
+                else
+                    this.State = HTTPRequestStates.Aborted;
+
+#if !UNITY_WEBGL || UNITY_EDITOR
+                if (this.OnCancellationRequested != null)
+                {
+                    try
+                    {
+                        this.OnCancellationRequested(this);
+                    }
+                    catch { }
+                }
+#endif
+            }
         }
 
         /// <summary>
@@ -1426,11 +1456,12 @@ namespace BestHTTP
 
             this.IsRedirected = false;
             this.RedirectCount = 0;
+            this.Exception = null;
         }
 
         private void VerboseLogging(string str)
         {
-            HTTPManager.Logger.Verbose("HTTPRequest", "'" + this.CurrentUri.ToString() + "' - " + str);
+            HTTPManager.Logger.Verbose("HTTPRequest", str, this.Context);
         }
 
         #region System.Collections.IEnumerator implementation
@@ -1456,6 +1487,12 @@ namespace BestHTTP
 
         public void Dispose()
         {
+            if (UploadStream != null && DisposeUploadStream)
+            {
+                UploadStream.Dispose();
+                UploadStream = null;
+            }
+
             if (Response != null)
                 Response.Dispose();
         }

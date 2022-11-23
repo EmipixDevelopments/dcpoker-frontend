@@ -3,13 +3,18 @@
 using System;
 
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Utilities;
+using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities;
 
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Engines
 {
 	/// <summary>
 	/// Implementation of Daniel J. Bernstein's ChaCha stream cipher.
 	/// </summary>
-	public class ChaChaEngine
+    
+    
+    
+    [BestHTTP.PlatformSupport.IL2CPP.Il2CppEagerStaticClassConstructionAttribute]
+    public sealed class ChaChaEngine
 		: Salsa20Engine
 	{
 		/// <summary>
@@ -68,7 +73,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Engines
 		{
 			ChachaCore(rounds, engineState, x);
 			Pack.UInt32_To_LE(x, output, 0);
-		}
+        }
 
 		/// <summary>
 		/// ChaCha function.
@@ -102,41 +107,41 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Engines
 			uint x14 = input[14];
 			uint x15 = input[15];
 
-			for (int i = rounds; i > 0; i -= 2)
-			{
-				x00 += x04; x12 = R(x12 ^ x00, 16);
-				x08 += x12; x04 = R(x04 ^ x08, 12);
-				x00 += x04; x12 = R(x12 ^ x00, 8);
-				x08 += x12; x04 = R(x04 ^ x08, 7);
-				x01 += x05; x13 = R(x13 ^ x01, 16);
-				x09 += x13; x05 = R(x05 ^ x09, 12);
-				x01 += x05; x13 = R(x13 ^ x01, 8);
-				x09 += x13; x05 = R(x05 ^ x09, 7);
-				x02 += x06; x14 = R(x14 ^ x02, 16);
-				x10 += x14; x06 = R(x06 ^ x10, 12);
-				x02 += x06; x14 = R(x14 ^ x02, 8);
-				x10 += x14; x06 = R(x06 ^ x10, 7);
-				x03 += x07; x15 = R(x15 ^ x03, 16);
-				x11 += x15; x07 = R(x07 ^ x11, 12);
-				x03 += x07; x15 = R(x15 ^ x03, 8);
-				x11 += x15; x07 = R(x07 ^ x11, 7);
-				x00 += x05; x15 = R(x15 ^ x00, 16);
-				x10 += x15; x05 = R(x05 ^ x10, 12);
-				x00 += x05; x15 = R(x15 ^ x00, 8);
-				x10 += x15; x05 = R(x05 ^ x10, 7);
-				x01 += x06; x12 = R(x12 ^ x01, 16);
-				x11 += x12; x06 = R(x06 ^ x11, 12);
-				x01 += x06; x12 = R(x12 ^ x01, 8);
-				x11 += x12; x06 = R(x06 ^ x11, 7);
-				x02 += x07; x13 = R(x13 ^ x02, 16);
-				x08 += x13; x07 = R(x07 ^ x08, 12);
-				x02 += x07; x13 = R(x13 ^ x02, 8);
-				x08 += x13; x07 = R(x07 ^ x08, 7);
-				x03 += x04; x14 = R(x14 ^ x03, 16);
-				x09 += x14; x04 = R(x04 ^ x09, 12);
-				x03 += x04; x14 = R(x14 ^ x03, 8);
-				x09 += x14; x04 = R(x04 ^ x09, 7);
-			}
+                for (int i = rounds; i > 0; i -= 2)
+                {
+				x00 += x04; x12 = Integers.RotateLeft(x12 ^ x00, 16);
+				x08 += x12; x04 = Integers.RotateLeft(x04 ^ x08, 12);
+				x00 += x04; x12 = Integers.RotateLeft(x12 ^ x00, 8);
+				x08 += x12; x04 = Integers.RotateLeft(x04 ^ x08, 7);
+				x01 += x05; x13 = Integers.RotateLeft(x13 ^ x01, 16);
+				x09 += x13; x05 = Integers.RotateLeft(x05 ^ x09, 12);
+				x01 += x05; x13 = Integers.RotateLeft(x13 ^ x01, 8);
+				x09 += x13; x05 = Integers.RotateLeft(x05 ^ x09, 7);
+				x02 += x06; x14 = Integers.RotateLeft(x14 ^ x02, 16);
+				x10 += x14; x06 = Integers.RotateLeft(x06 ^ x10, 12);
+				x02 += x06; x14 = Integers.RotateLeft(x14 ^ x02, 8);
+				x10 += x14; x06 = Integers.RotateLeft(x06 ^ x10, 7);
+				x03 += x07; x15 = Integers.RotateLeft(x15 ^ x03, 16);
+				x11 += x15; x07 = Integers.RotateLeft(x07 ^ x11, 12);
+				x03 += x07; x15 = Integers.RotateLeft(x15 ^ x03, 8);
+				x11 += x15; x07 = Integers.RotateLeft(x07 ^ x11, 7);
+				x00 += x05; x15 = Integers.RotateLeft(x15 ^ x00, 16);
+				x10 += x15; x05 = Integers.RotateLeft(x05 ^ x10, 12);
+				x00 += x05; x15 = Integers.RotateLeft(x15 ^ x00, 8);
+				x10 += x15; x05 = Integers.RotateLeft(x05 ^ x10, 7);
+				x01 += x06; x12 = Integers.RotateLeft(x12 ^ x01, 16);
+				x11 += x12; x06 = Integers.RotateLeft(x06 ^ x11, 12);
+				x01 += x06; x12 = Integers.RotateLeft(x12 ^ x01, 8);
+				x11 += x12; x06 = Integers.RotateLeft(x06 ^ x11, 7);
+				x02 += x07; x13 = Integers.RotateLeft(x13 ^ x02, 16);
+				x08 += x13; x07 = Integers.RotateLeft(x07 ^ x08, 12);
+				x02 += x07; x13 = Integers.RotateLeft(x13 ^ x02, 8);
+				x08 += x13; x07 = Integers.RotateLeft(x07 ^ x08, 7);
+				x03 += x04; x14 = Integers.RotateLeft(x14 ^ x03, 16);
+				x09 += x14; x04 = Integers.RotateLeft(x04 ^ x09, 12);
+				x03 += x04; x14 = Integers.RotateLeft(x14 ^ x03, 8);
+				x09 += x14; x04 = Integers.RotateLeft(x04 ^ x09, 7);
+                }
 
 			x[ 0] = x00 + input[ 0];
 			x[ 1] = x01 + input[ 1];

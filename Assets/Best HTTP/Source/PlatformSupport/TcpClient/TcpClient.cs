@@ -1,4 +1,4 @@
-﻿#if !NETFX_CORE || UNITY_EDITOR
+#if !NETFX_CORE || UNITY_EDITOR
 
 // TcpClient.cs
 //
@@ -34,6 +34,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -415,7 +416,7 @@ namespace BestHTTP.PlatformSupport.TcpClient.General
                 if (success)
                 {
                     IPAddress[] addresses = Dns.EndGetHostAddresses(result);
-                    Connect(addresses, port);
+                    Connect(addresses, port, null);
                 }
                 else
                 {
@@ -425,11 +426,11 @@ namespace BestHTTP.PlatformSupport.TcpClient.General
             else
             {
                 IPAddress[] addresses = Dns.GetHostAddresses(hostname);
-                Connect(addresses, port);
+                Connect(addresses, port, null);
             }
         }
 
-        public void Connect(IPAddress[] ipAddresses, int port)
+        public void Connect(IPAddress[] ipAddresses, int port, HTTPRequest request)
         {
             CheckDisposed();
 
@@ -438,11 +439,14 @@ namespace BestHTTP.PlatformSupport.TcpClient.General
                 throw new ArgumentNullException("ipAddresses");
             }
 
-            for (int i = 0; i < ipAddresses.Length; i++)
+            List<IPAddress> addresses = new List<IPAddress>(ipAddresses);
+            addresses.Sort((a, b) => a.AddressFamily - b.AddressFamily);
+
+            for (int i = 0; i < addresses.Count; i++)
             {
                 try
                 {
-                    IPAddress address = ipAddresses[i];
+                    IPAddress address = addresses[i];
 
                     if (address.Equals(IPAddress.Any) ||
                         address.Equals(IPAddress.IPv6Any))
@@ -465,6 +469,11 @@ namespace BestHTTP.PlatformSupport.TcpClient.General
                         throw new NotSupportedException("This method is only valid for sockets in the InterNetwork and InterNetworkV6 families");
                     }
 
+                    if (request != null && request.IsCancellationRequested)
+                        throw new Exception("IsCancellationRequested");
+
+                    HTTPManager.Logger.Verbose("TcpClient", string.Format("Trying to connect to {0}:{1}", address.ToString(), port.ToString()), request.Context);
+
                     Connect(new IPEndPoint(address, port));
 
                     if (values != 0)
@@ -472,11 +481,11 @@ namespace BestHTTP.PlatformSupport.TcpClient.General
                         SetOptions();
                     }
 
-                    // Enable Keep-Alive packets
-                    client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
-
                     try
                     {
+                        // Enable Keep-Alive packets
+                        client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+
                         /*
                             TCP_KEEPIDLE		4	 // Start keeplives after this period
                             TCP_KEEPINTVL		5	 // Interval between keepalives
@@ -501,7 +510,7 @@ namespace BestHTTP.PlatformSupport.TcpClient.General
                     catch{ }
 #endif
 
-                    HTTPManager.Logger.Information("TcpClient", string.Format("Connected to {0}:{1}", address.ToString(), port.ToString()));
+                    HTTPManager.Logger.Information("TcpClient", string.Format("Connected to {0}:{1}", address.ToString(), port.ToString()), request.Context);
 
                     break;
                 }
@@ -517,7 +526,7 @@ namespace BestHTTP.PlatformSupport.TcpClient.General
                      * address, so re-throw the
                      * exception
                      */
-                    if (i == ipAddresses.Length - 1)
+                    if (i == addresses.Count - 1)
                     {
                         throw e;
                     }

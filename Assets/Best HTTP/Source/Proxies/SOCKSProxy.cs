@@ -1,4 +1,4 @@
-﻿#if !BESTHTTP_DISABLE_PROXY
+#if !BESTHTTP_DISABLE_PROXY
 using System;
 using System.IO;
 using System.Text;
@@ -63,6 +63,11 @@ namespace BestHTTP
             return uri.GetRequestPathAndQueryURL();
         }
 
+        internal override bool SetupRequest(HTTPRequest request)
+        {
+            return false;
+        }
+
         internal override void Connect(Stream stream, HTTPRequest request)
         {
             var buffer = BufferPool.Get(1024, true);
@@ -99,7 +104,7 @@ namespace BestHTTP
                 }
 
                 if (HTTPManager.Logger.Level == Logger.Loglevels.All)
-                    HTTPManager.Logger.Information("SOCKSProxy", string.Format("Sending method negotiation - count: {0} buffer: {1} ", count.ToString(), BufferToHexStr(buffer, count)));
+                    HTTPManager.Logger.Information("SOCKSProxy", string.Format("Sending method negotiation - count: {0} buffer: {1} ", count.ToString(), BufferToHexStr(buffer, count)), request.Context);
 
                 // Write negotiation
                 stream.Write(buffer, 0, count);
@@ -107,7 +112,7 @@ namespace BestHTTP
                 count = stream.Read(buffer, 0, buffer.Length);
 
                 if (HTTPManager.Logger.Level == Logger.Loglevels.All)
-                    HTTPManager.Logger.Information("SOCKSProxy", string.Format("Negotiation response - count: {0} buffer: {1} ", count.ToString(), BufferToHexStr(buffer, count)));
+                    HTTPManager.Logger.Information("SOCKSProxy", string.Format("Negotiation response - count: {0} buffer: {1} ", count.ToString(), BufferToHexStr(buffer, count)), request.Context);
 
                 //   The server selects from one of the methods given in METHODS, and
                 //   sends a METHOD selection message:
@@ -147,7 +152,7 @@ namespace BestHTTP
                     throw new Exception("SOCKS Proxy - Received 'NO ACCEPTABLE METHODS' (0xFF)");
                 else
                 {
-                    HTTPManager.Logger.Information("SOCKSProxy", "Method negotiation over. Method: " + method.ToString());
+                    HTTPManager.Logger.Information("SOCKSProxy", "Method negotiation over. Method: " + method.ToString(), request.Context);
                     switch (method)
                     {
                         case SOCKSMethods.NoAuthenticationRequired:
@@ -172,7 +177,7 @@ namespace BestHTTP
                             //           | 1  |  1   | 1 to 255 |  1   | 1 to 255 |
                             //           +----+------+----------+------+----------+
 
-                            HTTPManager.Logger.Information("SOCKSProxy", "starting sub-negotiation");
+                            HTTPManager.Logger.Information("SOCKSProxy", "starting sub-negotiation", request.Context);
                             count = 0;
                             buffer[count++] = 0x01; // version of sub negotiation
 
@@ -180,7 +185,7 @@ namespace BestHTTP
                             WriteString(buffer, ref count, this.Credentials.Password);
 
                             if (HTTPManager.Logger.Level == Logger.Loglevels.All)
-                                HTTPManager.Logger.Information("SOCKSProxy", string.Format("Sending username and password sub-negotiation - count: {0} buffer: {1} ", count.ToString(), BufferToHexStr(buffer, count)));
+                                HTTPManager.Logger.Information("SOCKSProxy", string.Format("Sending username and password sub-negotiation - count: {0} buffer: {1} ", count.ToString(), BufferToHexStr(buffer, count)), request.Context);
 
                             // Write negotiation
                             stream.Write(buffer, 0, count);
@@ -188,7 +193,7 @@ namespace BestHTTP
                             count = stream.Read(buffer, 0, buffer.Length);
 
                             if (HTTPManager.Logger.Level == Logger.Loglevels.All)
-                                HTTPManager.Logger.Information("SOCKSProxy", string.Format("Username and password sub-negotiation response - count: {0} buffer: {1} ", count.ToString(), BufferToHexStr(buffer, count)));
+                                HTTPManager.Logger.Information("SOCKSProxy", string.Format("Username and password sub-negotiation response - count: {0} buffer: {1} ", count.ToString(), BufferToHexStr(buffer, count)), request.Context);
 
                             //   The server verifies the supplied UNAME and PASSWD, and sends the
                             //   following response:
@@ -209,7 +214,7 @@ namespace BestHTTP
                             else if (!success)
                                 throw new Exception("SOCKS proxy: username+password authentication failed!");
 
-                            HTTPManager.Logger.Information("SOCKSProxy", "Authenticated!");
+                            HTTPManager.Logger.Information("SOCKSProxy", "Authenticated!", request.Context);
                             break;
 
                         case SOCKSMethods.GSSAPI:
@@ -272,13 +277,13 @@ namespace BestHTTP
                 buffer[count++] = (byte)(request.CurrentUri.Port & 0xFF);
 
                 if (HTTPManager.Logger.Level == Logger.Loglevels.All)
-                    HTTPManager.Logger.Information("SOCKSProxy", string.Format("Sending connect request - count: {0} buffer: {1} ", count.ToString(), BufferToHexStr(buffer, count)));
+                    HTTPManager.Logger.Information("SOCKSProxy", string.Format("Sending connect request - count: {0} buffer: {1} ", count.ToString(), BufferToHexStr(buffer, count)), request.Context);
 
                 stream.Write(buffer, 0, count);
                 count = stream.Read(buffer, 0, buffer.Length);
 
                 if (HTTPManager.Logger.Level == Logger.Loglevels.All)
-                    HTTPManager.Logger.Information("SOCKSProxy", string.Format("Connect response - count: {0} buffer: {1} ", count.ToString(), BufferToHexStr(buffer, count)));
+                    HTTPManager.Logger.Information("SOCKSProxy", string.Format("Connect response - count: {0} buffer: {1} ", count.ToString(), BufferToHexStr(buffer, count)), request.Context);
 
                 //   The SOCKS request information is sent by the client as soon as it has
                 //   established a connection to the SOCKS server, and completed the
@@ -323,7 +328,7 @@ namespace BestHTTP
                 else if (reply != SOCKSReplies.Succeeded)
                     throw new Exception("SOCKS proxy error: " + reply.ToString());
 
-                HTTPManager.Logger.Information("SOCKSProxy", "Connected!");
+                HTTPManager.Logger.Information("SOCKSProxy", "Connected!", request.Context);
             }
             finally
             {

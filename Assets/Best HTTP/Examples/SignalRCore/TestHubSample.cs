@@ -9,6 +9,20 @@ using BestHTTP.Examples.Helpers;
 
 namespace BestHTTP.Examples
 {
+    public enum MyEnum : int
+    {
+        None,
+        One,
+        Two
+    }
+
+    public sealed class Metadata
+    {
+        public string strData;
+        public int intData;
+        public MyEnum myEnum;
+    }
+
     // Server side of this example can be found here:
     // https://github.com/Benedicht/BestHTTP_DemoSite/blob/master/BestHTTP_DemoSite/Hubs/TestHub.cs
     public class TestHubSample : BestHTTP.Examples.Helpers.SampleBase
@@ -58,14 +72,35 @@ namespace BestHTTP.Examples
         /// </summary>
         public void OnConnectButton()
         {
+#if BESTHTTP_SIGNALR_CORE_ENABLE_MESSAGEPACK_CSHARP
+            try
+            {
+                MessagePack.Resolvers.StaticCompositeResolver.Instance.Register(
+                    MessagePack.Resolvers.DynamicEnumAsStringResolver.Instance,
+                    MessagePack.Unity.UnityResolver.Instance,
+                    //MessagePack.Unity.Extension.UnityBlitWithPrimitiveArrayResolver.Instance,
+                    //MessagePack.Resolvers.StandardResolver.Instance,
+                    MessagePack.Resolvers.ContractlessStandardResolver.Instance
+                );
+
+                var options = MessagePack.MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.StaticCompositeResolver.Instance);
+                MessagePack.MessagePackSerializer.DefaultOptions = options;
+            }
+            catch
+            { }
+#endif
+
             IProtocol protocol = null;
-#if BESTHTTP_SIGNALR_CORE_ENABLE_GAMEDEVWARE_MESSAGEPACK
+#if BESTHTTP_SIGNALR_CORE_ENABLE_MESSAGEPACK_CSHARP
+            protocol = new MessagePackCSharpProtocol();
+#elif BESTHTTP_SIGNALR_CORE_ENABLE_GAMEDEVWARE_MESSAGEPACK
             protocol = new MessagePackProtocol();
 #else
             protocol = new JsonProtocol(new LitJsonEncoder());
 #endif
+
             // Crete the HubConnection
-            hub = new HubConnection(new Uri(this.sampleSelector.BaseURL + this._path), protocol);
+            hub = new HubConnection(new Uri(base.sampleSelector.BaseURL + this._path), protocol);
 
             // Optionally add an authenticator
             //hub.AuthenticationProvider = new BestHTTP.SignalRCore.Authentication.HeaderAuthenticator("<generated jwt token goes here>");
@@ -104,6 +139,7 @@ namespace BestHTTP.Examples
             }
         }
 
+
         /// <summary>
         /// This callback is called when the plugin is connected to the server successfully. Messages can be sent to the server after this point.
         /// </summary>
@@ -112,9 +148,11 @@ namespace BestHTTP.Examples
             SetButtons(false, true);
             AddText(string.Format("Hub Connected with <color=green>{0}</color> transport using the <color=green>{1}</color> encoder.", hub.Transport.TransportType.ToString(), hub.Protocol.Name));
 
+            hub.Send("SendMetadata", new Metadata() { intData = 123, strData = "meta data", myEnum = MyEnum.One });
+
             // Call a server function with a string param. We expect no return value.
             hub.Send("Send", "my message");
-
+            
             // Call a parameterless function. We expect a string return value.
             hub.Invoke<string>("NoParam")
                 .OnSuccess(ret => AddText(string.Format("'<color=green>NoParam</color>' returned: '<color=yellow>{0}</color>'", ret)).AddLeftPadding(20))
@@ -197,20 +235,6 @@ namespace BestHTTP.Examples
         private TextListItem AddText(string text)
         {
             return GUIHelper.AddText(this._listItemPrefab, this._contentRoot, text, this._maxListItemEntries, this._scrollRect);
-        }
-
-        /// <summary>
-        /// Helper class to demonstrate strongly typed callbacks
-        /// </summary>
-        sealed class Person
-        {
-            public string Name { get; set; }
-            public long Age { get; set; }
-
-            public override string ToString()
-            {
-                return string.Format("[Person Name: '{0}', Age: '<color=yellow>{1}</color>']", this.Name, this.Age.ToString());
-            }
         }
     }
 }

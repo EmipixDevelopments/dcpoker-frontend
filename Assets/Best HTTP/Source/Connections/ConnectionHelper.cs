@@ -11,6 +11,9 @@ using BestHTTP.Caching;
 using BestHTTP.Cookies;
 #endif
 
+using BestHTTP.Logger;
+using BestHTTP.Timings;
+
 namespace BestHTTP.Connections
 {
     /// <summary>
@@ -36,8 +39,8 @@ namespace BestHTTP.Connections
             if (parser.TryGet("timeout", out value) && value.HasValue)
             {
                 int intValue = 0;
-                if (int.TryParse(value.Value, out intValue))
-                    this.TimeOut = TimeSpan.FromSeconds(intValue);
+                if (int.TryParse(value.Value, out intValue) && intValue > 1)
+                    this.TimeOut = TimeSpan.FromSeconds(intValue - 1);
                 else
                     this.TimeOut = TimeSpan.MaxValue;
             }
@@ -55,7 +58,7 @@ namespace BestHTTP.Connections
 
     public static class ConnectionHelper
     {
-        public static void HandleResponse(string context, HTTPRequest request, out bool resendRequest, out HTTPConnectionStates proposedConnectionState, ref KeepAliveHeader keepAlive)
+        public static void HandleResponse(string context, HTTPRequest request, out bool resendRequest, out HTTPConnectionStates proposedConnectionState, ref KeepAliveHeader keepAlive, LoggingContext loggingContext1 = null, LoggingContext loggingContext2 = null, LoggingContext loggingContext3 = null)
         {
             resendRequest = false;
             proposedConnectionState = HTTPConnectionStates.Processing;
@@ -64,8 +67,8 @@ namespace BestHTTP.Connections
             {
 #if !BESTHTTP_DISABLE_COOKIES
                 // Try to store cookies before we do anything else, as we may remove the response deleting the cookies as well.
-                if (request.IsCookiesEnabled && CookieJar.Set(request.Response))
-                    PluginEventHelper.EnqueuePluginEvent(new PluginEventInfo(PluginEvents.SaveCookieLibrary));
+                if (request.IsCookiesEnabled)
+                    CookieJar.Set(request.Response);
 #endif
 
                 switch (request.Response.StatusCode)
@@ -87,9 +90,22 @@ namespace BestHTTP.Connections
                             goto default;
                         }
 
+#if !BESTHTTP_DISABLE_PROXY
+                    case 407:
+                        {
+                            if (request.Proxy == null)
+                                goto default;
+
+                            resendRequest = request.Proxy.SetupRequest(request);
+
+                            goto default;
+                        }
+#endif
+
                     // Redirected
                     case 301: // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.2
                     case 302: // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.3
+                    case 303: // "See Other"
                     case 307: // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.8
                     case 308: // http://tools.ietf.org/html/rfc7238
                         {
@@ -103,12 +119,18 @@ namespace BestHTTP.Connections
                                 Uri redirectUri = ConnectionHelper.GetRedirectUri(request, location);
 
                                 if (HTTPManager.Logger.Level == Logger.Loglevels.All)
-                                    HTTPManager.Logger.Verbose("HTTPConnection", string.Format("[{0}] - Redirected to Location: '{1}' redirectUri: '{1}'", context, location, redirectUri));
+                                    HTTPManager.Logger.Verbose("HTTPConnection", string.Format("[{0}] - Redirected to Location: '{1}' redirectUri: '{1}'", context, location, redirectUri), loggingContext1, loggingContext2, loggingContext3);
+
+                                if (redirectUri == request.CurrentUri)
+                                {
+                                    HTTPManager.Logger.Information("HTTPConnection", string.Format("[{0}] - Redirected to the same location!", context), loggingContext1, loggingContext2, loggingContext3);
+                                    goto default;
+                                }
 
                                 // Let the user to take some control over the redirection
                                 if (!request.CallOnBeforeRedirection(redirectUri))
                                 {
-                                    HTTPManager.Logger.Information("HTTPConnection", string.Format("[{0}] OnBeforeRedirection returned False", context));
+                                    HTTPManager.Logger.Information("HTTPConnection", string.Format("[{0}] OnBeforeRedirection returned False", context), loggingContext1, loggingContext2, loggingContext3);
                                     goto default;
                                 }
 
@@ -120,9 +142,6 @@ namespace BestHTTP.Connections
 
                                 // Set the new Uri, the CurrentUri will return this while the IsRedirected property is true
                                 request.RedirectUri = redirectUri;
-
-                                // Discard the redirect response, we don't need it any more
-                                request.Response = null;
 
                                 request.IsRedirected = true;
 
@@ -139,16 +158,20 @@ namespace BestHTTP.Connections
                         if (request.DisableCache)
                             break;
                         
-                        if (ConnectionHelper.LoadFromCache(context, request))
+                        if (ConnectionHelper.LoadFromCache(context, request, loggingContext1, loggingContext2, loggingContext3))
                         {
-                            HTTPManager.Logger.Verbose("HTTPConnection", string.Format("[{0}] - HandleResponse - Loaded from cache successfully!", context));
+                            request.Timing.Add(TimingEventNames.Loading_From_Cache);
+                            HTTPManager.Logger.Verbose("HTTPConnection", string.Format("[{0}] - HandleResponse - Loaded from cache successfully!", context), loggingContext1, loggingContext2, loggingContext3);
+
+                            // Update any caching value
+                            HTTPCacheService.SetUpCachingValues(request.CurrentUri, request.Response);
                         }
                         else
                         {
-                            HTTPManager.Logger.Verbose("HTTPConnection", string.Format("[{0}] - HandleResponse - Loaded from cache failed!", context));
+                            HTTPManager.Logger.Verbose("HTTPConnection", string.Format("[{0}] - HandleResponse - Loaded from cache failed!", context), loggingContext1, loggingContext2, loggingContext3);
                             resendRequest = true;
                         }
-                        
+
                         break;
 #endif
 
@@ -182,15 +205,28 @@ namespace BestHTTP.Connections
                         }
                     }
                 }
+
+                // Null out the response here instead of the redirected cases (301, 302, 307, 308)
+                //  because response might have a Connection: Close header that we would miss to process.
+                // If Connection: Close is present, the server is closing the connection and we would
+                // reuse that closed connection.
+                if (resendRequest)
+                {
+                    // Discard the redirect response, we don't need it any more
+                    request.Response = null;
+
+                    if (proposedConnectionState == HTTPConnectionStates.Closed)
+                        proposedConnectionState = HTTPConnectionStates.ClosedResendRequest;
+                }
             }
         }
 
 #if !BESTHTTP_DISABLE_CACHING
-        public static bool LoadFromCache(string context, HTTPRequest request)
+        public static bool LoadFromCache(string context, HTTPRequest request, LoggingContext loggingContext1 = null, LoggingContext loggingContext2 = null, LoggingContext loggingContext3 = null)
         {
             if (request.IsRedirected)
             {
-                if (LoadFromCache(context, request, request.RedirectUri))
+                if (LoadFromCache(context, request, request.RedirectUri, loggingContext1, loggingContext2, loggingContext3))
                     return true;
                 else
                 {
@@ -198,22 +234,22 @@ namespace BestHTTP.Connections
                 }
             }
 
-            bool loaded = LoadFromCache(context, request, request.Uri);
+            bool loaded = LoadFromCache(context, request, request.Uri, loggingContext1, loggingContext2, loggingContext3);
             if (!loaded)
                 Caching.HTTPCacheService.DeleteEntity(request.Uri);
 
             return loaded;
         }
 
-        private static bool LoadFromCache(string context, HTTPRequest request, Uri uri)
+        private static bool LoadFromCache(string context, HTTPRequest request, Uri uri, LoggingContext loggingContext1 = null, LoggingContext loggingContext2 = null, LoggingContext loggingContext3 = null)
         {
             if (HTTPManager.Logger.Level == Logger.Loglevels.All)
-                HTTPManager.Logger.Verbose("HTTPConnection", string.Format("[{0}] - LoadFromCache for Uri: {1}", context, uri.ToString()));
+                HTTPManager.Logger.Verbose("HTTPConnection", string.Format("[{0}] - LoadFromCache for Uri: {1}", context, uri.ToString()), loggingContext1, loggingContext2, loggingContext3);
 
             var cacheEntity = HTTPCacheService.GetEntity(uri);
             if (cacheEntity == null)
             {
-                HTTPManager.Logger.Warning("HTTPConnection", string.Format("[{0}] - LoadFromCache for Uri: {1} - Cached entity not found!", context, uri.ToString()));
+                HTTPManager.Logger.Warning("HTTPConnection", string.Format("[{0}] - LoadFromCache for Uri: {1} - Cached entity not found!", context, uri.ToString()), loggingContext1, loggingContext2, loggingContext3);
                 return false;
             }
 
@@ -243,19 +279,16 @@ namespace BestHTTP.Connections
             return true;
         }
 
-        public static bool TryLoadAllFromCache(string context, HTTPRequest request)
+        public static bool TryLoadAllFromCache(string context, HTTPRequest request, LoggingContext loggingContext1 = null, LoggingContext loggingContext2 = null, LoggingContext loggingContext3 = null)
         {
-            if (!HTTPCacheService.IsCachedEntityExpiresInTheFuture(request))
-                return false;
-
-            // We will try read the response from the cache, but if something happens we will fallback to the normal way.
+            // We will try to read the response from the cache, but if something happens we will fallback to the normal way.
             try
             {
                 //Unless specifically constrained by a cache-control (section 14.9) directive, a caching system MAY always store a successful response (see section 13.8) as a cache entity,
                 //  MAY return it without validation if it is fresh, and MAY    return it after successful validation.
                 // MAY return it without validation if it is fresh!
                 if (HTTPManager.Logger.Level == Logger.Loglevels.All)
-                    HTTPManager.Logger.Verbose("ConnectionHelper", string.Format("[{0}] - TryLoadAllFromCache - whole response loading from cache", context));
+                    HTTPManager.Logger.Verbose("ConnectionHelper", string.Format("[{0}] - TryLoadAllFromCache - whole response loading from cache", context), loggingContext1, loggingContext2, loggingContext3);
 
                 request.Response = HTTPCacheService.GetFullResponse(request);
 
@@ -264,6 +297,7 @@ namespace BestHTTP.Connections
             }
             catch
             {
+                HTTPManager.Logger.Verbose("ConnectionHelper", string.Format("[{0}] - TryLoadAllFromCache - failed to load content!", context), loggingContext1, loggingContext2, loggingContext3);
                 HTTPCacheService.DeleteEntity(request.CurrentUri);
             }
 
@@ -283,6 +317,7 @@ namespace BestHTTP.Connections
                     HTTPCacheService.Store(request.Uri, request.MethodType, request.Response);
                 else
                     HTTPCacheService.Store(request.CurrentUri, request.MethodType, request.Response);
+                request.Timing.Add(TimingEventNames.Writing_To_Cache);
 
                 PluginEventHelper.EnqueuePluginEvent(new PluginEventInfo(PluginEvents.SaveCacheLibrary));
             }
@@ -307,10 +342,26 @@ namespace BestHTTP.Connections
 
             if (result == null)
             {
-                var uri = request.Uri;
-                var builder = new UriBuilder(uri.Scheme, uri.Host, uri.Port, location);
-                result = builder.Uri;
+                var baseURL = request.CurrentUri.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
 
+                if (!location.StartsWith("/"))
+                {
+                    var segments = request.CurrentUri.Segments;
+                    segments[segments.Length - 1] = location;
+
+                    location = String.Join(string.Empty, segments);
+                    if (location.StartsWith("//"))
+                        location = location.Substring(1);
+                }
+                
+                bool endsWithSlash = baseURL[baseURL.Length - 1] == '/';
+                bool startsWithSlash = location[0] == '/';
+                if (endsWithSlash && startsWithSlash)
+                    result = new Uri(baseURL + location.Substring(1));
+                else if (!endsWithSlash && !startsWithSlash)
+                    result = new Uri(baseURL + '/' + location);
+                else
+                    result = new Uri(baseURL + location);
             }
 
             return result;

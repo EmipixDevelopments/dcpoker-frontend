@@ -1,8 +1,9 @@
-﻿#if !BESTHTTP_DISABLE_WEBSOCKET
+#if !BESTHTTP_DISABLE_WEBSOCKET
+
+using System;
 
 using BestHTTP.Examples.Helpers;
-using System;
-using System.Collections;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,7 +15,7 @@ namespace BestHTTP.Examples.Websockets
 
         [SerializeField]
         [Tooltip("The WebSocket address to connect")]
-        private string address = "wss://echo.websocket.org";
+        private string address = "wss://besthttpwebgldemo.azurewebsites.net/ws";
 
         [SerializeField]
         private InputField _input;
@@ -66,12 +67,12 @@ namespace BestHTTP.Examples.Websockets
             // Create the WebSocket instance
             this.webSocket = new WebSocket.WebSocket(new Uri(address));
 
-#if !UNITY_WEBGL
+#if !UNITY_WEBGL || UNITY_EDITOR
             this.webSocket.StartPingThread = true;
 
 #if !BESTHTTP_DISABLE_PROXY
             if (HTTPManager.Proxy != null)
-                this.webSocket.InternalRequest.Proxy = new HTTPProxy(HTTPManager.Proxy.Address, HTTPManager.Proxy.Credentials, false);
+                this.webSocket.OnInternalRequestCreated = (ws, internalRequest) => internalRequest.Proxy = new HTTPProxy(HTTPManager.Proxy.Address, HTTPManager.Proxy.Credentials, false);
 #endif
 #endif
 

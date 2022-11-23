@@ -152,11 +152,16 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Cms
 			get { return signedData.Version.IntValueExact; }
 		}
 
-		/**
+        internal IX509Store GetCertificates()
+        {
+            return Helper.GetCertificates(signedData.Certificates);
+		}
+
+        /**
 		* return the collection of signers that are associated with the
 		* signatures for the message.
 		*/
-		public SignerInformationStore GetSignerInfos()
+        public SignerInformationStore GetSignerInfos()
 		{
 			if (signerInfoStore == null)
 			{
@@ -219,7 +224,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Cms
 			string type)
 		{
 			if (certificateStore == null)
-			{
+			{				
 				certificateStore = Helper.CreateCertificateStore(type, signedData.Certificates);
 			}
 
@@ -246,7 +251,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Cms
 			return crlStore;
 		}
 
-		[Obsolete("Use 'SignedContentType' property instead.")]
+
 		public string SignedContentTypeOid
 		{
 			get { return signedData.EncapContentInfo.ContentType.Id; }
@@ -281,6 +286,16 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Cms
 		{
 			return contentInfo.GetEncoded();
 		}
+
+        /**
+         * return the ASN.1 encoded representation of this object using the specified encoding.
+         *
+         * @param encoding the ASN.1 encoding format to use ("BER" or "DER").
+         */
+        public byte[] GetEncoded(string encoding)
+        {
+            return contentInfo.GetEncoded(encoding);
+        }
 
 		/**
 		* Replace the signerinformation store associated with this

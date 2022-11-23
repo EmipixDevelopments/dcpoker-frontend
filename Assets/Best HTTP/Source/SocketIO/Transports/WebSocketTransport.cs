@@ -1,4 +1,4 @@
-﻿#if !BESTHTTP_DISABLE_SOCKETIO
+#if !BESTHTTP_DISABLE_SOCKETIO
 #if !BESTHTTP_DISABLE_WEBSOCKET
 
 using System;
@@ -51,11 +51,18 @@ namespace BestHTTP.SocketIO.Transports
 
             uri = new Uri(string.Format(format,
                                         baseUrl,
-                                        SocketManager.MinProtocolVersion,
+                                        Manager.ProtocolVersion,
                                         Manager.Handshake != null ? Manager.Handshake.Sid : string.Empty,
                                         sendAdditionalQueryParams ? Manager.Options.BuildQueryParams() : string.Empty));
 
             Implementation = new WebSocket(uri);
+
+#if !UNITY_WEBGL || UNITY_EDITOR
+            Implementation.StartPingThread = true;
+
+            if (this.Manager.Options.HTTPRequestCustomizationCallback != null)
+                Implementation.OnInternalRequestCreated = (ws, internalRequest) => this.Manager.Options.HTTPRequestCustomizationCallback(this.Manager, internalRequest);
+#endif
 
             Implementation.OnOpen = OnOpen;
             Implementation.OnMessage = OnMessage;
@@ -167,7 +174,17 @@ namespace BestHTTP.SocketIO.Transports
 
             if (PacketWithAttachment != null)
             {
-                PacketWithAttachment.AddAttachmentFromServer(data, false);
+                switch(this.Manager.Options.ServerVersion)
+                {
+                    case SupportedSocketIOVersions.v2: PacketWithAttachment.AddAttachmentFromServer(data, false); break;
+                    case SupportedSocketIOVersions.v3: PacketWithAttachment.AddAttachmentFromServer(data, true); break;
+                    default:
+                        HTTPManager.Logger.Warning("WebSocketTransport", "Binary packet received while the server's version is Unknown. Set SocketOption's ServerVersion to the correct value to avoid packet mishandling!");
+
+                        // Fall back to V2 by default.
+                        this.Manager.Options.ServerVersion = SupportedSocketIOVersions.v2;
+                        goto case SupportedSocketIOVersions.v2;
+                }
 
                 if (PacketWithAttachment.HasAllAttachment)
                 {
@@ -273,7 +290,10 @@ namespace BestHTTP.SocketIO.Transports
         {
             if (State == TransportStates.Closed ||
                 State == TransportStates.Paused)
+            {
+                HTTPManager.Logger.Information("WebSocketTransport", string.Format("Send - State == {0}, skipping packet sending!", State));
                 return;
+            }
 
             string encoded = packet.Encode();
 

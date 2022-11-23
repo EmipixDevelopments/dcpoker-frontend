@@ -315,7 +315,7 @@ public class PanelForgotPassword : MonoBehaviour
         {
             TMP_Dropdown.OptionData optionData = new TMP_Dropdown.OptionData();
             optionData.text = item.PhoneCode;
-            optionData.image = _flagsOfCountries.GetSpriteByName(item.FlagName);
+//            optionData.image = _flagsOfCountries.GetSpriteByName(item.FlagName);
             dropdown.options.Add(optionData);
         }
         dropdown.options.Add(new TMP_Dropdown.OptionData());

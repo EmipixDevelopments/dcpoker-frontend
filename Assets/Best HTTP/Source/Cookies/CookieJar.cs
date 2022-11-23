@@ -1,5 +1,6 @@
 #if !BESTHTTP_DISABLE_COOKIES
 
+using BestHTTP.Core;
 using BestHTTP.PlatformSupport.FileSystem;
 using System;
 using System.Collections.Generic;
@@ -28,8 +29,12 @@ namespace BestHTTP.Cookies
 
                 try
                 {
+#if UNITY_WEBGL && !UNITY_EDITOR
+                    _isSavingSupported = false;
+#else
                     HTTPManager.IOService.DirectoryExists(HTTPManager.GetRootCacheFolder());
                     _isSavingSupported = true;
+#endif
                 }
                 catch
                 {
@@ -44,7 +49,7 @@ namespace BestHTTP.Cookies
 
                 return _isSavingSupported;
 #else
-                return false;
+                    return false;
 #endif
             }
         }
@@ -114,7 +119,7 @@ namespace BestHTTP.Cookies
 
             foreach (var cookieHeader in setCookieHeaders)
             {
-                Cookie cookie = Cookie.Parse(cookieHeader, response.baseRequest.CurrentUri);
+                Cookie cookie = Cookie.Parse(cookieHeader, response.baseRequest.CurrentUri, response.baseRequest.Context);
                 if (cookie != null)
                 {
                     rwLock.EnterWriteLock();
@@ -160,13 +165,15 @@ namespace BestHTTP.Cookies
 
             response.Cookies = newCookies;
 
+            PluginEventHelper.EnqueuePluginEvent(new PluginEventInfo(PluginEvents.SaveCookieLibrary));
+
             return true;
         }
 
         /// <summary>
         /// Deletes all expired or 'old' cookies, and will keep the sum size of cookies under the given size.
         /// </summary>
-        internal static void Maintain()
+        internal static void Maintain(bool sendEvent)
         {
             // It's not the same as in the rfc:
             //  http://tools.ietf.org/html/rfc6265#section-5.3
@@ -212,6 +219,9 @@ namespace BestHTTP.Cookies
             {
                 rwLock.ExitWriteLock();
             }
+
+            if (sendEvent)
+                PluginEventHelper.EnqueuePluginEvent(new PluginEventInfo(PluginEvents.SaveCookieLibrary));
         }
 
         /// <summary>
@@ -228,7 +238,7 @@ namespace BestHTTP.Cookies
                 return;
 
             // Delete any expired cookie
-            Maintain();
+            Maintain(false);
 
             rwLock.EnterWriteLock();
             try
@@ -289,7 +299,7 @@ namespace BestHTTP.Cookies
                 if (!HTTPManager.IOService.FileExists(LibraryPath))
                     return;
 
-                using (var fs = HTTPManager.IOService.CreateFileStream(LibraryPath, FileStreamModes.Open))
+                using (var fs = HTTPManager.IOService.CreateFileStream(LibraryPath, FileStreamModes.OpenRead))
                 using (var br = new System.IO.BinaryReader(fs))
                 {
                     /*int version = */br.ReadInt32();
@@ -383,6 +393,8 @@ namespace BestHTTP.Cookies
             {
                 rwLock.ExitWriteLock();
             }
+
+            PluginEventHelper.EnqueuePluginEvent(new PluginEventInfo(PluginEvents.SaveCookieLibrary));
         }
 
         public static List<Cookie> GetAll()
@@ -408,6 +420,8 @@ namespace BestHTTP.Cookies
             {
                 rwLock.ExitWriteLock();
             }
+
+            Persist();
         }
 
         /// <summary>
@@ -435,6 +449,8 @@ namespace BestHTTP.Cookies
             {
                 rwLock.ExitWriteLock();
             }
+
+            Persist();
         }
 
         /// <summary>
@@ -462,6 +478,8 @@ namespace BestHTTP.Cookies
             {
                 rwLock.ExitWriteLock();
             }
+
+            Persist();
         }
 
         public static void Remove(Uri uri, string name)
@@ -485,6 +503,8 @@ namespace BestHTTP.Cookies
             {
                 rwLock.ExitWriteLock();
             }
+
+            PluginEventHelper.EnqueuePluginEvent(new PluginEventInfo(PluginEvents.SaveCookieLibrary));
         }
 
 #endregion
