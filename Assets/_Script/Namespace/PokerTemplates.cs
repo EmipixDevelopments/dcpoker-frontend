@@ -68,6 +68,7 @@ public class PlayerLoginResponse
     public string token;
     public string timeZone;
     public int profilePic; // used in server
+    public string profileImage;
     public int winningCount;
     public int winningToken;
     public int winningTotal;
@@ -131,6 +132,7 @@ public class RoomsListing
         public string pokerGameType = "texas";
 
         public string pokerGameFormat = "cash";
+        //public bool isCash;
 
         public string tableNumber = "";
         public string name = "";
@@ -245,6 +247,9 @@ public class PlayerInfoList
         public string absoluteTimeSartTime;
         public PlayerProfile player;
         public WaitForBigBlindData waitForBigBlindData = null;
+
+        public string profileImage;
+        public string flag;
     }
 
     public PlayerSidePot PlayerSidePot = null;
@@ -681,6 +686,7 @@ public class OnTurnTimer
     public string roomId = "";
     public ButtonAction buttonAction;
     public bool isLimitGame = false;
+    public float bankTimer;
 }
 
 [Serializable]
@@ -928,6 +934,136 @@ public class RunItTwiceRoundCompleteResponse
 }
 
 [Serializable]
+public class MessagesDetails
+{
+    public MessagesDetails()
+    {
+        result = new List<Result>();
+    }
+
+    public string status;
+    public List<Result> result;
+    public string message;
+
+    [Serializable]
+    public class Result
+    {
+        public bool read;
+        public string _id;
+        public string message;
+        public UserId userId;
+
+        [Serializable]
+        public class UserId
+        {
+            public string username;
+            public string _id;
+        }
+    }
+}
+
+/* All info MessagesDetails
+ 
+ [Serializable]
+public class MessagesDetails
+{
+    public MessagesDetails()
+    {
+        result = new List<Result>();
+    }
+
+    public string status;
+    public List<Result> result;
+    public string message;
+
+    [Serializable]
+    public class Result
+    {
+
+        public bool read;
+        public string _id;
+        public string message;
+        public UserId userId;
+        public string updatedAt;
+        public string createdAt;
+
+        [Serializable]
+        public class UserId
+        {
+            public UserId()
+            {
+                statistics = new Statistics();
+            }
+            
+            public string appid;
+            public int latitude;
+            public int longitude;
+            public string username;
+            public string firstname;
+            public string lastname;
+            public int profilePic;
+            public bool isFb;
+            public int profilePicId;
+            public string fbProfileUrl;
+            public string email;
+            public string password;
+            public int mobile;
+            public string gender;
+            public string activationCode;
+            public string status;
+            public string sessionId;
+            public string socketId;
+            public int rating;
+            public bool isBot;
+            public int cash;
+            public bool isCash;
+            public string agentName;
+            public string isLatest;
+            public string platform_os;
+            public string accountNumber;
+            public string HTMLToken;
+            public string loginToken;
+            public string identifiertoken;
+            public bool isSuperPlayer;
+            public bool muck;
+            public bool deleted;
+            public string _id;
+            public string device_id;
+            public string uniqId;
+            public int chips;
+            public Statistics statistics;
+            public string updatedAt;
+            public string createdAt;
+            public string fcmId;
+            
+            [Serializable]
+            public class Statistics
+            {
+                public Statistics()
+                {
+                    cashgame = new Info();
+                    sng = new Info();
+                    tournament = new Info();
+                }
+                public Info cashgame;
+                public Info sng;
+                public Info tournament;
+            
+                [Serializable]
+                public class Info
+                {
+                    public int noOfPlayedGames;
+                    public int totalWonGame;
+                    public int totalLoseGame;
+                }
+            }
+        }
+    }
+}
+ */
+
+
+[Serializable]
 public class NormalTournamentDetails
 {
     public NormalTournamentDetails()
@@ -957,14 +1093,9 @@ public class NormalTournamentDetails
         public string tournamentStartTime;
         public int timerDisplayWhen;
         public string displayDateTime;
-<<<<<<< Updated upstream
-        public bool   isJoinable = false;
-        public bool   isFreeRoll = false;
-=======
         public bool isJoinable = false;
         public bool isFreeRoll = false;
         public string colorOfCapture = "";
->>>>>>> Stashed changes
 
         public bool Compare(NormalTournamentData data)
         {
@@ -985,6 +1116,7 @@ public class NormalTournamentDetails
             if (displayDateTime != data.displayDateTime) answer = false;
             if (isJoinable != data.isJoinable) answer = false;
             if (isFreeRoll != data.isFreeRoll) answer = false;
+            if (colorOfCapture != data.colorOfCapture) answer = false;
             return answer;
         }
     }
@@ -1061,6 +1193,9 @@ public class getTournamentInfoData
     public bool allowRebuy = false;
     public int remainRebuySec = 0;
     public long rebuyAmount;
+    internal int lateRegistrationLevel;
+    internal int bindLevelRizeTime;
+    public string blindTime;
 }
 
 [Serializable]
@@ -1703,8 +1838,6 @@ public class TableBalanceNoticeResp
 public class AuthTokenFromJSON
 {
     public string authToken = "";
-<<<<<<< Updated upstream
-=======
 }
 
 [Serializable]
@@ -1749,5 +1882,4 @@ public class StatusMessageStandard<T>
     public List<T> result;
     public string message;
     public int statusCode;
->>>>>>> Stashed changes
 }

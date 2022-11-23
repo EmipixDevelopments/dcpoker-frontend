@@ -61,6 +61,8 @@ public class BetPanel : MonoBehaviour
     public GameObject raisePanel;
     #endregion
 
+    private GamePanel _gamePanel;
+
     #region UNITY_CALLBACKS
 
     void OnEnable()
@@ -117,8 +119,9 @@ public class BetPanel : MonoBehaviour
     }
     public void ResetButtons()
     {
-
+        
     }
+    
     public void SetButtonsCheck(bool IsOpen)
     {
         //		raiseSliderMinusButton.interactable = IsOpen;
@@ -147,7 +150,7 @@ public class BetPanel : MonoBehaviour
     {
         SetButtonsCheck(false);
         UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.SocketGameManager.SendPlayerAction(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId, 0, PokerPlayerAction.Fold, false, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.SendPlayerAction(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId, 0, PokerPlayerAction.Fold, false, _gamePanel.GetBankTimer(), (socket, packet, args) =>
         {
             Debug.Log("SendPlayerAction  : " + packet.ToString());
 
@@ -174,7 +177,7 @@ public class BetPanel : MonoBehaviour
     {
         SetButtonsCheck(false);
         UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.SocketGameManager.SendPlayerAction(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId, CallAmount, PokerPlayerAction.Call, false, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.SendPlayerAction(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId, CallAmount, PokerPlayerAction.Call, false, _gamePanel.GetBankTimer(), (socket, packet, args) =>
         {
             Debug.Log("SendPlayerAction  : " + packet.ToString());
             JSONArray arr = new JSONArray(packet.ToString());
@@ -200,7 +203,7 @@ public class BetPanel : MonoBehaviour
     {
         SetButtonsCheck(false);
         UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.SocketGameManager.SendPlayerAction(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId, 0, PokerPlayerAction.Check, false, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.SendPlayerAction(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId, 0, PokerPlayerAction.Check, false, _gamePanel.GetBankTimer(), (socket, packet, args) =>
         {
             //			Debug.Log ("SendPlayerAction  : " + packet.ToString ());
             JSONArray arr = new JSONArray(packet.ToString());
@@ -230,7 +233,7 @@ public class BetPanel : MonoBehaviour
 
         SetButtonsCheck(false);
         UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.SocketGameManager.SendPlayerAction(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId, raiseAmount, PokerPlayerAction.Bet, true, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.SendPlayerAction(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId, raiseAmount, PokerPlayerAction.Bet, true, _gamePanel.GetBankTimer(), (socket, packet, args) =>
         {
             Debug.Log("SendPlayerAction  : " + packet.ToString());
             JSONArray arr = new JSONArray(packet.ToString());
@@ -262,7 +265,7 @@ public class BetPanel : MonoBehaviour
 
         SetButtonsCheck(false);
         UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.SocketGameManager.SendPlayerAction(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId, betAmount, PokerPlayerAction.Bet, true, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.SendPlayerAction(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId, betAmount, PokerPlayerAction.Bet, true, _gamePanel.GetBankTimer(), (socket, packet, args) =>
         {
             Debug.Log("SendPlayerAction  : " + packet.ToString());
             JSONArray arr = new JSONArray(packet.ToString());
@@ -285,7 +288,7 @@ public class BetPanel : MonoBehaviour
         double AllinAmountVal = AllinAmount;
         SetButtonsCheck(false);
         UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.SocketGameManager.SendPlayerAction(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId, AllinAmountVal, PokerPlayerAction.Allin, false, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.SendPlayerAction(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId, AllinAmountVal, PokerPlayerAction.Allin, false, _gamePanel.GetBankTimer(), (socket, packet, args) =>
         {
             Debug.Log("SendPlayerAction  : " + packet.ToString());
             JSONArray arr = new JSONArray(packet.ToString());
@@ -817,4 +820,9 @@ public class BetPanel : MonoBehaviour
         }
     }
     #endregion
+
+    public void Init(GamePanel gamePanel)
+    {
+        _gamePanel = gamePanel;
+    }
 }

@@ -28,6 +28,8 @@ public class PlayerPerTableFilter : MonoBehaviour
         Save();
     }
 
+    public bool IsAllOn() => _allToggle.isOn;
+
     #region Save/Load
     private void Save()
     {

@@ -12,13 +12,16 @@ public class TableElement : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _byInText;
     [SerializeField] private TextMeshProUGUI _typeText;
     [SerializeField] private Button _button;
+    [SerializeField] private TextMeshProUGUI _waitingText;
 
     private RoomsListing.Room _data;
+    private PopupConfirmCashData _popupConfirmCashData;
 
     private void Start()
     {
         _button.onClick.RemoveAllListeners();
         _button.onClick.AddListener(OnGameButtonTap);
+        _popupConfirmCashData = new PopupConfirmCashData();
     }
 
     public RoomsListing.Room GetData() { return _data; }
@@ -31,6 +34,8 @@ public class TableElement : MonoBehaviour
         _blindsText.text = CheckStringData(data.stake);
         _byInText.text = CheckStringData($"{data.minBuyIn}");
         _typeText.text = CheckStringData(data.type);
+        
+        UpdateButton();
     }
     private string CheckStringData(string text)
     {
@@ -41,24 +46,57 @@ public class TableElement : MonoBehaviour
         return text;
     }
 
+    private void UpdateButton()
+    {
+        ResetButton();
+        if (_data.playerCount < _data.maxPlayers)
+        {
+            _button.gameObject.SetActive(true);
+            return;
+        }
+        _waitingText.gameObject.SetActive(true);
+    }
+
+    private void ResetButton()
+    {
+        _button.gameObject.SetActive(false);
+        _waitingText.gameObject.SetActive(false);
+    }
+
     // copypast from TableData.cs
     public void OnGameButtonTap()
     {
+        var uiManager = UIManager.Instance;
+        
+        if(!uiManager.PopupDepositeOrClose.Open(_data.minBuyIn))
+            return;
+
         UIManager.Instance.SoundManager.OnButtonClick();
         if (UIManager.Instance.tableManager.playingTableList.Count == UIManager.Instance.tableManager.maxTableLimit && !UIManager.Instance.tableManager.playingTableList.Contains(_data.roomId))
         {
             UIManager.Instance.DisplayMessagePanel("You can not join more than " + UIManager.Instance.tableManager.maxTableLimit + "tables at the same time.");
             return;
         }
-        else if (_data.isPasswordProtected == true && !UIManager.Instance.tableManager.playingTableList.Contains(_data.roomId))
+        if (_data.isPasswordProtected == true && !UIManager.Instance.tableManager.playingTableList.Contains(_data.roomId))
         {
             TableData tableData = new TableData();
             tableData.OnlySetDataNotView(_data);
             UIManager.Instance.PrivateTablePasswordPopup.OpenTablePasswordPopup(tableData);
             return;
         }
+        
+        if(!uiManager.PopupDepositeOrClose.Open(_data.minBuyIn))
+            return;
 
         OnViewGameTap();
+        /*
+        _popupConfirmCashData.ConfirmAction = OnViewGameTap;
+        _popupConfirmCashData.BuyIn = _data.minBuyIn;
+
+        UIManager.Instance.PopupConfirmTournament.OpenPopup(_popupConfirmCashData);
+        */
+        
+        
     }
     // copypast from TableData.cs
     public void OnViewGameTap()

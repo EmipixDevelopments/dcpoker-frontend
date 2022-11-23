@@ -2,20 +2,26 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PanelTournaments : MonoBehaviour
 {
     [SerializeField] private TournamentTableFilterPanel _tournamentTableFilter;
     [Space]
     [SerializeField] private TournamentTableElement _tournamentTablePrefab;
-    [SerializeField] private Transform _content;
+    [SerializeField] private RectTransform _content;
+
+    private TableContainer<TournamentTableElement> _tableContainer;
+    private int _delayUpdateTableSeconds = 5;
+    private int _oldTableContainerAmount;
+    private Coroutine _updateTableListCoroutine;
     
-    private int _updatePanelAfterSecconds = 8;
-    private List<TournamentTableElement> _tableElements = new List<TournamentTableElement>();
 
     private void Start()
     {
+        _tableContainer = new TableContainer<TournamentTableElement>(_content, _tournamentTablePrefab, element => element.Init(this));
         _tournamentTableFilter.FilterChanged = OnEnable;
     }
     private void OnDestroy()
@@ -25,29 +31,24 @@ public class PanelTournaments : MonoBehaviour
 
     private void OnEnable()
     {
-        StopAllCoroutines();
-        StartCoroutine(UpdateAtTime());
+        _updateTableListCoroutine = StartCoroutine(UpdateTableList());
     }
 
-    IEnumerator UpdateAtTime() 
+    private void OnDisable()
+    {
+        StopCoroutine(_updateTableListCoroutine);
+    }
+
+    private IEnumerator UpdateTableList()
     {
         while (true)
         {
             UpdateTable();
-            yield return new WaitForSeconds(_updatePanelAfterSecconds);
+            yield return new WaitForSeconds(_delayUpdateTableSeconds);
         }
     }
 
-    private void RemoveAllRow()
-    {
-        for (int i = 0; i < _content.childCount; i++)
-        {
-            Destroy(_content.GetChild(i).gameObject);
-        }
-        _tableElements.Clear();
-    }
-
-    private void UpdateTable()
+    public void UpdateTable()
     {
         if (UIManager.Instance)
         {
@@ -75,9 +76,10 @@ public class PanelTournaments : MonoBehaviour
     private void OnRegularTableListReceived(Socket socket, BestHTTP.SocketIO.Packet packet, params object[] args)
     {
         Debug.Log("OnRegularTableListReceived : " + packet.ToString());
-
+        
         JSONArray arr = new JSONArray(packet.ToString());
         string Source = arr.getString(arr.length() - 1);
+        
         NormalTournamentDetails touramentsDetail = JsonUtility.FromJson<NormalTournamentDetails>(Source);
 
         if (!touramentsDetail.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
@@ -87,33 +89,30 @@ public class PanelTournaments : MonoBehaviour
         }
 
         List<NormalTournamentDetails.NormalTournamentData> tableData = touramentsDetail.result;
-        // used filter
+        
+        // use filter
         tableData = _tournamentTableFilter.UseFilter(tableData);
 
         if (tableData != null)
         {
-            // if the number of rows in the table has not changed, update them
-            if (_tableElements.Count == tableData.Count)
+            for (var i = 0; i < tableData.Count; i++)
             {
-                for (int i = 0; i < tableData.Count; i++)
-                {
-                    var rowTableData = tableData[i];
-                    _tableElements[i].UpdateValue(rowTableData);
-                }
+                _tableContainer.GetElement(i).SetData(tableData[i]);
             }
-            else // remove all rows and create new rows
+            _tableContainer.HideFromIndex(tableData.Count);
+
+            if (_oldTableContainerAmount != tableData.Count)
             {
-                RemoveAllRow();
-                // create new row
-                foreach (var item in tableData)
-                {
-                    TournamentTableElement row = Instantiate(_tournamentTablePrefab, _content);
-                    row.Init(item);
-                    _tableElements.Add(row);
-                }
-                // update all UI
-                UIManager.Instance.LobbyPanelNew.UpdatePanel();
+                UpdateUi();
+                _oldTableContainerAmount = tableData.Count;
             }
         }
+    }
+    
+    private void UpdateUi()
+    {
+        //LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
+        LayoutRebuilder.MarkLayoutForRebuild(_content);
+        UIManager.Instance.LobbyPanelNew.UpdateUi();
     }
 }

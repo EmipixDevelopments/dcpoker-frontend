@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
-
 
 public class MainHomePageScreen : MonoBehaviour
 {
-<<<<<<< Updated upstream
-    [SerializeField] private ToggleImage _soundToggle;
-=======
     [SerializeField] private TMP_Text textAppVersion;
     [SerializeField] private Background _background;
     [SerializeField] private ToggleImageNormal _soundToggle;
->>>>>>> Stashed changes
     [SerializeField] private FreeTournamentTable _tournamentTable;
     [SerializeField] private HomePageTournamentTable _texasHoldemTable;
     [SerializeField] private HomePageTournamentTable _omahaOrPLO5Table;
@@ -31,22 +24,15 @@ public class MainHomePageScreen : MonoBehaviour
     public GameObject PanelHowToPlay;
 
     public GameObject PanelAbout;
-<<<<<<< Updated upstream
-    public GameObject PanelSupport;
-=======
 
     //public GameObject PanelSupport;
->>>>>>> Stashed changes
     public GameObject PanelTermsOfService;
     public GameObject PanelPrivacyPolicy;
     public GameObject PanelResponsibleGaming;
 
     void OnEnable()
     {
-<<<<<<< Updated upstream
-=======
         Debug.unityLogger.logEnabled = true; //test
->>>>>>> Stashed changes
         //SelectedOptionButtonTap(0);
         Reset();
 #if UNITY_EDITOR || UNITY_ANDROID || UNITY_IOS || UNITY_IPHONE
@@ -61,12 +47,8 @@ public class MainHomePageScreen : MonoBehaviour
             PlayerPrefs.SetInt("gameRules", 1);
         }
 #endif
+        _soundToggle.AddListener(OnToogleSoundChange);
     }
-<<<<<<< Updated upstream
-    void Start() 
-    {
-=======
->>>>>>> Stashed changes
 
     void Start()
     {
@@ -173,10 +155,6 @@ public class MainHomePageScreen : MonoBehaviour
         textAppVersion.text = "v" + Application.version;
     }
 
-<<<<<<< Updated upstream
-
-
-=======
     private void OnToogleSoundChange(bool active)
     {
         var uiManager = UIManager.Instance;
@@ -185,7 +163,6 @@ public class MainHomePageScreen : MonoBehaviour
             uiManager.SoundManager.SetSoundActive(active);
         ;
     }
->>>>>>> Stashed changes
 
 
     //public void SelectedOptionButtonTap(int SelectedOption)
@@ -215,7 +192,7 @@ public class MainHomePageScreen : MonoBehaviour
         ForgotPasswordScreen.gameObject.SetActive(false);
         PanelHowToPlay.gameObject.SetActive(false);
         PanelAbout.gameObject.SetActive(false);
-        PanelSupport.gameObject.SetActive(false);
+        //PanelSupport.gameObject.SetActive(false);
         PanelTermsOfService.gameObject.SetActive(false);
         PanelPrivacyPolicy.gameObject.SetActive(false);
         PanelResponsibleGaming.gameObject.SetActive(false);
@@ -227,11 +204,6 @@ public class MainHomePageScreen : MonoBehaviour
     // PanelTopButtons
     public void OnClickMacauGoldLogo()
     {
-<<<<<<< Updated upstream
-        UIManager.Instance.SoundManager.OnButtonClick();
-        CloseAllWindow();
-        PanelTournamentUnlogin.SetActive(true);
-=======
         OnClickloginButton();
         Reset();
         _background.SetActiveBackgroundPanel(false);
@@ -239,12 +211,12 @@ public class MainHomePageScreen : MonoBehaviour
         //UIManager.Instance.SoundManager.OnButtonClick();
         //CloseAllWindow();
         //PanelTournamentUnlogin.SetActive(true);
->>>>>>> Stashed changes
     }
 
     public void OnClickHowToPlayButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
+        _background.SetActiveBackgroundPanel(true);
         CloseAllWindow();
         PanelHowToPlay.SetActive(true);
     }
@@ -252,15 +224,14 @@ public class MainHomePageScreen : MonoBehaviour
     public void OnClickAboutButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
+        _background.SetActiveBackgroundPanel(true);
         CloseAllWindow();
         PanelAbout.SetActive(true);
     }
 
     public void OnClickSupportButton()
     {
-        UIManager.Instance.SoundManager.OnButtonClick();
-        CloseAllWindow();
-        PanelSupport.SetActive(true);
+        OnClickloginButton();
         //UIManager.Instance.SoundManager.OnButtonClick();
         //Utility.Instance.OpenLink("https://support.macau-gold.com");
     }
@@ -273,15 +244,12 @@ public class MainHomePageScreen : MonoBehaviour
     public void OnClickBanner()
     {
         //StartCoroutine(GetBannerUrl("https://httpbin.org/ip"));
-        Utility.Instance.OpenLink("https://google.com");
+        //Utility.Instance.OpenLink("https://google.com");
+        OnClickloginButton();
     }
-<<<<<<< Updated upstream
-    IEnumerator GetBannerUrl(string url) 
-=======
 
     //Old
     IEnumerator GetBannerUrl(string url)
->>>>>>> Stashed changes
     {
         UnityWebRequest infoRequest = UnityWebRequest.Get(url);
         yield return infoRequest.SendWebRequest();
@@ -330,7 +298,7 @@ public class MainHomePageScreen : MonoBehaviour
     public void OnClickloginButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
-        Reset();
+        //Reset();
         LoginScreen.Open();
     }
 
@@ -364,11 +332,8 @@ public class MainHomePageScreen : MonoBehaviour
     public void OnClickTermsOfServiceButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
-<<<<<<< Updated upstream
-=======
         _background.SetActiveBackgroundPanel(true);
 
->>>>>>> Stashed changes
         CloseAllWindow();
         PanelTermsOfService.SetActive(true);
     }
@@ -376,6 +341,8 @@ public class MainHomePageScreen : MonoBehaviour
     public void OnClickPrivacyPolicyButton()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
+        _background.SetActiveBackgroundPanel(true);
+
         CloseAllWindow();
         PanelPrivacyPolicy.SetActive(true);
     }
@@ -383,6 +350,8 @@ public class MainHomePageScreen : MonoBehaviour
     public void OnClickResponsibleGaming()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
+        _background.SetActiveBackgroundPanel(true);
+
         CloseAllWindow();
         PanelResponsibleGaming.SetActive(true);
     }
@@ -392,6 +361,7 @@ public class MainHomePageScreen : MonoBehaviour
     void OnDisable()
     {
         SelectedGames = 0;
+        _soundToggle.RemoveListener(OnToogleSoundChange);
     }
 
 

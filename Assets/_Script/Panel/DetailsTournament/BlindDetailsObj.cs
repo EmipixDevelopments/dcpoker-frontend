@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
+
 
 public class BlindDetailsObj : MonoBehaviour
 {
@@ -13,11 +12,11 @@ public class BlindDetailsObj : MonoBehaviour
 
 
 
-    [Header("Images")]
-    public Image BarMain;
+    //[Header("Images")]
+    //public Image BarMain;
 
-    [Header("Colors")]
-    public Sprite[] Colors;
+    //[Header("Colors")]
+    //public Sprite[] Colors;
 
 
     //	[Header("InputField")] 
@@ -80,14 +79,14 @@ public class BlindDetailsObj : MonoBehaviour
         Rank.text = Data.index.ToString();
         Blinds.text = Data.blinds.ToString();
         Duration.text = Data.duaration.ToString();
-        if (i % 2 == 0)
+        /*if (i % 2 == 0)
         {
             BarMain.sprite = Colors[0];
         }
         else
         {
             BarMain.sprite = Colors[1];
-        }
+        }*/
         this.Open();
 
     }

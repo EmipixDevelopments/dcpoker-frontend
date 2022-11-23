@@ -258,7 +258,13 @@ public class PhoneCodeAndFlagListData
         List.Add(new CodeAndFlag() { PhoneCode = "+996", FlagName = "kyrgyzstan" });//Kyrgyzstan
         List.Add(new CodeAndFlag() { PhoneCode = "+998", FlagName = "uzbekistan" });//Uzbekistan
     }
+
+    public string FindFlagByPhoneCode(string code)
+    {
+        return List.Find(codeAndFlag => codeAndFlag.PhoneCode == code)?.FlagName;
+    }
 }
+
 
 [Serializable]
 public class CodeAndFlag

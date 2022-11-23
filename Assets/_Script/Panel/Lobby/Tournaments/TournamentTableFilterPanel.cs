@@ -33,6 +33,11 @@ public class TournamentTableFilterPanel : MonoBehaviour
 
     public List<NormalTournamentDetails.NormalTournamentData> UseFilter(List<NormalTournamentDetails.NormalTournamentData> tournamentData)
     {
+        if (_gameFilter.IsAllOn() && _priceFilter.IsAllOn() && _playerPerTableFilter.IsAllOn())
+        {
+            return tournamentData;
+        }
+        
         List<NormalTournamentDetails.NormalTournamentData> answer = new List<NormalTournamentDetails.NormalTournamentData>();
 
         //--- Game GameType filter ---//

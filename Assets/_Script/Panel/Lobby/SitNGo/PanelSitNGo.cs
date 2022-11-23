@@ -1,22 +1,28 @@
-﻿using BestHTTP.SocketIO;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
+using BestHTTP.SocketIO;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PanelSitNGo : MonoBehaviour
 {
     [SerializeField] private SitNGoTableFilterPanel _sitNGoTableFilter;
     [Space]
     [SerializeField] private SitNGoTableElement _sitNGoTablePrefab;
-    [SerializeField] private Transform _content;
+    [SerializeField] private RectTransform _content;
+    
+    private TableContainer<SitNGoTableElement> _tableContainer;
+    private int _delayUpdateTableSeconds = 5;
+    private int _oldTableContainerAmount;
 
-    private int _updatePanelAfterSecconds = 8;
-    private List<SitNGoTableElement> _tableElements = new List<SitNGoTableElement>();
+    private Coroutine _updateTablesCoroutine;
 
     private void Start()
     {
-        _sitNGoTableFilter.FilterChanged = OnEnable;
+        _sitNGoTableFilter.FilterChanged = UpdateTable;
+        _tableContainer = new TableContainer<SitNGoTableElement>( _content, _sitNGoTablePrefab, element => element.Init(this));
     }
+    
     private void OnDestroy()
     {
         _sitNGoTableFilter.FilterChanged = null;
@@ -24,28 +30,24 @@ public class PanelSitNGo : MonoBehaviour
 
     private void OnEnable()
     {
-        StopAllCoroutines();
-        StartCoroutine(UpdateAtTime());
+        _updateTablesCoroutine = StartCoroutine(UpdateTablesEnumerator());
     }
 
-    IEnumerator UpdateAtTime()
+    private void OnDisable()
+    {
+        StopCoroutine(_updateTablesCoroutine);
+    }
+
+    private IEnumerator UpdateTablesEnumerator()
     {
         while (true)
         {
             UpdateTable();
-            yield return new WaitForSeconds(_updatePanelAfterSecconds);
+            yield return new WaitForSeconds(_delayUpdateTableSeconds);
         }
     }
 
-    private void RemoveAllRow()
-    {
-        for (int i = 0; i < _content.childCount; i++)
-        {
-            Destroy(_content.GetChild(i).gameObject);
-        }
-        _tableElements.Clear();
-    }
-    private void UpdateTable()
+    public void UpdateTable()
     {
         if (UIManager.Instance)
         {
@@ -55,7 +57,7 @@ public class PanelSitNGo : MonoBehaviour
             string tournamentPokerType = "all";
             GameSpeed selectedGameSpeed = UIManager.Instance.selectedGameSpeed;
             bool isLimitSelected = false;
-            string gametype = "sng"; //"Touranment";
+            string gametype = "all"; //"Touranment";
             string selectedLimitType = "all";
             string selectedStack = "all";
             string selectedPlayerPerTable = "all";
@@ -85,38 +87,34 @@ public class PanelSitNGo : MonoBehaviour
             return;
         }
 
-        List<TournamentRoomObject.TournamentRoom> tableData = roomsResp.result;
+        var tableData = roomsResp.result;
 
         if (tableData != null)
         {
-            // used filter
+            // use filter
             tableData = _sitNGoTableFilter.UseFilter(tableData);
 
             if (tableData != null)
             {
-                // if the number of rows in the table has not changed, update them
-                if (_tableElements.Count == tableData.Count)
+                for (var i = 0; i < tableData.Count; i++)
                 {
-                    for (int i = 0; i < tableData.Count; i++)
-                    {
-                        var rowTableData = tableData[i];
-                       _tableElements[i].UpdateValue(rowTableData);
-                    }
+                    _tableContainer.GetElement(i).SetData(tableData[i]);
                 }
-                else // remove all rows and create new rows
+                _tableContainer.HideFromIndex(tableData.Count);
+
+                if (_oldTableContainerAmount != tableData.Count)
                 {
-                    RemoveAllRow();
-                    // create new row
-                    foreach (var item in tableData)
-                    {
-                        SitNGoTableElement row = Instantiate(_sitNGoTablePrefab, _content);
-                         row.Init(item);
-                        _tableElements.Add(row);
-                    }
-                    // update all UI
-                    UIManager.Instance.LobbyPanelNew.UpdatePanel();
+                    UpdateUi();
+                    _oldTableContainerAmount = tableData.Count;
                 }
             }
         }
+    }
+
+    private void UpdateUi()
+    {
+        //LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
+        LayoutRebuilder.MarkLayoutForRebuild(_content);
+        UIManager.Instance.LobbyPanelNew.UpdateUi();
     }
 }

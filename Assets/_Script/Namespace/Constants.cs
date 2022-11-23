@@ -1,10 +1,4 @@
-<<<<<<< Updated upstream
-﻿
-using UnityEngine;
-using System.Collections;
-=======
 ﻿using UnityEngine;
->>>>>>> Stashed changes
 
 namespace Constants
 {
@@ -312,14 +306,11 @@ namespace Constants
         public const string PokerPlayerStatusLeft = "Left";
     }
 
-<<<<<<< Updated upstream
-=======
     public class PokerStatus
     {
         public static string RunningStatus = "Running";
     }
 
->>>>>>> Stashed changes
     /// <summary>
     /// Poker events
     /// </summary>
@@ -406,14 +397,10 @@ namespace Constants
         public const string PrivateRoomLogin = "PrivateRoomLogin";
 
         public const string UpdateIsCash = "updateIsCash";
-<<<<<<< Updated upstream
-        public const string СontactUs = "contactUs";
-=======
         //public const string СontactUs = "contactUs";
 
         //public const string sendPlayerProfileImage = "sendPlayerProfileImage";
         //public const string getPlayerProfileImage = "getPlayerProfileImage";
->>>>>>> Stashed changes
 
         public const string DeletePlayerSendCode = "deletePlayerSendCode";
         public const string DeletePlayerConfirmCode = "deletePlayerConfirmCode";
@@ -470,13 +457,10 @@ namespace Constants
         public const string ShowCardResult = "ShowCardResult";
         public const string WaitForBigBlind = "WaitForBigBlind";
         public const string GamePopupNotification = "GamePopupNotification";
-<<<<<<< Updated upstream
-=======
 
         public const string SendContactUs = "sendContactUs";
         public const string ContactUs = "contactUs";
         public const string ReadContactUs = "readContactUs";
->>>>>>> Stashed changes
 
         public const string RoundStarted = "NewRoundStarted";
         public const string GameStarted = "GameStarted";
@@ -571,11 +555,10 @@ namespace Constants
         public static string InGamePlayerGameHistory = "InGamePlayerGameHistory";
         public static string clubTablesResult = "clubTablesResult";
         public static string TournamentLeaderboard = "TournamentLeaderboard";
-    }
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
+        public static string Transactions = "transactions";
+    }
+
 
     /// <summary>
     /// keys for save/load data
@@ -696,13 +679,14 @@ public enum SERVER
 
 public enum GameType
 {
-    cash,
+    cash, // what is it cash?
     sng,
     Touranment,
     texas,
     omaha,
     PLO5
 }
+
 public enum PreBet
 {
     Check,
@@ -754,9 +738,4 @@ public enum TournamentGameType
     reg,
     sng,
     PLO5
-}
-
-public enum BannerType
-{
-    tournament
 }

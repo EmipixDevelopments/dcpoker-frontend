@@ -84,9 +84,9 @@ public class PanelContactSupportPopup : MonoBehaviour
     {
         //Debug.Log($"Sent to report: {_messageInputFieldPanel1.text}");
         //ChanheState(State.Panel2);
-        UIManager.Instance.SocketGameManager.СontactUs(_messageInputFieldPanel1.text, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.SendContactUs(_messageInputFieldPanel1.text, (socket, packet, args) =>
         {
-            Debug.Log("СontactUs  => " + packet.ToString());
+            Debug.Log("SendContactUs  => " + packet.ToString());
 
             UIManager.Instance.HideLoader();
             JSONArray arr = new JSONArray(packet.ToString());

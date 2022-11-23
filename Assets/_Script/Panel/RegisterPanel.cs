@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,15 +25,22 @@ public class RegisterPanel : MonoBehaviour
 
     private PhoneCodeAndFlagListData _phoneAndCodeList = new PhoneCodeAndFlagListData();
 
+    private void Start()
+    {
+        _phoneAndCodeList.InitializeUsingSettings();
+
+        AddOptionToDropdown(_phoneAndCodeList);
+    }
+
     void OnEnable()
     {
         ResetAllInputFields();
 
-        _phoneAndCodeList.InitializeUsingSettings();
+        //_phoneAndCodeList.InitializeUsingSettings();
         // or download JSON online
         //string url = "https://drive.google.com/uc?export=download&id=1Qs9VTpx-n8IT2FpXI_jhIJwomLbsuo_P";
         //StartCoroutine(GetData(url));
-        AddOptionToDropdown(_phoneAndCodeList);
+        //AddOptionToDropdown(_phoneAndCodeList);
 
         _otherUserNamePanel.OnSelectName = SelectOtherName;
     }
@@ -118,6 +126,9 @@ public class RegisterPanel : MonoBehaviour
         string repeatPassword = _repeatPassword.text;
         string phoneCode = _phoneCode.options[_phoneCode.value].text;
 
+        var flagName = _phoneAndCodeList.FindFlagByPhoneCode(phoneCode);
+        string flag = flagName ?? "";
+        Debug.LogError(flag);
         string fullymobylePhone = phoneCode + phoneNumber;
         fullymobylePhone = fullymobylePhone.Replace("+", "");
         fullymobylePhone = fullymobylePhone.Replace("-", "");
@@ -129,7 +140,7 @@ public class RegisterPanel : MonoBehaviour
             {
                 UIManager.Instance.DisplayLoader("");
 
-                UIManager.Instance.SocketGameManager.RegisterPlayer(username, password, fullymobylePhone, "", (socket, packet, args) =>
+                UIManager.Instance.SocketGameManager.RegisterPlayer(username, password, fullymobylePhone, flag, "", (socket, packet, args) =>
                 {
                     Debug.Log("RegisterPlayer  => " + packet.ToString());
 

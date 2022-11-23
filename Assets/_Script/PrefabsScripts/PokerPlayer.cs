@@ -8,6 +8,11 @@ using BestHTTP.SocketIO;
 public class PokerPlayer : MonoBehaviour
 {
 
+    [SerializeField] private GameObject _avatarMaskGameObject;
+    [SerializeField] private Image _profileImage;
+    [SerializeField] private Image ProfilePic;
+    [SerializeField] private Image _flag;
+    //[SerializeField] private FlagsOfCountries _flagsOfCountries;
     #region PUBLIC_VARIABLES
 
     [Header("Boolean")]
@@ -42,12 +47,11 @@ public class PokerPlayer : MonoBehaviour
     public PokerPlayerBetValue Bets;
     public ContentSizeFitter contentSizeFitter;
     [Header("Images")]
-    public Image ProfilePic;
     public Image TurnPlayer;
     public Image Dealer;
     public Image twiceIcon;
     public Image StraddleIcon;
-    public Image DetailObj;
+    //public Image DetailObj;
     public Sprite[] DetailObjsSprites;
     [Header("Text")]
     public TextMeshProUGUI txtUsername;
@@ -65,9 +69,9 @@ public class PokerPlayer : MonoBehaviour
 
     [Header("Chat")]
     public GameObject chatBubble;
-    public GameObject AllinObj;
-    public GameObject FoldObj;
-    public GameObject RaiseObj;
+    [SerializeField] private GameObject AllinObj;
+    [SerializeField] private GameObject FoldObj;
+    [SerializeField] private GameObject RaiseObj;
     public CanvasGroup chatCanvasGroup;
     public Text txtChatMessage;
     #endregion
@@ -85,6 +89,49 @@ public class PokerPlayer : MonoBehaviour
     public float maxTimer;
     public float timer;
     #endregion
+
+    public Image GetProfilePicImage() => ProfilePic;
+
+    /*public void SetImage(string url)
+    {
+        Debug.LogError("SetImage");
+        UIManager.Instance._avatarUrlSpriteContainer.GetUrlSprite(url, sprite => _profileImage.sprite = sprite);
+
+        _avatarMaskGameObject.SetActive(true);
+        ProfilePic.gameObject.SetActive(false);
+    }*/
+
+    public void SetFlag(Sprite flag)
+    {
+        if(_flag == null)
+            return;
+
+        _flag.sprite = flag;
+    }
+
+    /*public void SetAvatar(int avatarId)
+    {
+        ProfilePic.sprite = UIManager.Instance.assetOfGame.profileAvatarList.profileAvatarSprite[avatarId];
+        
+        _avatarMaskGameObject.SetActive(false);
+        ProfilePic.gameObject.SetActive(true);
+    }*/
+
+    public void SetAvatar(Sprite sprite)
+    {
+        ProfilePic.sprite = sprite;
+        
+        _avatarMaskGameObject.SetActive(false);
+        ProfilePic.gameObject.SetActive(true);
+    }
+    
+    public void SetImage(Sprite sprite)
+    {
+        _profileImage.sprite = sprite;
+
+        _avatarMaskGameObject.SetActive(true);
+        ProfilePic.gameObject.SetActive(false);
+    }
 
     #region UNITY_CALLBACKS
 
@@ -442,19 +489,34 @@ public class PokerPlayer : MonoBehaviour
     // public void AllInAnimation()
     public void AllInAnimation()
     {
-        AllinObj.SetActive(true);
+        //AllinObj.SetActive(true);
+        OpenAllInAnimation();
         Invoke("CloseAllInAnimation", 2f);
     }
 
     public void FoldObjAnimation()
     {
-        FoldObj.SetActive(true);
+        //FoldObj.SetActive(true);
+        OpenFoldAnimation();
         Invoke("CloseFoldAnimation", 2f);
     }
     public void RaiseAnimation()
     {
-        RaiseObj.SetActive(true);
+        //RaiseObj.SetActive(true);
+        OpenRaiseAnimation();
         Invoke("CloseRaiseAnimation", 2f);
+    }
+
+    public void ResetObjAnimation()
+    {
+        if (AllinObj.activeSelf)
+        {
+            AllinObj.SetActive(false);
+        }
+        if (FoldObj.activeSelf)
+        {
+            FoldObj.SetActive(false);
+        }
     }
 
     public void CloseAllHiddenCards()
@@ -835,19 +897,41 @@ public class PokerPlayer : MonoBehaviour
         txtUsername.Open();
         Winner.CloseAnimation();
     }
+    
     public void CloseFoldAnimation()
     {
+        txtUsername.gameObject.SetActive(true);
         FoldObj.SetActive(false);
     }
     public void CloseAllInAnimation()
     {
+        txtUsername.gameObject.SetActive(true);
         AllinObj.SetActive(false);
     }
 
     public void CloseRaiseAnimation()
     {
+        txtUsername.gameObject.SetActive(true);
         RaiseObj.SetActive(false);
     }
+    
+    public void OpenFoldAnimation()
+    {
+        txtUsername.gameObject.SetActive(false);
+        FoldObj.SetActive(true);
+    }
+    public void OpenAllInAnimation()
+    {
+        txtUsername.gameObject.SetActive(false);
+        AllinObj.SetActive(true);
+    }
+
+    public void OpenRaiseAnimation()
+    {
+        txtUsername.gameObject.SetActive(false);
+        RaiseObj.SetActive(true);
+    }
+    
     void ResetData()
     {
         cards = new List<string>();

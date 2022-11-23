@@ -8,6 +8,7 @@ using BestHTTP.SocketIO.Events;
 using UnityEngine.Events;
 using System;
 using BestHTTP;
+using IngameDebugConsole;
 using UnityEngine.Networking;
 
 public class UIManager : MonoBehaviour
@@ -34,7 +35,7 @@ public class UIManager : MonoBehaviour
     public WebGLAffiliatePanel webGLAffiliatePanel;
     public LobbyPanel LobbyScreeen; // not need used
     public LobbyPanelNew LobbyPanelNew;
-    public DetailsTournament DetailsTournament;
+    public DetailsTournamentNew DetailsTournament;
     public GamePanel GameScreeen;
     public TournamentWinnerPanel TournamentWinnerPanel;
     public HistoryPanel historyPanel;
@@ -59,6 +60,12 @@ public class UIManager : MonoBehaviour
     public PanelContactSupportPopup PanelContactSupportPopup;
     public PrivateTablePasswordPopup PrivateTablePasswordPopup;
     public PanelTransferToOtherPlayerPopup PanelTransferToOtherPlayerPopup;
+    public PanelMessageContactSupport PanelMessageContactSupport;
+    public PopupConfirmTournament PopupConfirmTournament;
+    public PopupDepositeOrClose PopupDepositeOrClose;
+
+    public UrlSpriteContainer _avatarUrlSpriteContainer;
+    public UrlSprite _avatarUrlSprite;
 
     [Header("Public Variables")] public bool isLogAllEnabled = false;
     public bool IsMultipleTableAllowed;
@@ -109,6 +116,10 @@ public class UIManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        _avatarUrlSpriteContainer = new UrlSpriteContainer(36);
+        _avatarUrlSprite = new UrlSprite();
+        GameScreeen.Init();
+
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Application.runInBackground = true;
         //print("width =>" + Screen.width);
@@ -824,16 +835,13 @@ public class UIManager : MonoBehaviour
         set
         {
             _profilePic = value;
-
-<<<<<<< Updated upstream
             assetOfGame.SavedLoginData.SelectedAvatar = _profilePic;
-=======
+
             if (_profilePic == -1)
             {
                 return;
             }
 
->>>>>>> Stashed changes
             LobbyScreeen.ProfileScreen.PanelMyAccount.ProfilePanel.PlayerProfile.sprite = assetOfGame.profileAvatarList.profileAvatarSprite[_profilePic];
             LobbyScreeen.profilePicLeft.sprite = assetOfGame.profileAvatarList.profileAvatarSprite[_profilePic];
         }

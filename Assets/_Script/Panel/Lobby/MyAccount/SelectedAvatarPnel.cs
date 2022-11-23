@@ -88,7 +88,7 @@ public class SelectedAvatarPnel : MonoBehaviour
     public void SelectButtonTap()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.SocketGameManager.GetplayerProfilePic(selectedAvatar, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.GetplayerProfilePic(selectedAvatar,null, (socket, packet, args) =>
         {
 
             Debug.Log("GetplayerProfilePic  : " + packet.ToString());

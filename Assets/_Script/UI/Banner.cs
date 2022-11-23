@@ -12,10 +12,15 @@ public class Banner : MonoBehaviour
     [SerializeField] private Image _image;
     [SerializeField] private Button _button;
     [Space]
-    [SerializeField] private BannerType _bannerType;
+    [SerializeField] private string _bannerPosition;
     
     private Action _onButtonClick;
     private BannerDataRequest.BannerData _bannerData;
+
+    private Texture2D _bannerTexture;
+    private Sprite _bannerSprite;
+    private bool _lock;
+    private string _url;
 
     private void Start()
     {
@@ -44,33 +49,54 @@ public class Banner : MonoBehaviour
 
     private void UpdateBanner()
     {
-        UIManager.Instance.SocketGameManager.Banner(_bannerType.ToString(), (socket, packet, args) =>
+        if(_lock)
+            return;
+        
+        UIManager.Instance.SocketGameManager.Banner(_bannerPosition.ToString(), (socket, packet, args) =>
         {
             print("Banners: " + packet.ToString());
             JSONArray arr = new JSONArray(packet.ToString());
             var resp = arr.getString(arr.length() - 1);
             BannerDataRequest bannerDataRequest = JsonUtility.FromJson<BannerDataRequest>(resp);
             _bannerData = bannerDataRequest.result;
- 
-            if (_bannerData.position == "tournament") TournamentBannerLogic(_bannerData);
- 
-            string url = PokerAPI.BaseUrl + _bannerData.image;
-            StartCoroutine(DownloadAndShowImage(url));
+
+            // The banner type feature has been removed. All banners open the tournament
+            //if (_bannerData.position == "tournament") TournamentBannerLogic(_bannerData);
+            TournamentBannerLogic(_bannerData);
+
+            var url = PokerAPI.BaseUrl + _bannerData.image;
+            
+            if(_url != url)
+                StartCoroutine(DownloadAndShowImage(url));
         });
     }
 
     IEnumerator DownloadAndShowImage(string mediaUrl)
     {
+        _lock = true;
+
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(mediaUrl);
+        
         yield return request.SendWebRequest();
         if (request.isNetworkError || request.isHttpError)
             Debug.Log(request.error);
         else
         {
-            Texture2D tex = ((DownloadHandlerTexture)request.downloadHandler).texture;
-            Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(tex.width / 2, tex.height / 2));
-            _image.overrideSprite = sprite;
+            if (_bannerTexture != null)
+            {
+                Destroy(_bannerTexture);
+                Destroy(_bannerSprite); 
+            }
+            
+            _bannerTexture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+            _bannerSprite = Sprite.Create(_bannerTexture, new Rect(0, 0, _bannerTexture.width, _bannerTexture.height), new Vector2(_bannerTexture.width / 2, _bannerTexture.height / 2));
+            _image.overrideSprite = _bannerSprite;
         }
+
+        request.Abort();
+        _url = mediaUrl;
+        _lock = false;
+        
     }
 
     #region Tournament Banner Logic
@@ -118,7 +144,6 @@ public class Banner : MonoBehaviour
             if (tournament.tournamentId == _bannerData.tournamentId)
             {
                 UIManager.Instance.SoundManager.OnButtonClick();
-                UIManager.Instance.DetailsTournament.TournamentDetailsId = _bannerData.tournamentId;
                 UIManager.Instance.DetailsTournament.GetDetailsTournamentButtonTap(_bannerData.tournamentId, tournament.pokerGameType);
             }
         }

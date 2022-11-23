@@ -16,7 +16,7 @@ public class WinnerPlayer : MonoBehaviour {
 	[Header ("Images")]
 	public Image Stars;
 	public Image Round;
-	public Image rectangleSurface;
+	//public Image rectangleSurface;
 	[Header ("Animators")]
 	public Animator WinAnimation;
 
@@ -53,7 +53,7 @@ public class WinnerPlayer : MonoBehaviour {
 	{
 		WinAnimation.StopPlayback ();
 		WinAnimation.enabled = false;
-		rectangleSurface.Close ();
+		//rectangleSurface.Close ();
 		Round.Close ();
 		Stars.Close ();
 		this.gameObject.GetComponent<RectTransform> ().localScale = new Vector3 (1f, 1f, 1f);
@@ -63,7 +63,7 @@ public class WinnerPlayer : MonoBehaviour {
 	{
 		if (IsOn) {
 			WinAnimation.enabled = IsOn;
-			rectangleSurface.Open();
+			//rectangleSurface.Open();
 			Round.Close ();
 			Stars.Close ();
 			WinAnimation.Play ("Image-Winner-Animation");

@@ -19,13 +19,13 @@ public class PayOutDetailsObj : MonoBehaviour
 
 	[Header ("DropDowns")]*/
 
-
+    /*
     [Header("Images")]
     public Image BarMain;
 
     [Header("Colors")]
     public Sprite[] Colors;
-
+*/
 
     //	[Header("InputField")] 
 
@@ -86,14 +86,14 @@ public class PayOutDetailsObj : MonoBehaviour
         this.Datavalue = Data;
         Rank.text = Data.position.ToString();
         Amount.text = Data.amount.ToString();
-        if (i % 2 == 0)
+        /*if (i % 2 == 0)
         {
             BarMain.sprite = Colors[0];
         }
         else
         {
             BarMain.sprite = Colors[1];
-        }
+        }*/
         this.Open();
 
     }

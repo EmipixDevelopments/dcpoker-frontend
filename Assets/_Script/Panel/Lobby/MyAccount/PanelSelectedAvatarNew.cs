@@ -18,7 +18,13 @@ public class PanelSelectedAvatarNew : MonoBehaviour
     {
         if (UIManager.Instance)
         {
-            _avatarId = UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar;
+            var profilePic = UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar;
+            if (profilePic == -1)
+            {
+                //Debug.LogError("Need to add profile image implementation");
+                profilePic = 0;
+            }
+            _avatarId = profilePic;
         }
         _avatarToggles[_avatarId].isOn = true;
     }
@@ -37,7 +43,7 @@ public class PanelSelectedAvatarNew : MonoBehaviour
     public void OnClickSelectButton() 
     {
         UIManager.Instance.SoundManager.OnButtonClick();
-        UIManager.Instance.SocketGameManager.GetplayerProfilePic(_avatarId, (socket, packet, args) =>
+        UIManager.Instance.SocketGameManager.GetplayerProfilePic(_avatarId, null, (socket, packet, args) =>
         {
             Debug.Log("GetplayerProfilePic  : " + packet.ToString());
 

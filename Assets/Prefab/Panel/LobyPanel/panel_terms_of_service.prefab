@@ -1,0 +1,629 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6552290171730169065
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6552290171730169064}
+  - component: {fileID: 6552290171730169067}
+  - component: {fileID: 2463677500904377894}
+  m_Layer: 5
+  m_Name: panel_terms_of_service
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6552290171730169064
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6552290171730169065}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6547741133788550869}
+  - {fileID: 3409887455520565286}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 949.0499, y: -3958}
+  m_SizeDelta: {x: 1898, y: 7450}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &6552290171730169067
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6552290171730169065}
+  m_CullTransparentMesh: 0
+--- !u!114 &2463677500904377894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6552290171730169065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 7450
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
+--- !u!1001 &3338023250951213856
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 6552290171730169064}
+    m_Modifications:
+    - target: {fileID: 5428961556799149578, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_Name
+      value: info_text
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_text
+      value: Terms Of Service
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_margin.x
+      value: 66
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_margin.y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 126
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1041d1785ac014454b7d5e39f52e2db3, type: 3}
+--- !u!224 &6547741133788550869 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8398427878544311797, guid: 1041d1785ac014454b7d5e39f52e2db3,
+    type: 3}
+  m_PrefabInstance: {fileID: 3338023250951213856}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6620132279303941587
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 6552290171730169064}
+    m_Modifications:
+    - target: {fileID: 5428961556799149578, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_Name
+      value: text_white_monserat_26
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: df7d6e736329944ba9793975d9fcb5d1,
+        type: 2}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_text
+      value: "<b>Terms & Conditions<b>\nBy accessin Macau-gold (\"Platform\") you
+        are hereby indicating your agreement to be bound by these Terms and Conditions.
+        If you do not agree to be bound by these Terms and Conditions, we request
+        that you disconnect from the Platform immediately and refrain from any further
+        use. Aside from these Terms and Conditions we also publish a Privacy Policy
+        at put here link to privacy policy. We encourage all users to read it to understand
+        how personal information may be processed by the Platform or us.\nThe Platform
+        is owned and operated by kicker enthronement , a company registered in zambia
+        with company registration number 120210022701. For any questions, please contact
+        us at: put here link to support.\nDefinitions\n\u201CAccount\u201D means an
+        account you create when you access the Services.\n\u201CCommunity Rules\u201D
+        means the rules of conduct that govern your interaction with our Services
+        and other players, which can be found here.\n\u201CFeature Terms\u201D means
+        any other rules related to specific services, like platforms and APIs, applications
+        for mobile devices, forums, contests, subscriptions or loyalty programs that
+        we may publish, which apply to your use of those specific services and state
+        they are part of these Terms.\n\u201CServices\u201D means our games, products,
+        services, content, website located on https://macau-gold.com/ , and/or other
+        domains or websites operated by Company.\n\u201CTerms of Service\u201D or
+        \u201CTerms\u201D means these terms of service including all Community Rules
+        and Feature Terms.\n\u201CUser Content\u201D means all the data that you upload,
+        transmit, create, or generate on or through the Services. This includes things
+        like your profile picture, your in-game text or video chat, and your in-game
+        art or other content authored or designed by you.\n\u201CVirtual Items\u201D
+        or \u201CPlay Money\u201D means (a) virtual currency, including without limitation
+        virtual coins, cash, tokens, or points, all for use in the Services and (b)
+        virtual in-game items.\n\u201Cmacau gold \u201D means \u201Cmacau gold \u201Dsubsidiaries,
+        joint ventures, and other corporate entities controlled by Company and their
+        agents, consultants, employees, officers, and directors and any of their third-party
+        content providers, distributors, licensees, or licensors.\n\t\u2022\tDescription
+        of Services\n\u201Cmacau gold \u201D (also referred to in these terms as \"we\"
+        or \"us\" or \u201CCompany\u201D) hereby provides each User (also referred
+        to in these terms as \u201Cyou\u201D or \u201CUser\u201D) with access to the
+        Platform under the Terms and Conditions herein. Access to the Platform is
+        free. Some other services provided by us may not be free. In such event, \u201Cmacau
+        gold \u201D will inform user before engaging such other services that they
+        are not free and make sure that it is clear what the charges are.\nTo access
+        our Platform or create an Account with us, you may need an account with a
+        social network, like Facebook, and, if you are using our mobile Services,
+        an account with the company that provides your mobile applications, like an
+        Apple iTunes account. You may need to update third-party software from time
+        to time to receive the Services and use the Platform.\nWe provide the games
+        and other Services. You provide the equipment (computer, phone, tablet, etc.)
+        and pay any fees to connect to the Internet and app stores, and for data or
+        cellular usage to download and use the Services.\n\t\u2022\tAccess to Services\nYou
+        may not use our Services if:\nYou are not legally competent or eligible to
+        enter into a binding contract with Company.\nYou are under 21 years old or
+        (i) under the age at which you can give valid consent or be bound by legal
+        agreement in your jurisdiction; or (ii) under the age at which you can give
+        valid consent to processing of your personal information under applicable
+        data privacy laws in your jurisdiction.\nYou are a convicted sex offender.\nYou
+        have previously been banned from playing any online gambling game or using
+        any similar Service, unless the entity enforcing the ban has reversed that
+        ban, in its sole discretion.\nIf you reside in one of the following countries:
+        Austria, Belgium, Brunei, Bulgaria, Cambodia, Croatia, Cyprus, Denmark, Estonia,
+        Finland, France, Georgia, Germany, Italy, Japan, North Korea, Oman, Panama,
+        Poland, Qatar, Romania, Singapore, Spain, Sri Lanka, United Kingdom, United
+        States, American Samoa, Anguilla, Bermuda, British Virgin Islands, Cayman
+        Islands, Falkland Islands, Gibraltar, Guam, Guernsey, Isle of Man, Jersey,
+        Montserrat, Northern Mariana Islands, Pitcairn Islands, Saint Helena, Ascension
+        and Tristan Da Cunha, Turks and Caicos Islands, United States Virgin Islands.\nYou
+        may stop using our Services and request that we delete your Account at any
+        time. You may also contact us at Customer Support to request deletion of your
+        Account. Unless applicable law requires otherwise, we are not required to
+        provide refunds, benefits, or other compensation if you request deletion of
+        your Account.\nService Changes and Limitations:\nOur Services are evolving,
+        and we may require that you accept or acknowledge updates to the Services
+        as well as to the Terms and Conditions herein, our Privacy Policy, or any
+        other applicable policy. From time to time, we may make you update the app
+        or the software in order for you to be able to continue to use our Services
+        and Platform. You hereby grant us irrevocable permission to perform these
+        updates automatically or remotely, without notifying you, at our sole discretion.
+        \nCompany reserves the right to stop offering or supporting the Services or
+        a particular service on the Platform or any part therein, at any time either
+        permanently or temporarily, at which point your right to use the Services
+        or Platform or any part of them will be automatically terminated or suspended.
+        \nCompany makes no promise or representations that Services will be uninterrupted
+        or error free.\nYour access to the Service may be occasionally restricted
+        to allow for repairs, maintenance or the introduction of new facilities or
+        services. Company will attempt to restore the Service as soon as it reasonably
+        can.\nThe Service is provided on an \"as is\" and \"as available\" basis.
+        We are not responsible to you for any error, omission, interruption, defect,
+        delay in operation or transmission or other failure to provide the Service
+        which results from a reason beyond our control.\nCOMPANY MAY, LIMIT, SUSPEND,
+        TERMINATE, MODIFY, OR DELETE ACCOUNTS OR ACCESS TO THE SERVICES OR ANY PORTION
+        THEREIN, AS WELL AS PROHIBIT ACCESS TO ANYONE TO OUR PLATFORM, AND ITS CONTENT,
+        SERVICES, AND TOOLS AND DELAY OR REMOVE USER CONTENT, AT ITS SOLE DISCRETION,
+        AND SHALL HAVE NO OBLIGATION TO COMPENSATE YOU FOR ANY LOSSES OR RESULTS INCURRED
+        AS RESULT OF SUCH LIMITATION, SUSPENSION OR TERMINATION HEREIN.\nAny attempt
+        by User to disrupt or interfere with the Services or Platform, including without
+        limitation undermining or manipulating the legitimate operation of any of
+        their functions, is a breach of these Terms and Conditions and Company\u2019s
+        Community Rules and may constitute a breach or violation of criminal and civil
+        laws, resulting in legal action by Company. \nLimited License\nThe Services
+        and Platform include various works that are owned or licensed by \u201Cmacau
+        gold \u201D Entities, and they are protected by copyright, trademark, trade
+        dress, patent, and other worldwide intellectual property rights and other
+        applicable laws, rules, or regulations. All such rights are reserved. These
+        Terms and Conditions do not grant you, and shall not be construed to grant
+        you, or any other party (including anyone on user\u2019s behalf) any right,
+        title, or interest in the Services or Platform or in any content therein.\nSubject
+        to the Terms and Conditions herein (including all Community Rules and Feature
+        Terms), User may use the Services for their own personal, non-commercial,
+        entertainment purposes only. Company shall have no liability to user or anyone
+        on its behalf or any third party for any damage or loss arising from any unauthorized
+        uses.\nRegardless of any other statement in these Terms and Conditions, you
+        do not own any Account that you create on our Platform, and your Account is
+        not your property. Likewise, you do not own any Virtual Items that you obtained
+        through our Services, regardless of whether you \u201Cearned\u201D those Virtual
+        Items or \u201Cpurchased\u201D them. Company is not liable for any loss (full
+        or partial) or damage to any Virtual Items or earnings not yet converted into
+        real currency. \nUser Content:\nIf you post, publish, transmit, or upload
+        User Content on the Services, you agree that it will be:\naccurate;\nnot confidential;\nnot
+        in violation of law;\nnot in violation of contractual restrictions or other
+        parties\u2019 rights, and that you have permission to use the User Content
+        from any other party whose personal or other information or intellectual property
+        is contained within the User Content;\nfree of viruses, adware, spyware, worms,
+        or other malicious code;\nin compliance with our Community Rules.\nAny User
+        Content that you post, publish, or transmit will be considered non-proprietary
+        and non-confidential. You retain all of your ownership rights in your User
+        Content, however, to the extent allowed by applicable laws, you give Company
+        a perpetual and irrevocable (other than as provided below), worldwide, royalty
+        free, non-exclusive, license to use, reproduce, distribute, prepare derivative
+        works of, display, and perform your User Content and any modified and derivative
+        works thereof in connection with the Services, including in marketing and
+        promotions. To the extent allowed by applicable laws, you waive any moral
+        rights you may have in any User Content (like the right to be identified as
+        the author of the User Content or the right to object to a certain use of
+        that User Content).\nWithout derogating from the above, Company has the right
+        to remove any User Content if, at its sole opinion, it does not comply with
+        the Terms of Use or the Community Rules, or any applicable rule or regulation.
+        We also have the right to disclose your identity to any third party, including
+        government entities and authorities, who is claiming that any of User Content
+        constitutes a breach or law or an infringement of their intellectual property
+        rights or their right to privacy. \nIf user request deletion of his User Content,
+        Company will take reasonable steps to remove the User Content from active
+        use. However, User Content may persist in our systems, including in back-up
+        copies. We may also retain copies of User Content if we reasonably believe
+        it is legally required.\nCOMPANY IS NOT RESPONSIBLE FOR ANY OTHER PERSON\u2019S
+        USE OR APPROPRIATION OF ANY CONTENT OR INFORMATION USER POST, PUBLISH, OR
+        TRANSMIT.\nMonitoring Use and User Content\nCompany has no obligation to monitor
+        the Services for inappropriate or illegal User Content or the conduct of other
+        players, and we take no responsibility for such conduct. We also are not responsible
+        for information, materials, products, or services provided by other players
+        (for instance, in their profiles) and User Content is not approved by us.
+        By using our Services, you understand that you may be exposed to conduct that
+        you might find offensive or otherwise objectionable. We do not endorse any
+        User Content posted on the Services, and nor do we guarantee its truthfulness
+        or accuracy. However, if someone is violating these Terms or misusing the
+        Services, please let us know by sending an email to macaugold2022@gmail.com\n\L\nWe
+        reserve the right, at our sole discretion, to monitor, record, or store your
+        interactions with the Services or other player when you are using the Services,
+        in accordance with applicable privacy law. If we determine that your communications
+        or User Content violate these Terms, Feature Terms, or Community Rules, we
+        have the right, at our sole discretion and without notice, to disable your
+        ability to post User Content or to communicate with other players, or we may
+        terminate your access to the Services entirely.\nYou hereby release Company
+        and all its Affiliates from responsibility, claims, demands, and/or damages
+        (actual or consequential) of every kind and nature, whether known or unknown,
+        resulting from that dispute or connected to any dispute between users of the
+        Platform. This includes damages for loss of profits, goodwill, use, or data.
+        \nPayment\nPlay Money or Virtual Items is a virtual currency used in games
+        and as the buy-ins for tournaments which award play money as a prize. You
+        can convert Play money or Virtual items for real world money through payment
+        methods detailed in the Platform. \nWhen you make a purchase on our platform,
+        the payment page will let you know what payment methods you can use to pay
+        when you make your purchase. The price of the product will be the price indicated
+        on the order page when you place your order. When your purchase is complete,
+        we may send you a confirmation email that will have details of the items you
+        have ordered. Please check that the details in the confirmation message are
+        correct as soon as possible and keep a copy of it for your records. \nPlay
+        Money can be also be awarded based on successful completion of special offers
+        or promotions at Company\u2019s sole discretion. These awards are dependent
+        on successful completion of said offers, as defined by the company or affiliate
+        providing the offer or promotion.\nYou agree that the purchase of virtual
+        currency is the purchase of a limited license and that you have no property
+        interest in the virtual currency or virtual items.\nAny conduct relating to
+        Play Money and Virtual Items deemed unethical by Company may result in the
+        applicable player(s) accounts being terminated and further access to Platform
+        being suspended permanently with no obligation to users.\nALL SALES ARE FINAL:
+        YOU ACKNOWLEDGE THAT COMPANY IS NOT REQUIRED TO PROVIDE A REFUND FOR ANY REASON,
+        AND THAT YOU WILL NOT RECEIVE MONEY OR OTHER COMPENSATION FOR UNUSED VIRTUAL
+        ITEMS WHEN AN ACCOUNT IS CLOSED, WHETHER SUCH CLOSURE WAS VOLUNTARY OR INVOLUNTARY,
+        OR WHETHER YOU MADE A PAYMENT THROUGH ANY OTHER SITES OR PLATFORMS WHERE WE
+        OFFER OUR SERVICES.\nPURCHASES TO ACQUIRE A LIMITED LICENSE AND RIGHT TO USE
+        VIRTUAL ITEMS ARE NON-REFUNDABLE TO THE FULLEST EXTENT ALLOWED BY LAW.\nYou
+        agree to pay all fees and applicable taxes incurred by you or anyone using
+        an Account registered to you, including all transaction fees required for
+        the conversion of Virtual Items to real world currency or vice versa. \nSubscriptions
+        are also subject to our additional Subscription Terms.\nFor billing support,
+        please contact us through Customer Support put link to support . For non-billing
+        customer assistance, you must contact us through Customer Support.\nLinks
+        to Other Web Sites and Third Party Advertising\nThe Site may contain links
+        to other web sites which are not under the control of and are not maintained
+        by us. These links are provided for your convenience only. and we are not
+        responsible for the contents or security of those sites.\nWe are not responsible
+        for any third-party website that we link to in our Services, and such a link
+        does not mean we endorse or approve that linked site or any information you
+        obtain from it. We are not liable for any claim relating to any content, goods,
+        and/or services of third parties.\nPlease also note that the linked third-party
+        sites are not under our control and may collect data or ask you to provide
+        them with personal or other information, or they may automatically collect
+        information from you. When you use these third-party sites and services, the
+        third-party company may (or may not) ask you for permission to access your
+        information and content. We are not responsible for these other companies\u2019
+        content, business practices, or privacy policies, or for how they collect,
+        use, or share the information they get from you.\nWe shall not be responsible
+        for any loss or damage suffered by you as a result of using the links provided
+        on our Site.\nLiability\nWe will not be liable for your loss of profits, wasted
+        expenditure, corruption or destruction of data or any other loss which does
+        not directly result from something we have done wrong on purpose, even if
+        we are aware of the possibility of such damage arising.\nOut total liability
+        to you (including where we have been negligent) shall be limited to the amount
+        of one hundred pounds sterling. This limit shall not apply to our liability
+        for death or personal injury caused by our negligence, which shall be unlimited.\nCompany
+        expressly disclaims any and all warranties, including without limitation,
+        any warranties as to the availability, accuracy, or content of information,
+        products, or services, or any terms, conditions or warranties of quality,
+        merchantability or fitness of the content on the Site for a particular purpose.\nArbitration
+        \nBefore bringing a formal legal case, you must send written notice to put
+        link to support, in order to give Company the opportunity to resolve the dispute
+        with you informally through negotiation. If Company has a dispute with you,
+        Company will provide notice to the address and/or email address it has on
+        file for you, if any. You and Company agree to negotiate the dispute in good
+        faith for no less than 30 days after notice of the dispute is provided. If
+        the dispute is not resolved within 30 days after receipt of notice of the
+        dispute, Company or you may pursue the claim in arbitration as provided in
+        this section. You and Company each agree that a dispute cannot be submitted
+        to arbitration unless and until the party submitting the dispute to arbitration
+        has complied, to the extent feasible, with the requirements of this paragraph.\nBy
+        voluntarily accepting these Terms, you, and Company and anyone on both parties
+        behalf, all agree to the fullest extent permitted by law to resolve any claims
+        arising out of, relating to, or in connection with the Terms, Feature Terms,
+        Community Rules, your relationship with us, or Company\u2019s Services, through
+        final and binding arbitration. This applies to all claims, and also applies
+        even after you stop using your account or delete it. \nIf any party brings
+        a claim in court that should be arbitrated, or any party refuses to arbitrate
+        a claim that should be arbitrated, any other party can ask a court to force
+        the parties to go to arbitration to resolve the claim (i.e., compel arbitration).
+        Any party may also ask a court to halt a court proceeding (i.e., stay the
+        court proceedings) while an arbitration proceeding is ongoing.\nBy voluntarily
+        accepting these Terms, parties all agree that the parties can only bring a
+        claim against each other on an individual basis and neither parties can bring
+        a claim as a plaintiff or class member in a class action, consolidated action,
+        or representative action, or otherwise seek to recover losses incurred by
+        a third party.\nThis section shall survive termination of these Terms.\nGeneral\nIf
+        any of these Terms and Conditions are determined by any competent authority
+        to be invalid, unlawful or unenforceable to any extent, such term, condition
+        or provision will to that extent, be severed from the remaining terms, conditions
+        and provisions which shall continue to be valid to the fullest extent permitted
+        by law.\nThese Terms and Conditions are governed by and construed in accordance
+        with English law. The Courts of England shall have exclusive jurisdiction
+        over any disputes arising out of these Terms\nCompany reserves the right to
+        modify these Terms and Conditions at any time by the posting of modified Terms
+        and Conditions on this website.\n\n"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_margin.x
+      value: 76
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_margin.y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_margin.z
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_fontColorGradient.bottomRight.r
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_fontColorGradient.bottomRight.g
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382760213726978002, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_fontColorGradient.bottomRight.b
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -126
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 7132
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 010e9abd2c6394852bdcc16a48dc7932, type: 3}
+--- !u!224 &3409887455520565286 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8398427878544311797, guid: 010e9abd2c6394852bdcc16a48dc7932,
+    type: 3}
+  m_PrefabInstance: {fileID: 6620132279303941587}
+  m_PrefabAsset: {fileID: 0}

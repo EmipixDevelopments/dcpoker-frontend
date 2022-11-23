@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http;
 using UnityEngine;
 using BestHTTP.SocketIO;
 using BestHTTP.SocketIO.Events;
@@ -151,7 +153,7 @@ public class SocketGamemanager : MonoBehaviour
     /// <param name="username">Username.</param>
     /// <param name="password">Password.</param>
     /// <param name="action">Action.</param>
-    public void RegisterPlayer(string username, string password, string mobile, string refferralcode, SocketIOAckCallback action)
+    public void RegisterPlayer(string username, string password, string mobile, string flag, string refferralcode, SocketIOAckCallback action)
     {
         if (!HasInternetConnection())
             return;
@@ -160,14 +162,9 @@ public class SocketGamemanager : MonoBehaviour
         //jsonObj.put ("name", name);
         jsonObj.put("username", username);
         jsonObj.put("password", password);
-<<<<<<< Updated upstream
-        jsonObj.put("mobile", mobile);
-        jsonObj.put("refferralCode", refferralcode); // not used
-=======
 //        jsonObj.put("mobile", mobile);
 //        jsonObj.put("flag", flag);
 //        jsonObj.put("refferralCode", refferralcode); // not used
->>>>>>> Stashed changes
         jsonObj.put("deviceId", SystemInfo.deviceUniqueIdentifier.ToString());
         jsonObj.put("os", Utility.Instance.GetOSName());
         jsonObj.put("appVersion", Utility.Instance.GetApplicationVersion());
@@ -266,7 +263,7 @@ public class SocketGamemanager : MonoBehaviour
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.SearchLobby, action, Json.Decode(jsonObj.toString()));
     }
 
-    public void СontactUs(string message, SocketIOAckCallback action)
+    public void SendContactUs(string message, SocketIOAckCallback action)
     {
         JSON_Object jsonObj = new JSON_Object();
         jsonObj.put("message", message);
@@ -275,10 +272,6 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
         jsonObj.put("productName", Application.productName);
 
-<<<<<<< Updated upstream
-        print(Constants.PokerEvents.СontactUs + " - " + jsonObj.toString());
-        Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.СontactUs, action, Json.Decode(jsonObj.toString()));
-=======
         print(Constants.PokerEvents.SendContactUs + " - " + jsonObj.toString());
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.SendContactUs, action, Json.Decode(jsonObj.toString()));
     }
@@ -306,7 +299,6 @@ public class SocketGamemanager : MonoBehaviour
 
         print(Constants.PokerEvents.ReadContactUs + " - " + jsonObj.toString());
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.ReadContactUs, action, Json.Decode(jsonObj.toString()));
->>>>>>> Stashed changes
     }
 
     /// <summary>
@@ -1081,12 +1073,14 @@ public class SocketGamemanager : MonoBehaviour
     /// </summary>
     /// <param name="playerId">Player iD.</param>
     /// <param name="profilePic">profilePic iD.</param>
+    /// <param name="profileImage">profile Image.</param>
     /// <param name="action">Action.</param>
-    public void GetplayerProfilePic(int profilePicId, SocketIOAckCallback action)
+    public void GetplayerProfilePic(int profilePicId, string profileImageBase64, SocketIOAckCallback action)
     {
         JSON_Object jsonObj = new JSON_Object();
         jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
         jsonObj.put("profilePic", profilePicId);
+        jsonObj.put("profileImage", profileImageBase64 ?? "null");
         jsonObj.put("authToken", UIManager.Instance.tokenHack());
         jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
         jsonObj.put("productName", Application.productName);
@@ -1094,6 +1088,7 @@ public class SocketGamemanager : MonoBehaviour
 
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.playerProfilePic, action, Json.Decode(jsonObj.toString()));
     }
+
     /// <summary>
     /// newsBlog.
     /// </summary>
@@ -1252,7 +1247,7 @@ public class SocketGamemanager : MonoBehaviour
     /// <param name="playerAction">Player action.</param>
     /// <param name="hasRaised">If set to <c>true</c> has raised.</param>
     /// <param name="action">Action.</param>
-    public void SendPlayerAction(string playerId, double betAmount, PokerPlayerAction playerAction, bool hasRaised, SocketIOAckCallback action)
+    public void SendPlayerAction(string playerId, double betAmount, PokerPlayerAction playerAction, bool hasRaised, int bankTime, SocketIOAckCallback action)
     {
         JSON_Object actionObj = new JSON_Object();
         actionObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
@@ -1260,6 +1255,7 @@ public class SocketGamemanager : MonoBehaviour
         actionObj.put("action", (int) playerAction);
         actionObj.put("roomId", Constants.Poker.TableId);
         actionObj.put("hasRaised", hasRaised);
+        actionObj.put("backTime", bankTime);
         actionObj.put("authToken", UIManager.Instance.tokenHack());
         actionObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
         actionObj.put("productName", Application.productName);
@@ -1837,7 +1833,6 @@ public class SocketGamemanager : MonoBehaviour
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.Banner, action, Json.Decode(jsonObj.toString()));
     }
 
-
     /// <summary>
     /// Reconnect.
     /// </summary>
@@ -1976,8 +1971,6 @@ public class SocketGamemanager : MonoBehaviour
         print("RulesofPlay: " + jsonObj.toString());
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.RulesofPlay, action, Json.Decode(jsonObj.toString()));
     }
-<<<<<<< Updated upstream
-=======
 
     public void Transactions(SocketIOAckCallback action)
     {
@@ -1993,7 +1986,6 @@ public class SocketGamemanager : MonoBehaviour
         Game.Lobby.socketManager.Socket.Emit(Constants.PokerEvents.Transactions, action, Json.Decode(jsonObj.toString()));
     }
 
->>>>>>> Stashed changes
     #endregion
 
     #region DELEGATE_CALLBACKS

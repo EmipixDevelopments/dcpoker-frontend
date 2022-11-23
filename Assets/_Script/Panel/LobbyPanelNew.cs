@@ -1,10 +1,6 @@
-<<<<<<< Updated upstream
-﻿using System.Collections;
-=======
 ﻿using System;
 using System.Collections;
 using TMPro;
->>>>>>> Stashed changes
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,16 +19,11 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private Button _howToPlayButton;
     [SerializeField] private Button _aboutButton;
     [SerializeField] private Button _supportButton;
-<<<<<<< Updated upstream
-    [Header("Bottom panel buttons")]
-    [SerializeField] private Button _termsOfServiceButton;
-=======
     [SerializeField] private ToggleImageNormal _soundToggleImageNormal;
 
     [Header("Bottom panel buttons")] [SerializeField]
     private Button _termsOfServiceButton;
 
->>>>>>> Stashed changes
     [SerializeField] private Button _privacyPolicyButton;
     [SerializeField] private Button _responsibleGamingButton;
 
@@ -50,10 +41,17 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private GameObject _panelTermsOfService;
     [SerializeField] private GameObject _panelPrivacyPolicy;
     [SerializeField] private GameObject _panelResponsibleGaming;
-    [SerializeField] private GameObject _panelBottomMenu;
+    [SerializeField] private PanelBottom _panelBottomMenu;
 
+    [Space] public Messages Messages;
+    [SerializeField] private Background _background;
+    [SerializeField] private RectTransform _content;
 
-    private enum LobbyPanel
+    private ScrollRect _scrollRect;
+    private bool _isScrollHide;
+    private Action<LobbyPanel> _onSwitchLobbyPanel;
+
+    public enum LobbyPanel
     {
         Home,
         MyAccount,
@@ -73,47 +71,29 @@ public class LobbyPanelNew : MonoBehaviour
 
     private void Start()
     {
-<<<<<<< Updated upstream
-=======
         _scrollRect = GetComponent<ScrollRect>();
 
->>>>>>> Stashed changes
         InitButtonsAndToggles();
         textAppVersion.text = "v" + Application.version;
 //        UserWalletBalance();
     }
 
-
     private void OnEnable()
     {
-        SwitchAtlHome(true);
-    }
-
-    public void UpdatePanel() 
-    {
         SwitchPanel(_currentPanel);
-<<<<<<< Updated upstream
-=======
 
         //SwitchAtlHome(true);
 
         _soundToggleImageNormal.AddListener(OnChangeSoundToggle);
->>>>>>> Stashed changes
     }
 
-    public void OpenWitchdawPanel() 
+    private void OnDisable()
     {
-        _accountInfoInToggle.isOn = true;
-        _currentPanel = LobbyPanel.MyAccount;
-        UpdatePanel();
-        _panelMyAccount.OpenWithdraw();
+        _soundToggleImageNormal.RemoveListener(OnChangeSoundToggle);
     }
 
-    #region Menu
-    private void InitButtonsAndToggles()
+    private void OnDestroy()
     {
-        // init
-        // clear all listeners
         _tournamentsToggle.onValueChanged.RemoveAllListeners();
         _sitNGoToggle.onValueChanged.RemoveAllListeners();
         _texasHoldemToggle.onValueChanged.RemoveAllListeners();
@@ -130,9 +110,6 @@ public class LobbyPanelNew : MonoBehaviour
         _termsOfServiceButton.onClick.RemoveAllListeners();
         _privacyPolicyButton.onClick.RemoveAllListeners();
         _responsibleGamingButton.onClick.RemoveAllListeners();
-<<<<<<< Updated upstream
-
-=======
     }
 
     public void UpdatePanel()
@@ -201,7 +178,6 @@ public class LobbyPanelNew : MonoBehaviour
 
     private void InitButtonsAndToggles()
     {
->>>>>>> Stashed changes
         // set listeners
         _tournamentsToggle.onValueChanged.AddListener(SwitchAtTournaments);
         _sitNGoToggle.onValueChanged.AddListener(SwitchAtSitNGo);
@@ -219,10 +195,6 @@ public class LobbyPanelNew : MonoBehaviour
         _termsOfServiceButton.onClick.AddListener(SwitchAtTermsOfService);
         _privacyPolicyButton.onClick.AddListener(SwitchAtPrivacyPolicy);
         _responsibleGamingButton.onClick.AddListener(SwitchAtResponsibleGaming);
-<<<<<<< Updated upstream
-    }
-
-=======
 
         _soundToggleImageNormal.SetActive(PlayerPrefs.GetInt("Sound") > 0);
     }
@@ -237,7 +209,6 @@ public class LobbyPanelNew : MonoBehaviour
         ;
     }
 
->>>>>>> Stashed changes
     private void SwitchPanel(LobbyPanel nextWindow)
     {
         // default, close all windows
@@ -284,12 +255,6 @@ public class LobbyPanelNew : MonoBehaviour
             default:
                 break;
         }
-<<<<<<< Updated upstream
-        _currentPanel = nextWindow;
-
-        // need open in next frame for other panels to be opened
-        StartCoroutine(ShowBottomMenu());
-=======
 
         if (_currentPanel != nextWindow)
             _onSwitchLobbyPanel?.Invoke(nextWindow);
@@ -308,14 +273,19 @@ public class LobbyPanelNew : MonoBehaviour
         _background.SetActiveChipsBottomImage(isHomePage || (int) _currentPanel > 6);
 
         _panelBottomMenu.gameObject.SetActive(true);
->>>>>>> Stashed changes
     }
 
-    IEnumerator ShowBottomMenu()
+    /*IEnumerator ShowBottomMenu()
     {
         yield return new WaitForEndOfFrame();
-        _panelBottomMenu.SetActive(true);
-    }
+        
+        //todo move to false always
+        var isHomePage = _currentPanel == LobbyPanel.Home;
+        _background.SetActiveBackgroundPanel( !isHomePage );
+        _background.SetActiveChipsBottomImage( isHomePage || (int)_currentPanel > 6 );
+        
+        _panelBottomMenu.gameObject.SetActive(true);
+    }*/
 
     private void SwitchAtlHome(bool run)
     {
@@ -403,7 +373,7 @@ public class LobbyPanelNew : MonoBehaviour
         _panelTermsOfService.SetActive(false);
         _panelPrivacyPolicy.SetActive(false);
         _panelResponsibleGaming.SetActive(false);
-        _panelBottomMenu.SetActive(false);
+        _panelBottomMenu.gameObject.SetActive(false);
     }
 
     #endregion
@@ -473,9 +443,6 @@ public class LobbyPanelNew : MonoBehaviour
     }
 
     #endregion
-<<<<<<< Updated upstream
-}
-=======
 
     public void UpdateUi()
     {
@@ -500,4 +467,3 @@ public class LobbyPanelNew : MonoBehaviour
 
     public ScrollRect GetScrollRect() => _scrollRect;
 }
->>>>>>> Stashed changes

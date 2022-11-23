@@ -16,6 +16,8 @@ public class ActionPlayer : MonoBehaviour {
 	[Header ("Text")]
 	public TextMeshProUGUI txtAction;
 
+	[SerializeField] private GameObject _playerNameTextToHide;
+
 	[Header ("String")]
 	public string LastAction;
 	//[Header ("Prefabs")]
@@ -32,6 +34,8 @@ public class ActionPlayer : MonoBehaviour {
 	// Update is called once per frame
 	void OnEnable()
 	{
+		if(_playerNameTextToHide)
+			_playerNameTextToHide.SetActive(false);
 		StartCoroutine (closeObjects (Constants.Poker.PlayeractionDisplayTime));
 	}
 
@@ -60,6 +64,10 @@ public class ActionPlayer : MonoBehaviour {
 	IEnumerator closeObjects(float timer)
 	{
 		yield return new WaitForSeconds (timer);
+		
+		if(_playerNameTextToHide)
+			_playerNameTextToHide.SetActive(true);
+		
 		this.Close ();
 	}
 

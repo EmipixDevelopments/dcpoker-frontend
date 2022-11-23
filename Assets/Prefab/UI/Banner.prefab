@@ -60,7 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _image: {fileID: 5359570660093295989}
   _button: {fileID: 5359570660093295990}
-  _bannerType: 0
+  _bannerPosition: tournament
 --- !u!1 &5359570660093295984
 GameObject:
   m_ObjectHideFlags: 0
@@ -127,7 +127,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 7914bd9c1ce95574e9ac69d69970ad7a, type: 3}
   m_Type: 0
-  m_PreserveAspect: 1
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
