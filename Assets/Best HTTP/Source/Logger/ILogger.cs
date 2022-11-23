@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 
 namespace BestHTTP.Logger
 {
     /// <summary>
     /// Available logging levels.
     /// </summary>
-    public enum Loglevels : byte
+    public enum Loglevels : int
     {
         /// <summary>
         /// All message will be logged.
@@ -41,22 +38,28 @@ namespace BestHTTP.Logger
         None
     }
 
+    public interface ILogOutput : IDisposable
+    {
+        void Write(Loglevels level, string logEntry);
+    }
+
     public interface ILogger
     {
         /// <summary>
         /// The minimum severity to log
         /// </summary>
         Loglevels Level { get; set; }
-        string FormatVerbose { get; set; }
-        string FormatInfo { get; set; }
-        string FormatWarn { get; set; }
-        string FormatErr { get; set; }
-        string FormatEx { get; set; }
 
-        void Verbose(string division, string verb);
-        void Information(string division, string info);
-        void Warning(string division, string warn);
-        void Error(string division, string err);
-        void Exception(string division, string msg, Exception ex);
+        ILogOutput Output { get; set; }
+
+        void Verbose(string division, string msg, LoggingContext context1 = null, LoggingContext context2 = null, LoggingContext context3 = null);
+
+        void Information(string division, string msg, LoggingContext context1 = null, LoggingContext context2 = null, LoggingContext context3 = null);
+
+        void Warning(string division, string msg, LoggingContext context1 = null, LoggingContext context2 = null, LoggingContext context3 = null);
+
+        void Error(string division, string msg, LoggingContext context1 = null, LoggingContext context2 = null, LoggingContext context3 = null);
+
+        void Exception(string division, string msg, Exception ex, LoggingContext context1 = null, LoggingContext context2 = null, LoggingContext context3 = null);
     }
 }

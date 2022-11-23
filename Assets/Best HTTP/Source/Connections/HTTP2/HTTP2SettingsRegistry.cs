@@ -1,4 +1,4 @@
-﻿#if (!UNITY_WEBGL || UNITY_EDITOR) && !BESTHTTP_DISABLE_ALTERNATE_SSL && !BESTHTTP_DISABLE_HTTP2
+#if (!UNITY_WEBGL || UNITY_EDITOR) && !BESTHTTP_DISABLE_ALTERNATE_SSL && !BESTHTTP_DISABLE_HTTP2
 
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace BestHTTP.Connections.HTTP2
 {
     // https://httpwg.org/specs/rfc7540.html#iana-settings
-    enum HTTP2Settings : ushort
+    public enum HTTP2Settings : ushort
     {
         /// <summary>
         /// Allows the sender to inform the remote endpoint of the maximum size of the
@@ -71,9 +71,20 @@ namespace BestHTTP.Connections.HTTP2
         /// For any given request, a lower limit than what is advertised MAY be enforced. The initial value of this setting is unlimited.
         /// </summary>
         MAX_HEADER_LIST_SIZE = 0x06,
+
+        RESERVED = 0x07,
+
+        /// <summary>
+        /// https://tools.ietf.org/html/rfc8441
+        ///  Upon receipt of SETTINGS_ENABLE_CONNECT_PROTOCOL with a value of 1, a client MAY use the Extended CONNECT as defined in this document when creating new streams.
+        ///  Receipt of this parameter by a server does not have any impact.
+        ///  
+        ///  A sender MUST NOT send a SETTINGS_ENABLE_CONNECT_PROTOCOL parameter with the value of 0 after previously sending a value of 1.
+        /// </summary>
+        ENABLE_CONNECT_PROTOCOL = 0x08
     }
 
-    sealed class HTTP2SettingsRegistry
+    public sealed class HTTP2SettingsRegistry
     {
         public bool IsReadOnly { get; private set; }
         public Action<HTTP2SettingsRegistry, HTTP2Settings, UInt32, UInt32> OnSettingChangedEvent;
@@ -112,8 +123,12 @@ namespace BestHTTP.Connections.HTTP2
 
         public bool IsChanged { get; private set; }
 
-        public HTTP2SettingsRegistry(bool readOnly, bool treatItAsAlreadyChanged)
+        private HTTP2SettingsManager _parent;
+
+        public HTTP2SettingsRegistry(HTTP2SettingsManager parent, bool readOnly, bool treatItAsAlreadyChanged)
         {
+            this._parent = parent;
+
             this.values = new UInt32[HTTP2SettingsManager.SettingsCount];
 
             this.IsReadOnly = readOnly;
@@ -136,6 +151,9 @@ namespace BestHTTP.Connections.HTTP2
 
         public void Merge(List<KeyValuePair<HTTP2Settings, UInt32>> settings)
         {
+            if (settings == null)
+                return;
+
             for (int i = 0; i < settings.Count; ++i)
             {
                 HTTP2Settings setting = settings[i].Key;
@@ -149,6 +167,9 @@ namespace BestHTTP.Connections.HTTP2
 
                     if (oldValue != value && this.OnSettingChangedEvent != null)
                         this.OnSettingChangedEvent(this, setting, oldValue, value);
+
+                    if (HTTPManager.Logger.Level <= Logger.Loglevels.All)
+                        HTTPManager.Logger.Information("HTTP2SettingsRegistry", string.Format("Merge {0}({1}) = {2}", setting, key, value), this._parent.Parent.Context);
                 }
             }
         }
@@ -162,7 +183,7 @@ namespace BestHTTP.Connections.HTTP2
                 this.values[i] = from.values[i];
         }
 
-        public HTTP2FrameHeaderAndPayload CreateFrame()
+        internal HTTP2FrameHeaderAndPayload CreateFrame()
         {
             List<KeyValuePair<HTTP2Settings, UInt32>> keyValuePairs = new List<KeyValuePair<HTTP2Settings, uint>>(HTTP2SettingsManager.SettingsCount);
 
@@ -179,7 +200,7 @@ namespace BestHTTP.Connections.HTTP2
         }
     }
 
-    sealed class HTTP2SettingsManager
+    public sealed class HTTP2SettingsManager
     {
         public static readonly int SettingsCount = Enum.GetNames(typeof(HTTP2Settings)).Length + 1;
 
@@ -201,15 +222,19 @@ namespace BestHTTP.Connections.HTTP2
 
         public DateTime SettingsChangesSentAt { get; private set; }
 
-        public HTTP2SettingsManager()
+        public HTTP2Handler Parent { get; private set; }
+
+        public HTTP2SettingsManager(HTTP2Handler parentHandler)
         {
-            this.MySettings = new HTTP2SettingsRegistry(readOnly: true, treatItAsAlreadyChanged: false);
-            this.InitiatedMySettings = new HTTP2SettingsRegistry(readOnly: false, treatItAsAlreadyChanged: true);
-            this.RemoteSettings = new HTTP2SettingsRegistry(readOnly: true, treatItAsAlreadyChanged: false);
+            this.Parent = parentHandler;
+
+            this.MySettings = new HTTP2SettingsRegistry(this, readOnly: true, treatItAsAlreadyChanged: false);
+            this.InitiatedMySettings = new HTTP2SettingsRegistry(this, readOnly: false, treatItAsAlreadyChanged: true);
+            this.RemoteSettings = new HTTP2SettingsRegistry(this, readOnly: true, treatItAsAlreadyChanged: false);
             this.SettingsChangesSentAt = DateTime.MinValue;
         }
 
-        public void Process(HTTP2FrameHeaderAndPayload frame, List<HTTP2FrameHeaderAndPayload> outgoingFrames)
+        internal void Process(HTTP2FrameHeaderAndPayload frame, List<HTTP2FrameHeaderAndPayload> outgoingFrames)
         {
             if (frame.Type != HTTP2FrameTypes.SETTINGS)
                 return;
@@ -217,7 +242,7 @@ namespace BestHTTP.Connections.HTTP2
             HTTP2SettingsFrame settingsFrame = HTTP2FrameHelper.ReadSettings(frame);
 
             if (HTTPManager.Logger.Level <= Logger.Loglevels.Information)
-                HTTPManager.Logger.Information("HTTP2SettingsManager", "Processing Settings frame: " + settingsFrame.ToString());
+                HTTPManager.Logger.Information("HTTP2SettingsManager", "Processing Settings frame: " + settingsFrame.ToString(), this.Parent.Context);
 
             if ((settingsFrame.Flags & HTTP2SettingsFlags.ACK) == HTTP2SettingsFlags.ACK)
             {
@@ -231,11 +256,11 @@ namespace BestHTTP.Connections.HTTP2
             }
         }
 
-        public void SendChanges(List<HTTP2FrameHeaderAndPayload> outgoingFrames)
+        internal void SendChanges(List<HTTP2FrameHeaderAndPayload> outgoingFrames)
         {
             if (this.SettingsChangesSentAt != DateTime.MinValue && DateTime.UtcNow - this.SettingsChangesSentAt >= TimeSpan.FromSeconds(10))
             {
-                HTTPManager.Logger.Error("HTTP2SettingsManager", "No ACK received for settings frame!");
+                HTTPManager.Logger.Error("HTTP2SettingsManager", "No ACK received for settings frame!", this.Parent.Context);
                 this.SettingsChangesSentAt = DateTime.MinValue;
             }
 

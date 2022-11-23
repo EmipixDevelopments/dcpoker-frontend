@@ -115,6 +115,18 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
             get { return new BigInteger(bytes); }
         }
 
+        public bool HasValue(int x)
+        {
+            return (bytes.Length - start) <= 4
+                && IntValue(bytes, start, SignExtSigned) == x;
+        }
+
+        public bool HasValue(long x)
+        {
+            return (bytes.Length - start) <= 8
+                && LongValue(bytes, start, SignExtSigned) == x;
+        }
+
         public bool HasValue(BigInteger x)
         {
             return null != x
@@ -147,9 +159,26 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
             }
         }
 
-        internal override void Encode(DerOutputStream derOut)
+        public long LongValueExact
         {
-            derOut.WriteEncoded(Asn1Tags.Integer, bytes);
+            get
+            {
+                int count = bytes.Length - start;
+                if (count > 8)
+                    throw new ArithmeticException("ASN.1 Integer out of long range");
+
+                return LongValue(bytes, start, SignExtSigned);
+            }
+        }
+
+        internal override int EncodedLength(bool withID)
+        {
+            return Asn1OutputStream.GetLengthOfEncodingDL(withID, bytes.Length);
+        }
+
+        internal override void Encode(Asn1OutputStream asn1Out, bool withID)
+        {
+            asn1Out.WriteEncodingDL(withID, Asn1Tags.Integer, bytes);
         }
 
 		protected override int Asn1GetHashCode()
@@ -177,6 +206,19 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
             int pos = System.Math.Max(start, length - 4);
 
             int val = (sbyte)bytes[pos] & signExt;
+            while (++pos < length)
+            {
+                val = (val << 8) | bytes[pos];
+            }
+            return val;
+        }
+
+        internal static long LongValue(byte[] bytes, int start, int signExt)
+        {
+            int length = bytes.Length;
+            int pos = System.Math.Max(start, length - 8);
+
+            long val = (sbyte)bytes[pos] & signExt;
             while (++pos < length)
             {
                 val = (val << 8) | bytes[pos];

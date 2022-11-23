@@ -38,6 +38,11 @@ namespace BestHTTP.SignalRCore
         /// This function can customize the given uri. If there's no intention to modify the uri, this function should return with the parameter.
         /// </summary>
         Uri PrepareUri(Uri uri);
+
+        /// <summary>
+        /// Cancel any ongoing authentication.
+        /// </summary>
+        void Cancel();
     }
 }
 #endif

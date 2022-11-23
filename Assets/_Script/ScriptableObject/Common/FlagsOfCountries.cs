@@ -12,7 +12,7 @@ public class FlagsOfCountries : ScriptableObject
 
     private Dictionary<string, Sprite> _flags;
 
-    public Sprite GetSpriteByName(string flag) 
+    public Sprite GetSpriteByName(string flag)
     {
         Sprite sprite;
         /*foreach (var flag in flags)
@@ -27,19 +27,20 @@ public class FlagsOfCountries : ScriptableObject
         {
             sprite = defaultFlag.Sprite;
         }*/
-        if(!_flags.TryGetValue(flag,  out sprite))
-        {
-            sprite = defaultFlag.Sprite;
-        }
-        
-        return sprite;
 
+        sprite = defaultFlag.Sprite;
+//        if (!_flags.TryGetValue(flag, out sprite))
+//        {
+//            sprite = defaultFlag.Sprite;
+//        }
+
+        return sprite;
     }
 
     public void Init()
     {
         _flags = new Dictionary<string, Sprite>();
-        
+
         foreach (var flag in flags)
         {
             _flags.Add(flag.Name, flag.Sprite);

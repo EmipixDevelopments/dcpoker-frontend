@@ -1,4 +1,4 @@
-﻿#if !BESTHTTP_DISABLE_CACHING
+#if !BESTHTTP_DISABLE_CACHING
 
 using System;
 using System.Collections.Generic;
@@ -19,67 +19,82 @@ namespace BestHTTP.Caching
         /// <summary>
         /// The uri that this HTTPCacheFileInfo belongs to.
         /// </summary>
-        internal Uri Uri { get; set; }
+        public Uri Uri { get; private set; }
 
         /// <summary>
         /// The last access time to this cache entity. The date is in UTC.
         /// </summary>
-        internal DateTime LastAccess { get; set; }
+        public DateTime LastAccess { get; private set; }
 
         /// <summary>
         /// The length of the cache entity's body.
         /// </summary>
-        public int BodyLength { get; set; }
+        public int BodyLength { get; internal set; }
 
         /// <summary>
         /// ETag of the entity.
         /// </summary>
-        private string ETag { get; set; }
+        public string ETag { get; private set; }
 
         /// <summary>
         /// LastModified date of the entity.
         /// </summary>
-        private string LastModified { get; set; }
+        public string LastModified { get; private set; }
 
         /// <summary>
         /// When the cache will expire.
         /// </summary>
-        private DateTime Expires { get; set; }
+        public DateTime Expires { get; private set; }
 
         /// <summary>
         /// The age that came with the response
         /// </summary>
-        private long Age { get; set; }
+        public long Age { get; private set; }
 
         /// <summary>
         /// Maximum how long the entry should served from the cache without revalidation.
         /// </summary>
-        private long MaxAge { get; set; }
+        public long MaxAge { get; private set; }
 
         /// <summary>
         /// The Date that came with the response.
         /// </summary>
-        private DateTime Date { get; set; }
+        public DateTime Date { get; private set; }
 
         /// <summary>
-        /// Indicates whether the entity must be revalidated with the server or can be serverd directly from the cache without touching the server.
+        /// Indicates whether the entity must be revalidated with the server or can be serverd directly from the cache without touching the server when the content is considered stale.
         /// </summary>
-        private bool MustRevalidate { get; set; }
+        public bool MustRevalidate { get; private set; }
+
+        /// <summary>
+        /// If it's true, the client always have to revalidate the cached content when it's stale.
+        /// </summary>
+        public bool NoCache { get; private set; }
+
+        /// <summary>
+        /// It's a grace period to serve staled content without revalidation.
+        /// </summary>
+        public long StaleWhileRevalidate { get; private set; }
+
+        /// <summary>
+        /// Allows the client to serve stale content if the server responds with an 5xx error.
+        /// </summary>
+        public long StaleIfError { get; private set; }
 
         /// <summary>
         /// The date and time when the HTTPResponse received.
         /// </summary>
-        private DateTime Received { get; set; }
+        public DateTime Received { get; private set; }
 
         /// <summary>
         /// Cached path.
         /// </summary>
-        private string ConstructedPath { get; set; }
+        public string ConstructedPath { get; private set; }
 
         /// <summary>
         /// This is the index of the entity. Filenames are generated from this value.
         /// </summary>
-        internal UInt64 MappedNameIDX { get; set; }
+        internal UInt64 MappedNameIDX { get; private set; }
 
         #endregion
 
@@ -108,6 +123,12 @@ namespace BestHTTP.Caching
 
             switch(version)
             {
+                case 3:
+                    this.NoCache = reader.ReadBoolean();
+                    this.StaleWhileRevalidate = reader.ReadInt64();
+                    this.StaleIfError = reader.ReadInt64();
+                    goto case 2;
+
                 case 2:
                     this.MappedNameIDX = reader.ReadUInt64();
                     goto case 1;
@@ -133,17 +154,27 @@ namespace BestHTTP.Caching
 
         internal void SaveTo(System.IO.BinaryWriter writer)
         {
-            writer.Write(LastAccess.ToBinary());
-            writer.Write(BodyLength);
-            writer.Write(MappedNameIDX);
-            writer.Write(ETag);
-            writer.Write(LastModified);
-            writer.Write(Expires.ToBinary());
-            writer.Write(Age);
-            writer.Write(MaxAge);
-            writer.Write(Date.ToBinary());
-            writer.Write(MustRevalidate);
-            writer.Write(Received.ToBinary());
+            // base
+            writer.Write(this.LastAccess.ToBinary());
+            writer.Write(this.BodyLength);
+
+            // version 3
+            writer.Write(this.NoCache);
+            writer.Write(this.StaleWhileRevalidate);
+            writer.Write(this.StaleIfError);
+
+            // version 2
+            writer.Write(this.MappedNameIDX);
+
+            // version 1
+            writer.Write(this.ETag);
+            writer.Write(this.LastModified);
+            writer.Write(this.Expires.ToBinary());
+            writer.Write(this.Age);
+            writer.Write(this.MaxAge);
+            writer.Write(this.Date.ToBinary());
+            writer.Write(this.MustRevalidate);
+            writer.Write(this.Received.ToBinary());
         }
 
         public string GetPath()
@@ -192,89 +223,143 @@ namespace BestHTTP.Caching
             this.Date = DateTime.FromBinary(0);
             this.MustRevalidate = false;
             this.Received = DateTime.FromBinary(0);
+            this.NoCache = false;
+            this.StaleWhileRevalidate = 0;
+            this.StaleIfError = 0;
         }
 
         #endregion
 
         #region Caching
-
-        /// <summary>
-        /// Returns true if the stored caching values are the same than the ones in the response.
-        /// </summary>
-        private bool AlreadyStored(HTTPResponse response)
-        {
-            if (!IsExists())
-                return false;
-
-            string newEtag = response.GetFirstHeaderValue("ETag").ToStrOrEmpty();
-            if (newEtag != this.ETag)
-                return false;
-
-            DateTime newExpires = response.GetFirstHeaderValue("Expires").ToDateTime(DateTime.FromBinary(0));
-            if (newExpires != this.Expires)
-                return false;
-
-            string newLastModified = response.GetFirstHeaderValue("Last-Modified").ToStrOrEmpty();
-            if (newLastModified != this.LastModified)
-                return false;
-
-            return true;
-        }
-
-        private void SetUpCachingValues(HTTPResponse response)
+        
+        internal void SetUpCachingValues(HTTPResponse response)
         {
             response.CacheFileInfo = this;
 
-            this.ETag = response.GetFirstHeaderValue("ETag").ToStrOrEmpty();
-            this.Expires = response.GetFirstHeaderValue("Expires").ToDateTime(DateTime.FromBinary(0));
-            this.LastModified = response.GetFirstHeaderValue("Last-Modified").ToStrOrEmpty();
+            this.ETag = response.GetFirstHeaderValue("ETag").ToStr(this.ETag ?? string.Empty);
+            this.Expires = response.GetFirstHeaderValue("Expires").ToDateTime(this.Expires);
+            this.LastModified = response.GetFirstHeaderValue("Last-Modified").ToStr(this.LastModified ?? string.Empty);
 
-            this.Age = response.GetFirstHeaderValue("Age").ToInt64(0);
+            this.Age = response.GetFirstHeaderValue("Age").ToInt64(this.Age);
 
-            this.Date = response.GetFirstHeaderValue("Date").ToDateTime(DateTime.FromBinary(0));
+            this.Date = response.GetFirstHeaderValue("Date").ToDateTime(this.Date);
 
-            string cacheControl = response.GetFirstHeaderValue("cache-control");
-            if (!string.IsNullOrEmpty(cacheControl))
+            List<string> cacheControls = response.GetHeaderValues("cache-control");
+            if (cacheControls != null && cacheControls.Count > 0)
             {
-                string[] kvp = cacheControl.FindOption("max-age");
-                if (kvp != null)
-                {
-                    // Some cache proxies will return float values
-                    double maxAge;
-                    if (double.TryParse(kvp[1], out maxAge))
-                        this.MaxAge = (int)maxAge;
-                }
+                // Merge all Cache-Control header values into one
+                string cacheControl = cacheControls[0];
+                for (int i = 1; i < cacheControls.Count; ++i)
+                    cacheControl += "," + cacheControls[i];
 
-                this.MustRevalidate = cacheControl.ToLower().Contains("must-revalidate");
+                if (!string.IsNullOrEmpty(cacheControl))
+                {
+                    HeaderParser parser = new HeaderParser(cacheControl);
+
+                    if (parser.Values != null)
+                    {
+                        for (int i = 0; i < parser.Values.Count; ++i)
+                        {
+                            var kvp = parser.Values[i];
+
+                            switch(kvp.Key.ToLowerInvariant())
+                            {
+                                case "max-age":
+                                    if (kvp.HasValue)
+                                    {
+                                        // Some cache proxies will return float values
+                                        double maxAge;
+                                        if (double.TryParse(kvp.Value, out maxAge))
+                                            this.MaxAge = (int)maxAge;
+                                        else
+                                            this.MaxAge = 0;
+                                    }
+                                    else
+                                        this.MaxAge = 0;
+                                    break;
+
+                                case "stale-while-revalidate":
+                                    this.StaleWhileRevalidate = kvp.HasValue ? kvp.Value.ToInt64(0) : 0;
+                                    break;
+
+                                case "stale-if-error":
+                                    this.StaleIfError = kvp.HasValue ? kvp.Value.ToInt64(0) : 0;
+                                    break;
+
+                                case "must-revalidate":
+                                    this.MustRevalidate = true;
+                                    break;
+
+                                case "no-cache":
+                                    this.NoCache = true;
+                                    break;
+                            }
+                        }
+                    }
+
+                    //string[] options = cacheControl.ToLowerInvariant().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    //
+                    //string[] kvp = options.FindOption("max-age");
+                    //if (kvp != null && kvp.Length > 1)
+                    //{
+                    //    // Some cache proxies will return float values
+                    //    double maxAge;
+                    //    if (double.TryParse(kvp[1], out maxAge))
+                    //        this.MaxAge = (int)maxAge;
+                    //    else
+                    //        this.MaxAge = 0;
+                    //}
+                    //else
+                    //    this.MaxAge = 0;
+                    //
+                    //kvp = options.FindOption("stale-while-revalidate");
+                    //if (kvp != null && kvp.Length == 2 && !string.IsNullOrEmpty(kvp[1]))
+                    //    this.StaleWhileRevalidate = kvp[1].ToInt64(0);
+                    //
+                    //kvp = options.FindOption("stale-if-error");
+                    //if (kvp != null && kvp.Length == 2 && !string.IsNullOrEmpty(kvp[1]))
+                    //    this.StaleIfError = kvp[1].ToInt64(0);
+                    //
+                    //this.MustRevalidate = cacheControl.Contains("must-revalidate");
+                    //this.NoCache = cacheControl.Contains("no-cache");
+                }
             }
 
             this.Received = DateTime.UtcNow;
         }
 
-        internal bool WillExpireInTheFuture()
+        /// <summary>
+        /// isInError should be true if downloading the content fails, and in that case, it might extend the content's freshness
+        /// </summary>
+        public bool WillExpireInTheFuture(bool isInError)
         {
             if (!IsExists())
                 return false;
 
-            if (MustRevalidate)
+            // https://csswizardry.com/2019/03/cache-control-for-civilians/#no-cache
+            // no-cache will always hit the network as it has to revalidate with the server before it can release the browser’s cached copy (unless the server responds with a fresher response),
+            // but if the server responds favourably, the network transfer is only a file’s headers: the body can be grabbed from cache rather than redownloaded.
+            if (this.NoCache)
                 return false;
 
             // http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.2.4 :
             //  The max-age directive takes priority over Expires
-            if (MaxAge != -1)
+            if (MaxAge > 0)
             {
                 // Age calculation:
                 // http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.2.3
 
-                long apparent_age = Math.Max(0, (long)(Received - Date).TotalSeconds);
-                long corrected_received_age = Math.Max(apparent_age, Age);
-                long resident_time = (long)(DateTime.UtcNow - Date).TotalSeconds;
+                long apparent_age = Math.Max(0, (long)(this.Received - this.Date).TotalSeconds);
+                long corrected_received_age = Math.Max(apparent_age, this.Age);
+                long resident_time = (long)(DateTime.UtcNow - this.Date).TotalSeconds;
                 long current_age = corrected_received_age + resident_time;
 
-                return current_age < MaxAge;
+                long maxAge = this.MaxAge + (this.NoCache ? 0 : this.StaleWhileRevalidate) + (isInError ? this.StaleIfError : 0);
+
+                return current_age < maxAge || this.Expires > DateTime.UtcNow;
             }
 
-            return Expires > DateTime.UtcNow;
+            return this.Expires > DateTime.UtcNow;
         }
 
         internal void SetUpRevalidationHeaders(HTTPRequest request)
@@ -305,7 +390,7 @@ namespace BestHTTP.Caching
 
             LastAccess = DateTime.UtcNow;
 
-            Stream stream = HTTPManager.IOService.CreateFileStream(GetPath(), FileStreamModes.Open);
+            Stream stream = HTTPManager.IOService.CreateFileStream(GetPath(), FileStreamModes.OpenRead);
             stream.Seek(-length, System.IO.SeekOrigin.End);
 
             return stream;
@@ -318,7 +403,7 @@ namespace BestHTTP.Caching
 
             LastAccess = DateTime.UtcNow;
 
-            using (Stream stream = HTTPManager.IOService.CreateFileStream(GetPath(), FileStreamModes.Open))
+            using (Stream stream = HTTPManager.IOService.CreateFileStream(GetPath(), FileStreamModes.OpenRead))
             {
                 var response = new HTTPResponse(request, stream, request.UseStreaming, true);
                 response.CacheFileInfo = this;
@@ -338,28 +423,24 @@ namespace BestHTTP.Caching
             if (path.Length > HTTPManager.MaxPathLength)
                 return;
 
-            // Don't delete and write the very same content to the disk if possible.
-            if (!AlreadyStored(response))
+            if (HTTPManager.IOService.FileExists(path))
+                Delete();
+
+            using (Stream writer = HTTPManager.IOService.CreateFileStream(GetPath(), FileStreamModes.Create))
             {
-                if (HTTPManager.IOService.FileExists(path))
-                    Delete();
-
-                using (Stream writer = HTTPManager.IOService.CreateFileStream(GetPath(), FileStreamModes.Create))
+                writer.WriteLine("HTTP/{0}.{1} {2} {3}", response.VersionMajor, response.VersionMinor, response.StatusCode, response.Message);
+                foreach (var kvp in response.Headers)
                 {
-                    writer.WriteLine("HTTP/1.1 {0} {1}", response.StatusCode, response.Message);
-                    foreach (var kvp in response.Headers)
-                    {
-                        for (int i = 0; i < kvp.Value.Count; ++i)
-                            writer.WriteLine("{0}: {1}", kvp.Key, kvp.Value[i]);
-                    }
-
-                    writer.WriteLine();
-
-                    writer.Write(response.Data, 0, response.Data.Length);
+                    for (int i = 0; i < kvp.Value.Count; ++i)
+                        writer.WriteLine("{0}: {1}", kvp.Key, kvp.Value[i]);
                 }
 
-                BodyLength = response.Data.Length;
+                writer.WriteLine();
+
+                writer.Write(response.Data, 0, response.Data.Length);
             }
+
+            BodyLength = response.Data.Length;
 
             LastAccess = DateTime.UtcNow;
 

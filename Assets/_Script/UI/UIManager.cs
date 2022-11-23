@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     #region PUBLIC_VARIABLES
 
     public SERVER server = SERVER.Club;
+
     public enum CurrencyType
     {
         cash,
@@ -48,8 +49,7 @@ public class UIManager : MonoBehaviour
     public UnityIAPManager panelInApp;
     public IPLocationService ipLocationService;
 
-    [Header("Utility Panels")]
-    public UtilityMessagePanel messagePanel;
+    [Header("Utility Panels")] public UtilityMessagePanel messagePanel;
     public UtilityMessagePanel messagePanelInfo;
     public UtilityMessagePanel messagePanelJoinTable;
     public tournamentMessagePanel TournamentRequestPanel;
@@ -67,8 +67,7 @@ public class UIManager : MonoBehaviour
     public UrlSpriteContainer _avatarUrlSpriteContainer;
     public UrlSprite _avatarUrlSprite;
 
-    [Header("Public Variables")]
-    public bool isLogAllEnabled = false;
+    [Header("Public Variables")] public bool isLogAllEnabled = false;
     public bool IsMultipleTableAllowed;
     public bool isChipsTransferAllowed;
     public bool MySuperPlayer = false;
@@ -78,8 +77,7 @@ public class UIManager : MonoBehaviour
     public string SelectedPlayerPerTable;
     public bool isGalleryOpen = false;
 
-    [Header("Currency Related")]
-    public Image[] currencyContainingImages;
+    [Header("Currency Related")] public Image[] currencyContainingImages;
     public Image[] sidePotCurrencyImages;
     public Image mainPotImage;
     public Sprite coinCurrencySprite;
@@ -88,21 +86,22 @@ public class UIManager : MonoBehaviour
     public float assetsLoadedPercentage = 0;
     public int totalIconsToDownload = 0;
 
-    [Header("Enum")]
-    public CurrencyType currencyType;
+    [Header("Enum")] public CurrencyType currencyType;
     public GameType gameType = GameType.cash;
     public GameType selectedGameType = GameType.cash;
     public GameSpeed selectedGameSpeed = GameSpeed.regular;
 
-    [Header("Header")]
-    public Reporter reporter;
+    [Header("Header")] public Reporter reporter;
+
     #endregion
 
     #region PRIVATE_VARIABLES
+
     public string CustormUrl;
     public string StoreDetails;
     private int _profilePic;
     public string webglToken;
+
     #endregion
 
     #region UNITY_CALLBACKS
@@ -112,8 +111,8 @@ public class UIManager : MonoBehaviour
         Debug.Log("Application.persistentDataPath = > " + Application.persistentDataPath);
         Instance = this;
         SaveLoad.LoadGame();
-        
     }
+
     // Use this for initialization
     void Start()
     {
@@ -185,8 +184,6 @@ public class UIManager : MonoBehaviour
         Game.Lobby.socketManager.Close();
     }
 
-
-
     #endregion
 
     #region DELEGATE_CALLBACKS
@@ -202,13 +199,8 @@ public class UIManager : MonoBehaviour
 
         TournamentStartData TournamentStartDetails = JsonUtility.FromJson<TournamentStartData>(resp);
         UIManager.Instance.HideTournamentRequestPopup();
-        UIManager.Instance.DisplayTorurnamentConfirmationPanel(TournamentStartDetails.message, TournamentStartDetails.timer, () =>
-        {
-            AcceptTournament(TournamentStartDetails.tournamentId, TournamentStartDetails.roomId, TournamentStartDetails.type, 0);
-        }, () =>
-        {
-            UIManager.Instance.getRejectTournamentCall(TournamentStartDetails.tournamentId);
-        });
+        UIManager.Instance.DisplayTorurnamentConfirmationPanel(TournamentStartDetails.message, TournamentStartDetails.timer,
+            () => { AcceptTournament(TournamentStartDetails.tournamentId, TournamentStartDetails.roomId, TournamentStartDetails.type, 0); }, () => { UIManager.Instance.getRejectTournamentCall(TournamentStartDetails.tournamentId); });
 
         if (!Instance.tableManager.IsMiniTableTournamentExisted(TournamentStartDetails.tournamentId))
             UIManager.Instance.LobbyScreeen.GetRunningGameList();
@@ -225,13 +217,8 @@ public class UIManager : MonoBehaviour
 
         TournamentStartData TournamentStartDetails = JsonUtility.FromJson<TournamentStartData>(resp);
         UIManager.Instance.HideTournamentRequestPopup();
-        UIManager.Instance.DisplayTorurnamentConfirmationPanel(TournamentStartDetails.message, TournamentStartDetails.timer, () =>
-        {
-            AcceptTournament(TournamentStartDetails.tournamentId, TournamentStartDetails.roomId, TournamentStartDetails.type, 1);
-        }, () =>
-        {
-            UIManager.Instance.getRejectTournamentCall(TournamentStartDetails.tournamentId);
-        });
+        UIManager.Instance.DisplayTorurnamentConfirmationPanel(TournamentStartDetails.message, TournamentStartDetails.timer,
+            () => { AcceptTournament(TournamentStartDetails.tournamentId, TournamentStartDetails.roomId, TournamentStartDetails.type, 1); }, () => { UIManager.Instance.getRejectTournamentCall(TournamentStartDetails.tournamentId); });
 
         if (!Instance.tableManager.IsMiniTableTournamentExisted(TournamentStartDetails.tournamentId))
             UIManager.Instance.LobbyScreeen.GetRunningGameList();
@@ -240,6 +227,7 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region PUBLIC_METHODS
+
     public void ButtonHold(Animator a)
     {
         a.SetBool("IsJoin", true);
@@ -249,6 +237,7 @@ public class UIManager : MonoBehaviour
     {
         a.SetBool("IsJoin", false);
     }
+
     public void SocketOn()
     {
         Game.Lobby.socketManager.Socket.On(Constants.PokerEvents.SOCKET_EVENT_OnTournamentStart, OnTournamentStart);
@@ -282,6 +271,7 @@ public class UIManager : MonoBehaviour
             messagePanel.btnNegativeAction.onClick.AddListener(SoundManager.OnButtonClick);
             messagePanel.btnNegativeAction.onClick.AddListener(HidePopup);
         }
+
         messagePanel.btnAffirmativeAction.gameObject.SetActive(true);
         messagePanel.btnNegativeAction.gameObject.SetActive(true);
         messagePanel.btnOK.gameObject.SetActive(false);
@@ -314,6 +304,7 @@ public class UIManager : MonoBehaviour
 
         messagePanel.Open();
     }
+
     public void DisplayRebuyinConfirmationPanel(string message, string positiveButtonTitle, string negativeButtonTitle, UnityAction affirmativeAction, UnityAction negativeAction)
     {
         RebuyInMessagePanel.txtTitle.text = message;
@@ -333,6 +324,7 @@ public class UIManager : MonoBehaviour
 
         RebuyInMessagePanel.Open();
     }
+
     public void DisplayMessagePanel(string message, UnityAction playerAction = null)
     {
         if (message == "")
@@ -351,6 +343,7 @@ public class UIManager : MonoBehaviour
             messagePanel.btnOK.onClick.AddListener(HidePopup);
             UIManager.Instance.SoundManager.OnButtonClick();
         }
+
         messagePanel.btnAffirmativeAction.gameObject.SetActive(false);
         messagePanel.btnNegativeAction.gameObject.SetActive(false);
         messagePanel.btnOK.gameObject.SetActive(true);
@@ -378,7 +371,6 @@ public class UIManager : MonoBehaviour
     /// <param name="message">Message.</param>
     /// <param name="affirmativeAction">Affirmative action.</param>
     /// <param name="negativeAction">Negative action.</param>
-
     public void DisplayTorurnamentConfirmationPanel(string message, int timer, UnityAction affirmativeAction, UnityAction negativeAction = null)
     {
         //		messagePanel.MainImage.sprite = messagePanel.Options[1];
@@ -404,6 +396,7 @@ public class UIManager : MonoBehaviour
             TournamentRequestPanel.btnNegativeAction.onClick.AddListener(HidePopup);
             UIManager.Instance.SoundManager.OnButtonClick();
         }
+
         TournamentRequestPanel.btnAffirmativeAction.gameObject.SetActive(true);
         TournamentRequestPanel.btnNegativeAction.gameObject.SetActive(true);
 
@@ -413,6 +406,7 @@ public class UIManager : MonoBehaviour
             Invoke("HideTournamentRequestPopup", 1f);
         }
     }
+
     public void DisplayJoinConfirmationPanel(string message, string positiveButtonTitle, string negativeButtonTitle, UnityAction affirmativeAction, UnityAction negativeAction)
     {
         //messagePanel.txtTitle.text = ArabicFixer.Fix(message, false, false); ;
@@ -446,7 +440,6 @@ public class UIManager : MonoBehaviour
         {
             loader.Close();
         }
-
     }
 
     public void HidePopup()
@@ -465,6 +458,7 @@ public class UIManager : MonoBehaviour
         TournamentRequestPanel.Close();
         CancelInvoke("HideTournamentRequestPopup");
     }
+
     public void SetPlayerLoginType(int no)
     {
         if (no.Equals(1))
@@ -475,9 +469,11 @@ public class UIManager : MonoBehaviour
         {
             assetOfGame.SavedLoginData.IsLogin = false;
         }
+
         PlayerPrefs.SetInt("PokerBetAutoLogin", no);
         //Debug.Log("set => " + PlayerPrefs.GetInt("PokerBetAutoLogin"));
     }
+
     #endregion
 
     #region PRIVATE_METHODS
@@ -494,6 +490,7 @@ public class UIManager : MonoBehaviour
                 currentSprite = coinCurrencySprite;
                 break;
         }
+
         for (int i = 0; i < currencyContainingImages.Length; i++)
         {
             currencyContainingImages[i].sprite = currentSprite;
@@ -539,7 +536,6 @@ public class UIManager : MonoBehaviour
             {
                 splashScreen.Open();
             }
-
         }
         else
         {
@@ -582,6 +578,7 @@ public class UIManager : MonoBehaviour
         ExternalCallClass.Instance.ReceiveGameData(data);
         //Debug.unityLogger.logEnabled = UIManager.Instance.isLogAllEnabled;
     }
+
     public void ReceiveDepositBase64Data(string data)
     {
         print("UNITY ReceiveDepositBase64Data string: " + data);
@@ -613,6 +610,7 @@ public class UIManager : MonoBehaviour
                         UIManager.Instance.tableManager.DeselectAllTableSelection();
                         UIManager.Instance.tableManager.AddMiniTable(resp.result);
                     }
+
                     UIManager.Instance.tableManager.DeselectAllTableSelection();
 
                     MiniTable miniTable = UIManager.Instance.tableManager.GetMiniTable(resp.result.roomId);
@@ -691,7 +689,6 @@ public class UIManager : MonoBehaviour
             }
             else
             {
-
                 UIManager.Instance.DisplayMessagePanel(resp.message);
             }
         });
@@ -718,6 +715,7 @@ public class UIManager : MonoBehaviour
             UIManager.Instance.tableManager.DeselectAllTableSelection();
             UIManager.Instance.tableManager.AddMiniTable(lateJoinTournament);
         }
+
         UIManager.Instance.tableManager.DeselectAllTableSelection();
 
         MiniTable miniTable = UIManager.Instance.tableManager.GetMiniTable(lateJoinTournament.roomId);
@@ -726,7 +724,6 @@ public class UIManager : MonoBehaviour
             UIManager.Instance.LobbyScreeen.TournamentDetailsScreen.Close();
             miniTable.MiniTableButtonTap();
         }
-
     }
 
     public void SetSecurityData()
@@ -738,6 +735,7 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region COROUTINES
+
     private IEnumerator GetCountryDetails(string url)
     {
         UnityWebRequest www = UnityWebRequest.Get(url);
@@ -754,6 +752,7 @@ public class UIManager : MonoBehaviour
             SetSecurityData();
         }
     }
+
     public IEnumerator WaitingProcess()
     {
         yield return new WaitForSeconds(60);
@@ -774,9 +773,9 @@ public class UIManager : MonoBehaviour
     {
         foreach (MiniTable tables in tableManager.MiniTables)
         {
-
             tables.imgSelected.SetActive(false);
         }
+
         UIManager.Instance.DisplayLoader(Constants.Messages.PleaseWait);
         UIManager.Instance.GameScreeen.Close();
         yield return new WaitForSeconds(0.5f);
@@ -791,9 +790,9 @@ public class UIManager : MonoBehaviour
             else
             {
                 tables.imgSelected.SetActive(false);
-
             }
         }
+
         UIManager.Instance.GameScreeen.SetRoomDataAndPlay(miniTableRoomData);
         yield return new WaitForSeconds(1f);
         UIManager.Instance.GameScreeen.Open();
@@ -808,6 +807,7 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region GETTER_SETTER
+
     public string tokenHack()
     {
         string syndicate = null;
@@ -822,17 +822,16 @@ public class UIManager : MonoBehaviour
         //print(syndicate);
         return syndicate;
     }
+
     public long DateTimeToUnix(DateTime MyDateTime)
     {
         TimeSpan timeSpan = MyDateTime - new DateTime(1970, 1, 1, 0, 0, 0);
-        return (long)timeSpan.TotalSeconds;
+        return (long) timeSpan.TotalSeconds;
     }
+
     public int ProfilePic
     {
-        get
-        {
-            return _profilePic;
-        }
+        get { return _profilePic; }
         set
         {
             _profilePic = value;
@@ -840,9 +839,9 @@ public class UIManager : MonoBehaviour
 
             if (_profilePic == -1)
             {
-               return;
+                return;
             }
-            
+
             LobbyScreeen.ProfileScreen.PanelMyAccount.ProfilePanel.PlayerProfile.sprite = assetOfGame.profileAvatarList.profileAvatarSprite[_profilePic];
             LobbyScreeen.profilePicLeft.sprite = assetOfGame.profileAvatarList.profileAvatarSprite[_profilePic];
         }
@@ -862,5 +861,6 @@ public class UIManager : MonoBehaviour
 #endif
         }
     }
+
     #endregion
 }

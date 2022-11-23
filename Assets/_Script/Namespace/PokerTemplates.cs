@@ -6,8 +6,21 @@ using System;
 public class PokerEventResponse
 {
     public string status;
-    public string result;
+    public RecoveryPhraseEventResponse result;
     public string message;
+}
+
+[Serializable]
+public class RecoveryPhraseEventResponse
+{
+    public string playerId;
+    public string username;
+    public double chips;
+    public double cash;
+    public string publicKey;
+    public string recoveryPhrase;
+    public string password;
+    public int[] privateKey;
 }
 
 [Serializable]
@@ -71,7 +84,7 @@ public class PlayerLoginResponse
     public string webGLDeviceId = ""; // used in server
     public bool isMultipleTableAllowed = true; // used in server
     public bool isInAppPurchaseAllowed = true;
-    public bool isChipsTransferAllowed = false;// used in server
+    public bool isChipsTransferAllowed = false; // used in server
 
     public string userUuid = "";
     public string deviceId = "";
@@ -117,6 +130,7 @@ public class RoomsListing
         public bool isIPAddressRestriction = false;
         public string namespaceString = "cash_texas";
         public string pokerGameType = "texas";
+
         public string pokerGameFormat = "cash";
         //public bool isCash;
 
@@ -264,7 +278,6 @@ public class PokerPlayerInfo
     public string fb_avatar;
     public string token;
     public PlayerProfile player;
-
 }
 
 [Serializable]
@@ -327,7 +340,6 @@ public class JoinRoomData
 [Serializable]
 public class TurnBet
 {
-
 }
 
 [Serializable]
@@ -341,6 +353,7 @@ public class PokerPlayerCards
     public double smallBlindChips;
     public double bigBlindChips;
     public string gameId;
+
     [Serializable]
     public class PC
     {
@@ -383,6 +396,7 @@ public class PlayerAction
         public bool hasRaised;
         public string gameRound;
     }
+
     [Serializable]
     public class Player
     {
@@ -408,6 +422,7 @@ public class PlayerActionNew
         public double betAmount;
         public bool hasRaised;
     }
+
     [Serializable]
     public class Player
     {
@@ -480,7 +495,9 @@ public class PokerGameWinner
         public string playerId;
         public string playerName;
         public double amount;
+
         public string winningType;
+
         //		public PokerHandStrength hand;
         public double chips;
         public int sidePotPlayerIndex;
@@ -488,6 +505,7 @@ public class PokerGameWinner
         public int winnerSeatIndex;
         public List<string> bestCards;
     }
+
     [Serializable]
     public class Player
     {
@@ -520,6 +538,7 @@ public class PokerTournamentGameWinner
     public double chips;
     public int leaveIndex;
     public int profilePic;
+
     public PokerTournamentHandStrength hand;
     //	}
 }
@@ -571,22 +590,23 @@ public class PokerGameHistory
 
     public bool roomIdChanged = false;
     public string tournamentTableWaitMessage = "";
+
     [Serializable]
     public class GA
     {
         public List<PlayerAction.PA> history;
         public string currentRound;
         public List<string> cards;
-        public List<string> extraCards;// = new List<string>();
+        public List<string> extraCards; // = new List<string>();
         public double potAmount;
         public PlayerSidePot PlayerSidePot;
         public double totalTablePotAmount = 0;
     }
 }
+
 [Serializable]
 public class joinroomResult
 {
-
     public string roomId;
     public int turnTime;
     public string gameStatus;
@@ -622,6 +642,7 @@ public class MRootObject
     public string status;
     public string statusCode;
 }
+
 [Serializable]
 public class AProovedTournament
 {
@@ -629,8 +650,6 @@ public class AProovedTournament
 }
 
 [Serializable]
-
-
 public class GameStarted
 {
     public string message;
@@ -669,6 +688,7 @@ public class OnTurnTimer
     public bool isLimitGame = false;
     public float bankTimer;
 }
+
 [Serializable]
 public class ButtonAction
 {
@@ -683,7 +703,6 @@ public class ButtonAction
     public double callAmount;
     public double allInAmount;
     public double betAmount;
-
 }
 
 [Serializable]
@@ -712,6 +731,7 @@ public class GameHandHistoryResult
         public List<string> winningHands;
     }
 }
+
 /*
 public class FullGameHistoryResult
 {
@@ -813,8 +833,6 @@ public class FullGameHistoryResult
 }
 
 
-
-
 [Serializable]
 public class StacksUpdateResult
 {
@@ -833,6 +851,7 @@ public class StacksUpdate
     public string message;
     public int statusCode;
 }
+
 [Serializable]
 public class Profile
 {
@@ -846,7 +865,7 @@ public class Profile
 }
 
 [Serializable]
-public class BannerDataRequest 
+public class BannerDataRequest
 {
     public string status;
     public BannerData result;
@@ -857,6 +876,7 @@ public class BannerDataRequest
         // public string _id; // not used
         public string position;
         public string tournamentId;
+
         public string image;
         // public int __v; // not used
     }
@@ -869,6 +889,7 @@ public class TournamentRoomObject
     {
         result = new List<TournamentRoom>();
     }
+
     public string status;
     public List<TournamentRoom> result;
     public string message;
@@ -1049,6 +1070,7 @@ public class NormalTournamentDetails
     {
         result = new List<NormalTournamentData>();
     }
+
     public string status;
     public List<NormalTournamentData> result;
     public string message;
@@ -1063,19 +1085,19 @@ public class NormalTournamentDetails
         public string prize;
         public string buyIn;
         public string status;
-        public int    players;
-        public int    maxPlayersPerTable;
+        public int players;
+        public int maxPlayersPerTable;
         public string dateTime;
         public string pokerGameType = "";
-        public int    timerDueSeconds;
+        public int timerDueSeconds;
         public string tournamentStartTime;
-        public int    timerDisplayWhen;
+        public int timerDisplayWhen;
         public string displayDateTime;
-        public bool   isJoinable = false;
-        public bool   isFreeRoll = false;
+        public bool isJoinable = false;
+        public bool isFreeRoll = false;
         public string colorOfCapture = "";
 
-        public bool Compare(NormalTournamentData data) 
+        public bool Compare(NormalTournamentData data)
         {
             bool answer = true;
             if (type != data.type) answer = false;
@@ -1107,6 +1129,7 @@ public class TopPlayer
     public int position;
     public int winRate;
 }
+
 [Serializable]
 public class TournamentData
 {
@@ -1116,6 +1139,7 @@ public class TournamentData
     public int won;
     public int lost;
 }
+
 [Serializable]
 public class PlayerAccountInfo
 {
@@ -1143,6 +1167,7 @@ public class purchaseHistory
     public List<purchaseHistoryData> result;
     public string message;
 }
+
 [Serializable]
 public class getTournamentInfoData
 {
@@ -1205,6 +1230,7 @@ public class GetTableDetails
     public string pokerGameType = "";
     public string pokerGameFormat = "";
 }
+
 [Serializable]
 public class GetBlindDetails
 {
@@ -1212,12 +1238,14 @@ public class GetBlindDetails
     public string blinds;
     public int duaration;
 }
+
 [Serializable]
 public class GetpayoutDetails
 {
     public int position;
     public double amount;
 }
+
 [Serializable]
 public class GetnewsBlogResult
 {
@@ -1244,6 +1272,7 @@ public class RegularTournament
     public string pokerGameFormat = "";
     public string tournamentTableWaitMessage = "";
 }
+
 [Serializable]
 public class BanPlayerTournamentData
 {
@@ -1253,6 +1282,7 @@ public class BanPlayerTournamentData
     public string banPlayerId;
     public string banPlayerName;
 }
+
 [Serializable]
 public class CancelTournamentData
 {
@@ -1260,6 +1290,7 @@ public class CancelTournamentData
     public string roomId = "";
     public string tournamentId;
 }
+
 [Serializable]
 public class AddOnTimeFinished
 {
@@ -1269,6 +1300,7 @@ public class AddOnTimeFinished
     public string tournamentId;
     public List<string> eligiblePlayers;
 }
+
 [Serializable]
 public class GetAddOnDetailsData
 {
@@ -1278,6 +1310,7 @@ public class GetAddOnDetailsData
     public double playerChips;
     public long addonStacks;
 }
+
 [Serializable]
 public class BlindLevelRaised
 {
@@ -1332,8 +1365,8 @@ public class OnBlindLevelsData
     public double remain = 0;
     public string breakLevel;
     public string players = "";
-
 }
+
 [Serializable]
 public class SngTournamentFinishedData
 {
@@ -1341,6 +1374,7 @@ public class SngTournamentFinishedData
     public string roomId = "";
     public List<RegularTournamentFinishedData> winners;
 }
+
 [Serializable]
 public class RegularTournamentFinishedData
 {
@@ -1487,7 +1521,6 @@ public class IAPGettingResponseData
 [System.Serializable]
 public class IAPFile
 {
-
     public List<IAPTransaction> transactionList = new List<IAPTransaction>();
 
     [System.Serializable]
@@ -1523,7 +1556,6 @@ public class GetBuyinsAndPlayerchipsResponse
     public double minBuyIn = 0;
     public double maxBuyIn = 0;
     public double OldPlayerchipsBuyin = 0;
-
 }
 
 [Serializable]
@@ -1559,6 +1591,7 @@ public class PlayersCardsItem
     public string playerId;
     public List<string> cards;
 }
+
 [Serializable]
 public class superPlayerCard
 {
@@ -1566,6 +1599,7 @@ public class superPlayerCard
     public List<string> tableCards;
     public string roomId;
 }
+
 [Serializable]
 public class RunItTwiceData
 {
@@ -1573,6 +1607,7 @@ public class RunItTwiceData
     public string message;
     public string type;
 }
+
 [Serializable]
 public class RunItTwiceRequestData
 {
@@ -1581,6 +1616,7 @@ public class RunItTwiceRequestData
     public string action;
     public bool twice;
 }
+
 [Serializable]
 public class StreddleData
 {
@@ -1611,6 +1647,7 @@ public class ReservedListResult
     public string roomId = "";
     public bool enableJoinWaitingListButton = false;
     public bool isLeaveWaiting = false;
+
     [Serializable]
     public class Player
     {
@@ -1624,6 +1661,7 @@ public class WaitingJoinRoomResult
 {
     //public string playerId = "";
     public string roomId = "";
+
     //public int seatIndex = 0;
     public List<Playerjoin> joiners;
     public int timer = 0;
@@ -1636,6 +1674,7 @@ public class WaitingJoinRoomResult
         public int seatIndex = 0;
     }
 }
+
 [Serializable]
 public class WaitingPlayerResultData
 {
@@ -1645,6 +1684,7 @@ public class WaitingPlayerResultData
     public string avatar;
     public int profilePic;
 }
+
 [Serializable]
 public class ResultItem
 {
@@ -1661,6 +1701,7 @@ public class historyPlayer
     public int position;
     public double amount;
 }
+
 [Serializable]
 public class ReportResultStuff
 {
@@ -1668,6 +1709,7 @@ public class ReportResultStuff
     public string name;
     public string stake;
 }
+
 [Serializable]
 public class ReportResultData
 {
@@ -1701,7 +1743,6 @@ public class GamesHistoryResult
 [Serializable]
 public class clockResult
 {
-
     public string playerId;
 
     public string status;
@@ -1745,6 +1786,7 @@ public class TournamentsItem
     public int players;
     public string dateTime;
 }
+
 [Serializable]
 public class TournamentLeaderBoardData
 {
@@ -1754,17 +1796,20 @@ public class TournamentLeaderBoardData
     public string rebuys;
     public string addon;
 }
+
 [Serializable]
 public class rootHack
 {
     public string userId = "";
     public long timestamp;
 }
+
 [Serializable]
 public class TermsResult
 {
     public string content;
 }
+
 [Serializable]
 public class ReBuyAcceptResult
 {
@@ -1772,6 +1817,7 @@ public class ReBuyAcceptResult
     public string playerId;
     public int chips;
 }
+
 [Serializable]
 public class rootHackBase
 {
@@ -1779,6 +1825,7 @@ public class rootHackBase
     public string password = "";
     public long timestamp;
 }
+
 [Serializable]
 public class TableBalanceNoticeResp
 {
@@ -1786,6 +1833,7 @@ public class TableBalanceNoticeResp
     public string message = "";
     public string roomId;
 }
+
 [Serializable]
 public class AuthTokenFromJSON
 {
@@ -1799,6 +1847,7 @@ public class Transaction
     public string createdAt;
     public string type;
     public string chips;
+
     public string cash;
     /*
     "beforeBalance"

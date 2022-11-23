@@ -25,6 +25,7 @@ public class GamePanel : MonoBehaviour
     [SerializeField] private Button _lobbyButton;
 
     [Space] [Space]
+
     #region PUBLIC_VARIABLES
 
     ///public Image mainBG;
@@ -32,20 +33,22 @@ public class GamePanel : MonoBehaviour
     //public Image imgTable;
     //public Image imgTableLogoMain;
     public GameObject currentTurnEffect;
+
     [Header("Gamobjects")]
     //public GameObject[] SelectedGame;
     public bool showBetPanel = false;
+
     private List<GameObject> instantiatedObjList = new List<GameObject>();
 
-    [Header("Transforms")]
-    public Transform cardGeneratePosition;
+    [Header("Transforms")] public Transform cardGeneratePosition;
     public Transform ChatParent;
     public GameObject chatPanel;
     public Transform cardsParentForInstantiatedCards;
 
-    [Header("ScriptableObjects")]
-    public PokerCard[] TableCards;
+    [Header("ScriptableObjects")] public PokerCard[] TableCards;
+
     public PokerCard[] TableExtraCards;
+
     //public PokerPlayer[] GamePlayers;
     //public Image[] SeatPositionCups;
     //public Image[] SeatPositionCupsByOrder;
@@ -65,12 +68,11 @@ public class GamePanel : MonoBehaviour
     public RankingPanel RankingScreen;
     public tournamentLeaderBoardPanel tournamentLeaderBoardScreen;
     public waitingTextPanel waitingTextScreen;
-    [Header("Panels")]
-    public FullGameHistoryPanel fullGameHistoryPanel;
+    [Header("Panels")] public FullGameHistoryPanel fullGameHistoryPanel;
 
-    [Header("Images")]
-    public Image imgDealer;
+    [Header("Images")] public Image imgDealer;
     public Image imgstraddleTimer;
+
     public Image imgRunItTwiceTimer;
     //public Sprite[] imgTables;
     //public Sprite[] imgBackgrounds;
@@ -81,7 +83,9 @@ public class GamePanel : MonoBehaviour
     //public Button[] Seats;
     //public Button[] SeatsByOrder;
     public Button btnChat;
+
     public Button btnRebuyinTournament;
+
     //public Button btnRebuyin;
     public Button btnAddOnTournament;
     public Button btnIAmBack;
@@ -95,7 +99,7 @@ public class GamePanel : MonoBehaviour
     public Button btnHistoryOpen;
     public Button btnRankingOpen;
     public Button btnClockOpen;
-    [SerializeField] private RebuyinButtons _rebuyinButtons; 
+    [SerializeField] private RebuyinButtons _rebuyinButtons;
 
     //[Header("Two Player")]
     //public PokerPlayer[] twoByTwoGamePlayers;
@@ -146,8 +150,7 @@ public class GamePanel : MonoBehaviour
     //public Image[] NineByNineSeatPositionCupsByOrder;
 
 
-    [Header("Text")]
-    public TextMeshProUGUI txtPotAmount;
+    [Header("Text")] public TextMeshProUGUI txtPotAmount;
     public TextMeshProUGUI txtTotalTablePotAmount;
     public TextMeshProUGUI txtBlindAmountforTournament;
     public TextMeshProUGUI txtBlindAmountforTournamentTimer;
@@ -161,7 +164,9 @@ public class GamePanel : MonoBehaviour
     public TextMeshProUGUI txtBlindLevel;
     public TextMeshProUGUI txtAppVersionOnTable;
     public TextMeshProUGUI txtTournamentBreakTableMessage;
+
     public Text txtChatPanel;
+
     //public TextMeshProUGUI txtTotalChips;
     public Text txtTwiceTimerText;
     public Text txtStraddleTimerText;
@@ -174,18 +179,15 @@ public class GamePanel : MonoBehaviour
     public Text txtMainPot2;
     public Text txtAddOnTimer;
     public flipfont ffText;
-    [Header("Toggle")]
-    public Toggle toggleSitOutNextHand;
+    [Header("Toggle")] public Toggle toggleSitOutNextHand;
     public Toggle toggleSitOutNextBigBlind;
     public Toggle toggleWaitForBigBlind;
     public Toggle EnglishLang;
     public Toggle HebrewLang;
 
-    [Header("Prefabs")]
-    public Text TxtChatPrefab;
+    [Header("Prefabs")] public Text TxtChatPrefab;
     public GameObject cardPrefab;
-    [Header("Booleans")]
-    public bool HasJoin;
+    [Header("Booleans")] public bool HasJoin;
     public bool Switchingtable;
     public bool isOmahaPokerGame;
     public double _PotAmount;
@@ -200,11 +202,12 @@ public class GamePanel : MonoBehaviour
     string individualLine = ""; //Control individual line in the multi-line text component.
 
     int numberOfAlphabetsInSingleLine = 20;
+
     #endregion
 
     public bool IsCash() => UIManager.Instance.assetOfGame.SavedLoginData.isCash; //rewrite
 
-        #region PRIVATE_VARIABLES
+    #region PRIVATE_VARIABLES
 
     System.Diagnostics.StackTrace stackTrace;
 
@@ -246,17 +249,17 @@ public class GamePanel : MonoBehaviour
     void Start()
     {
         txtAppVersionOnTable.text = Utility.Instance.GetApplicationVersionWithOS();
-        
-        _gameCustomizationButton.onClick.AddListener( _customizationPopup.OpenClose);
+
+        _gameCustomizationButton.onClick.AddListener(_customizationPopup.OpenClose);
         _lobbyButton.onClick.AddListener(BackButtonTap);
     }
 
     public void Init()
     {
         _currentRoomData = new RoomData();
-        
+
         _playerContainer.Init();
-        
+
         _rebuyinButtons.Init(this);
         _pockerRoomCustomization.Init();
         _customizationPopup.Init(_pockerRoomCustomization);
@@ -264,7 +267,6 @@ public class GamePanel : MonoBehaviour
 
         _playerPlaces = _playerContainer.GetPlayerPaces();
         _orderPlayerPlaces = _playerContainer.GetOrderPlayerPaces();
-        
     }
 
     /*public void SetActiveOpenSeatButton(int index, bool active)
@@ -298,7 +300,7 @@ public class GamePanel : MonoBehaviour
     void OnEnable()
     {
         //_playerContainer.Init();
-        
+
         UIManager.Instance.SoundManager.stopBgSound();
         tableCardsListData.Clear();
         currentTurnEffect.gameObject.GetComponent<Image>().enabled = false;
@@ -340,6 +342,7 @@ public class GamePanel : MonoBehaviour
             txtplayersPlayingTournament.text = "";
             GameName = "";
         }
+
         HasJoin = false;
         ownPlayerSeatIndex = 0;
         txtAddOnTimer.Close();
@@ -454,7 +457,7 @@ public class GamePanel : MonoBehaviour
         if (currentRoomData.isTournament)
         {
             _playerContainer.SetActivePlayerPlace(9);
-            
+
             //GamePlayers = NineByNineGamePlayers;
             //Seats = NineByNineSeats;
             //SeatsByOrder = NineByNineSeatsByOrder;
@@ -482,7 +485,7 @@ public class GamePanel : MonoBehaviour
                 //SeatPositionCups = ThreeByThreeSeatPositionCupsByOrder;
                 //SeatPositionCupsByOrder = ThreeByThreeSeatPositionCupsByOrder;
             }
-            else if (currentRoomData.maxPlayers == 4)//new
+            else if (currentRoomData.maxPlayers == 4) //new
             {
                 //GamePlayers = fourByfourGamePlayers;
                 _playerContainer.SetActivePlayerPlace(4);
@@ -502,7 +505,7 @@ public class GamePanel : MonoBehaviour
                 //SeatPositionCups = FiveByFiveSeatPositionCupsByOrder;
                 //SeatPositionCupsByOrder = FiveByFiveSeatPositionCupsByOrder;
             }
-            else if (currentRoomData.maxPlayers == 6)//new
+            else if (currentRoomData.maxPlayers == 6) //new
             {
                 //GamePlayers = sixBysixGamePlayers;
                 _playerContainer.SetActivePlayerPlace(6);
@@ -511,7 +514,7 @@ public class GamePanel : MonoBehaviour
                 //SeatPositionCups = sixBysixSeatPositionCupsByOrder;
                 //SeatPositionCupsByOrder = sixBysixSeatPositionCupsByOrder;
             }
-            else if (currentRoomData.maxPlayers == 7)//new
+            else if (currentRoomData.maxPlayers == 7) //new
             {
                 //GamePlayers = sevenBysevenGamePlayers;
                 _playerContainer.SetActivePlayerPlace(7);
@@ -520,7 +523,7 @@ public class GamePanel : MonoBehaviour
                 //SeatPositionCups = sevenBysevenSeatPositionCupsByOrder;
                 //SeatPositionCupsByOrder = sevenBysevenSeatPositionCupsByOrder;
             }
-            else if (currentRoomData.maxPlayers == 8)//new
+            else if (currentRoomData.maxPlayers == 8) //new
             {
                 //GamePlayers = eightByeightGamePlayers;
                 _playerContainer.SetActivePlayerPlace(8);
@@ -554,9 +557,9 @@ public class GamePanel : MonoBehaviour
             //SeatsByOrder[i].onClick.AddListener(() => { OnSeatButtonTap(newSeatIndex); });
             //SeatPositionCupsByOrder[i].Open();
         }*/
-        
+
         //_playerContainer.InitOpenSeatButtons(OnSeatButtonTap);
-        
+
         for (var i = 0; i < _orderPlayerPlaces.Count; i++)
         {
             var index = i;
@@ -573,7 +576,8 @@ public class GamePanel : MonoBehaviour
 
         WaitForBigBlindCheckbox = false;
         preBetButtonsPanel.toggleSitOutNextBigBlind.Close();
-        preBetButtonsPanel.toggleSitOutNextHand.Close(); ;
+        preBetButtonsPanel.toggleSitOutNextHand.Close();
+        ;
 
         StopCoroutine(SubscribeEventEnum());
         StartCoroutine(SubscribeEventEnum());
@@ -583,6 +587,7 @@ public class GamePanel : MonoBehaviour
         UIManager.Instance.tableManager.MiniTablePosition(0);
         UIManager.Instance.tableManager.ShowAddTableButton();
     }
+
     private void Update()
     {
         if (totalSeconds > 0 && btnIAmBack.gameObject.activeInHierarchy)
@@ -631,6 +636,7 @@ public class GamePanel : MonoBehaviour
             txtRebuyRemainingTime.Close();
         }
     }
+
     void SubscribeEventInvoke()
     {
         UIManager.Instance.SocketGameManager.SubscribeRoom(OnSubscribeRoomDone);
@@ -750,6 +756,7 @@ public class GamePanel : MonoBehaviour
     #endregion
 
     #region DELEGATE_CALLBACKS
+
     private void OnTurnOnRunItTwiceReceived(Socket socket, Packet packet, params object[] args)
     {
         Debug.Log("OnTurnOnRunItTwiceReceived Broadcast Response : " + packet.ToString());
@@ -769,6 +776,7 @@ public class GamePanel : MonoBehaviour
         {
             return;
         }
+
         if (myPlr.status == PlayerStatus.Waiting || myPlr.status == PlayerStatus.Ideal || myPlr.status == PlayerStatus.Fold)
         {
             return;
@@ -776,7 +784,6 @@ public class GamePanel : MonoBehaviour
 
         imgRunItTwiceTimer.fillAmount = 1f;
         btntwiceCards.Open();
-
     }
 
     private void OnRunItTwiceResponseeReceived(Socket socket, Packet packet, params object[] args)
@@ -856,6 +863,7 @@ public class GamePanel : MonoBehaviour
             }
         }
     }
+
     private void OnTurnOnStraddleReceived(Socket socket, Packet packet, params object[] args)
     {
         Debug.Log("OnTurnOnStraddleReceived Broadcast Response : " + packet.ToString());
@@ -882,8 +890,8 @@ public class GamePanel : MonoBehaviour
             {
                 //txtWaitingText.text = StreddleDataResp.message + " " + StreddleDataResp.displayTime + " Seconds";
                 //txtWaitingText.transform.parent.gameObject.SetActive(true);
-
             }
+
             btnExitToLobby.interactable = false;
             btnStandup.interactable = false;
         }
@@ -911,6 +919,7 @@ public class GamePanel : MonoBehaviour
                 btnStraddleCards.Close();
                 btnStraddleCardsCheck.Close();
             }
+
             imgstraddleTimer.fillAmount = 1f;
             //else
             //{
@@ -948,6 +957,7 @@ public class GamePanel : MonoBehaviour
             {
                 return;
             }
+
             if (myPlr.status == PlayerStatus.Waiting || myPlr.status == PlayerStatus.Ideal || myPlr.status == PlayerStatus.Fold)
             {
                 return;
@@ -971,8 +981,8 @@ public class GamePanel : MonoBehaviour
                     //            txtWaitingText.text = StreddleDataResp.message + " " + StreddleDataResp.currentTimer + " Seconds";
                     //          txtWaitingText.transform.parent.gameObject.SetActive(true);
                 }
-
             }
+
             if (StreddleDataResp.isRIT)
             {
                 txtStraddleTimerText.text = StreddleDataResp.currentTimer + "";
@@ -1012,6 +1022,7 @@ public class GamePanel : MonoBehaviour
                     ClockRemainingTime(result.dueSeconds, result.currentTime);
                 }
             }
+
             //#endif
             //ClockData = new clockResult();
             //ClockData.startTime = result.startTime;
@@ -1022,6 +1033,7 @@ public class GamePanel : MonoBehaviour
             Debug.LogError("onAbsolutePlayereceived -> Exception  : " + e);
         }
     }
+
     private void OnReservedSeatList(Socket socket, BestHTTP.SocketIO.Packet packet, params object[] args)
     {
         Debug.Log("OnReservedSeatList  : " + packet.ToString());
@@ -1092,13 +1104,14 @@ public class GamePanel : MonoBehaviour
             this.TableCards[i].DisplayCardWithoutAnimation(subscribeResp.gameHistory.cards[i]);
             tableCardsListData.Add(subscribeResp.gameHistory.cards[i].ToString());
         }
+
         for (int i = 0; i < subscribeResp.gameHistory.extraCards.Count; i++)
         {
             this.TableExtraCards[i].gameObject.SetActive(true);
             this.TableExtraCards[i].DisplayCardWithoutAnimation(subscribeResp.gameHistory.extraCards[i]);
             Debug.Log("extra card > ");
-
         }
+
         tournamentPlayersNumbers = subscribeResp.blindLevelsData.players;
         SetBlindLevelData(subscribeResp.blindLevelsData);
         //Debug.Log("muck => " + currentRoomData.muck);
@@ -1121,7 +1134,7 @@ public class GamePanel : MonoBehaviour
                 plr.StraddleIcon.Open();
             }
         }*/
-        
+
         foreach (var playerPlace in _playerPlaces)
         {
             var pokerPlayer = playerPlace.pokerPlayer;
@@ -1132,12 +1145,12 @@ public class GamePanel : MonoBehaviour
                 pokerPlayer.StraddleIcon.Open();
             }
         }
+
         PokerPlayer ownPlayer = GetOwnPlayer();
         if (this.currentRoomData.isTournament && subscribeResp.isRebuyIn && ownPlayer == null)
         {
             btnRebuyinTournament.Open();
             RebuyRemainingTime(subscribeResp.remainRebuySec);
-
         }
         //foreach (PokerPlayer plr in GamePlayers)
         //{
@@ -1155,6 +1168,7 @@ public class GamePanel : MonoBehaviour
             //Debug.Log("222222");
             GetSuperPlayerRequest();
         }
+
         /*foreach (PokerPlayer plr in GamePlayers)
         {
             if (!plr.PlayerId.Equals(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId) && plr.gameObject.activeInHierarchy)
@@ -1209,7 +1223,7 @@ public class GamePanel : MonoBehaviour
                         }
                     }
                 }*/
-                
+
                 for (int i = 0; i < _playerPlaces.Count; i++)
                 {
                     if (!_playerPlaces[i].pokerPlayer.isActiveAndEnabled)
@@ -1223,6 +1237,7 @@ public class GamePanel : MonoBehaviour
                     }
                 }
             }
+
             if (currentRoomData.maxPlayers == playerInfo.playerInfo.Count)
             {
                 //Debug.Log("sub in ===");
@@ -1235,9 +1250,10 @@ public class GamePanel : MonoBehaviour
                 {
                     orderPlayerPlace.openSeatButton.gameObject.SetActive(false);
                 }
+
                 //_playerContainer.SetActiveOpenSeatButtons(false);
             }
-            
+
             foreach (var orderPlayerPlace in _orderPlayerPlaces)
             {
                 if (orderPlayerPlace.pokerPlayer.playerInfo.id ==
@@ -1318,7 +1334,6 @@ public class GamePanel : MonoBehaviour
 
         if (playerObj.getString("playerId") == UIManager.Instance.assetOfGame.SavedLoginData.PlayerId && !currentRoomData.isTournament)
         {
-
             foreach (var playerPlace in _playerPlaces)
             {
                 if (!playerPlace.pokerPlayer.isActiveAndEnabled)
@@ -1377,6 +1392,7 @@ public class GamePanel : MonoBehaviour
                     }
                 }
             }
+
             /*for (int i = 0; i < GamePlayers.Length; i++)
             {
                 if (!GamePlayers[i].isActiveAndEnabled)
@@ -1507,6 +1523,7 @@ public class GamePanel : MonoBehaviour
         {
             PreviousGameId = gameStartedObj.getString("previousGameId");
         }
+
         if (gameStartedObj.has("previousGameNumber"))
         {
             PreviousGameNumber = gameStartedObj.getString("previousGameNumber");
@@ -1572,6 +1589,7 @@ public class GamePanel : MonoBehaviour
             TableCards[i].SetAlpha(2f);
             //Debug.Log("----i----");
         }
+
         showBetPanel = false;
         Bet.IsPreCallAnySelected = Bet.IsPreCheckSelected = Bet.IsPreFoldSelected = Bet.IsPreCallSelected = false;
         Bet.Close();
@@ -1581,10 +1599,11 @@ public class GamePanel : MonoBehaviour
             StartCoroutine(ShowPotAfterSomeTime(round.PlayerSidePot));
         }
     }
+
     public bool freeze = false;
+
     private void OnGameFinished(Socket socket, BestHTTP.SocketIO.Packet packet, params object[] args)
     {
-
         if (!gameObject.activeSelf)
             return;
 
@@ -1660,7 +1679,6 @@ public class GamePanel : MonoBehaviour
         }
         catch (System.Exception e)
         {
-
         }
     }
 
@@ -1692,7 +1710,7 @@ public class GamePanel : MonoBehaviour
             return;
 
         Debug.Log("---------- OnTurnTimerRecieved ---------- " + packet.ToString());
-        
+
         try
         {
             JSONArray arr = new JSONArray(packet.ToString());
@@ -1731,15 +1749,19 @@ public class GamePanel : MonoBehaviour
                 {
                     waitingTextScreen.closePanel();
                 }
+
                 if (onTurnTimerCall.timer <= 4)
                 {
                     UIManager.Instance.SoundManager.AttentionSoundOnce();
                 }
-                if (!showBetPanel/* || !Bet.isActiveAndEnabled*/)
+
+                if (!showBetPanel /* || !Bet.isActiveAndEnabled*/)
                 {
                     Debug.Log("---------- OnTurnTimerRecieved ---------- " + packet.ToString());
                     showBetPanel = true;
-                    Bet.OpenBetPanelTurn(onTurnTimerCall.buttonAction.callAmount, onTurnTimerCall.buttonAction.betAmount, onTurnTimerCall.buttonAction.minRaise, onTurnTimerCall.buttonAction.maxRaise, onTurnTimerCall.buttonAction.allInAmount, onTurnTimerCall.buttonAction.call, onTurnTimerCall.buttonAction.bet, onTurnTimerCall.buttonAction.check, onTurnTimerCall.buttonAction.raise, onTurnTimerCall.buttonAction.allIn, onTurnTimerCall.timer, onTurnTimerCall.isLimitGame);
+                    Bet.OpenBetPanelTurn(onTurnTimerCall.buttonAction.callAmount, onTurnTimerCall.buttonAction.betAmount, onTurnTimerCall.buttonAction.minRaise, onTurnTimerCall.buttonAction.maxRaise, onTurnTimerCall.buttonAction.allInAmount,
+                        onTurnTimerCall.buttonAction.call, onTurnTimerCall.buttonAction.bet, onTurnTimerCall.buttonAction.check, onTurnTimerCall.buttonAction.raise, onTurnTimerCall.buttonAction.allIn, onTurnTimerCall.timer,
+                        onTurnTimerCall.isLimitGame);
                 }
             }
             else
@@ -1768,7 +1790,6 @@ public class GamePanel : MonoBehaviour
             //			{
             //				GetPlayerCards();
             //			}
-
         }
         catch (System.Exception e)
         {
@@ -1877,7 +1898,6 @@ public class GamePanel : MonoBehaviour
 
             UIManager.Instance.TournamentWinnerPanel.SNGTournamentData(RegularTournamentFinishedDataResp.winners);
             //UIManager.Instance.GameScreeen.Close();
-
         }
         catch (System.Exception e)
         {
@@ -2014,6 +2034,7 @@ public class GamePanel : MonoBehaviour
             BreakTimerPanel.Close();
         }
     }
+
     private void OnBanPlayerTournament(Socket scoket, Packet packet, params object[] args)
     {
         Debug.Log("OnBanPlayerTournament : " + packet.ToString());
@@ -2051,6 +2072,7 @@ public class GamePanel : MonoBehaviour
             Debug.Log("Error at !! " + stackTrace.GetFrame(1).GetMethod().Name);
         }
     }
+
     private void OnTableBalanceNotice(Socket scoket, Packet packet, params object[] args)
     {
         Debug.Log("OnTableBalanceNotice : " + packet.ToString());
@@ -2110,6 +2132,7 @@ public class GamePanel : MonoBehaviour
             Debug.Log("Error at !! " + stackTrace.GetFrame(1).GetMethod().Name);
         }
     }
+
     private void OnRoomDeleted(Socket scoket, Packet packet, params object[] args)
     {
         Debug.Log("OnRoomDeleted : " + packet.ToString());
@@ -2136,6 +2159,7 @@ public class GamePanel : MonoBehaviour
             Debug.Log("Error at !! " + stackTrace.GetFrame(1).GetMethod().Name);
         }
     }
+
     private void OnCancelTournament(Socket scoket, Packet packet, params object[] args)
     {
         Debug.Log("OnCancelTournament : " + packet.ToString());
@@ -2162,6 +2186,7 @@ public class GamePanel : MonoBehaviour
             Debug.Log("Error at !! " + stackTrace.GetFrame(1).GetMethod().Name);
         }
     }
+
     private void OnAddOnTimer(Socket scoket, Packet packet, params object[] args)
     {
         Debug.Log("OnAddOnTimer : " + packet.ToString());
@@ -2184,7 +2209,8 @@ public class GamePanel : MonoBehaviour
             {
                 btnAddOnTournament.gameObject.SetActive(AddOnTimeFinishedResp.tournamentAddon);
                 txtAddOnTimer.gameObject.SetActive(AddOnTimeFinishedResp.tournamentAddon);
-                string remaingAddOnTimes = string.Format("{0:D2}:{1:D2}:{2:D2}", TimeSpan.FromSeconds(AddOnTimeFinishedResp.remaingAddOnTime).Hours, TimeSpan.FromSeconds(AddOnTimeFinishedResp.remaingAddOnTime).Minutes, TimeSpan.FromSeconds(AddOnTimeFinishedResp.remaingAddOnTime).Seconds);
+                string remaingAddOnTimes = string.Format("{0:D2}:{1:D2}:{2:D2}", TimeSpan.FromSeconds(AddOnTimeFinishedResp.remaingAddOnTime).Hours, TimeSpan.FromSeconds(AddOnTimeFinishedResp.remaingAddOnTime).Minutes,
+                    TimeSpan.FromSeconds(AddOnTimeFinishedResp.remaingAddOnTime).Seconds);
                 txtAddOnTimer.text = remaingAddOnTimes + " Left";
             }
             else
@@ -2192,7 +2218,6 @@ public class GamePanel : MonoBehaviour
                 btnAddOnTournament.gameObject.SetActive(false);
                 txtAddOnTimer.gameObject.SetActive(false);
             }
-
         }
         catch (System.Exception e)
         {
@@ -2201,6 +2226,7 @@ public class GamePanel : MonoBehaviour
             Debug.Log("Error at !! " + stackTrace.GetFrame(1).GetMethod().Name);
         }
     }
+
     private void OnbountyTournament(Socket scoket, Packet packet, params object[] args)
     {
         Debug.Log("TournamentBounty : " + packet.ToString());
@@ -2229,6 +2255,7 @@ public class GamePanel : MonoBehaviour
             Debug.Log("Error at !! " + stackTrace.GetFrame(1).GetMethod().Name);
         }
     }
+
     private void OnBlindLevelRaised(Socket scoket, Packet packet, params object[] args)
     {
         Debug.Log("OnBlindLevelRaised : " + packet.ToString());
@@ -2249,7 +2276,6 @@ public class GamePanel : MonoBehaviour
 
             StopCoroutine("BLindValueRaised");
             StartCoroutine(BLindValueRaised(BlindLevelRaisedResp));
-
         }
         catch (System.Exception e)
         {
@@ -2300,7 +2326,7 @@ public class GamePanel : MonoBehaviour
                 BlindLevelRank = "#" + blindLevelData.current.level;
                 BreakLevelRank = blindLevelData.breakLevel;
                 ShowMessage = "BLINDS  : " + blindLevelData.current.smallBlind + "/" + blindLevelData.current.bigBlind
-                    + " (" + +blindLevelData.next.smallBlind + "/" + blindLevelData.next.bigBlind + ")";
+                              + " (" + +blindLevelData.next.smallBlind + "/" + blindLevelData.next.bigBlind + ")";
 
                 txtBlindAmountforTournament.text = ShowMessage;
                 System.TimeSpan t = System.TimeSpan.FromSeconds(blindLevelData.remain);
@@ -2310,7 +2336,6 @@ public class GamePanel : MonoBehaviour
         }
         catch (Exception e)
         {
-
         }
     }
 
@@ -2442,6 +2467,7 @@ public class GamePanel : MonoBehaviour
                         plr.Card4.DisplayCardWithoutAnimation(plr.cards[3]);
                     }
                 }
+
                 if (currentRoomData.pokerGameType == PokerGameType.PLO5.ToString())
                 {
                     plr.Card3.Open();
@@ -2481,7 +2507,6 @@ public class GamePanel : MonoBehaviour
                     plr.Card5.SetAlpha(2);
                 }
             }
-
         }
         catch (System.Exception e)
         {
@@ -2498,7 +2523,6 @@ public class GamePanel : MonoBehaviour
             return;
         try
         {
-
             JSONArray arr = new JSONArray(packet.ToString());
             string Source;
             Source = arr.getString(arr.length() - 1);
@@ -2524,12 +2548,14 @@ public class GamePanel : MonoBehaviour
                         plr.HiddenCard3.Open();
                         plr.HiddenCard4.Open();
                     }
+
                     if (currentRoomData.pokerGameType == PokerGameType.PLO5.ToString())
                     {
                         plr.HiddenCard3.Open();
                         plr.HiddenCard4.Open();
                         plr.HiddenCard5.Open();
                     }
+
                     plr.CloseAllOpenCards();
                 }
             }
@@ -2589,11 +2615,9 @@ public class GamePanel : MonoBehaviour
             {
                 pokerPlayer.OpenShowCards(playerCards.cards, playerCards.cardActiveTime);
             }
-
         }
         catch (System.Exception e)
         {
-
         }
     }
 
@@ -2615,7 +2639,6 @@ public class GamePanel : MonoBehaviour
         }
         catch (System.Exception e)
         {
-
         }
     }
 
@@ -2654,7 +2677,7 @@ public class GamePanel : MonoBehaviour
                 //Do you want to ReBuy 5000 from 10 chips?
                 btnRebuyinTournament.Open();
                 RebuyRemainingTime(result.remainRebuySec);
-                UIManager.Instance.DisplayRebuyinConfirmationPanel("Do you want to Rebuy " /*+ response.result.buyInChips + " from " */+ response.result.buyIn + " chips?", "Rebuy", "Cancel", () =>
+                UIManager.Instance.DisplayRebuyinConfirmationPanel("Do you want to Rebuy " /*+ response.result.buyInChips + " from " */ + response.result.buyIn + " chips?", "Rebuy", "Cancel", () =>
                 {
                     UIManager.Instance.DisplayLoader("Please wait...");
                     UIManager.Instance.RebuyInMessagePanel.btnAffirmativeAction.interactable = false;
@@ -2694,7 +2717,6 @@ public class GamePanel : MonoBehaviour
         }
         catch (System.Exception e)
         {
-
         }
     }
 
@@ -2786,7 +2808,6 @@ public class GamePanel : MonoBehaviour
         }
         catch (System.Exception e)
         {
-
         }
     }
 
@@ -2853,6 +2874,7 @@ public class GamePanel : MonoBehaviour
                     plr.CloseAllOpenCards();
                 }
             }
+
             StartCoroutine(DistributeCards(onPlayerCardsResp.playersCards));
         }
         catch (System.Exception e)
@@ -2918,11 +2940,13 @@ public class GamePanel : MonoBehaviour
                         pokerPlayer.BetAmount = onGameBootResp.smallBlindChips;
                         pokerPlayer.BuyInAmount = onGameBootResp.smallBlindPlayerChips;
                     }
+
                     if (onGameBootResp.bigBlindPlayerId.Equals(pokerPlayer.PlayerId))
                     {
                         pokerPlayer.BetAmount = onGameBootResp.bigBlindChips;
                         pokerPlayer.BuyInAmount = onGameBootResp.bigBlindPlayerChips;
                     }
+
                     if (onGameBootResp.straddlePlayerId != null && onGameBootResp.straddlePlayerId.Equals(pokerPlayer.PlayerId))
                     {
                         pokerPlayer.BetAmount = onGameBootResp.straddleChips;
@@ -2943,7 +2967,6 @@ public class GamePanel : MonoBehaviour
                     WaitForBigBlindCheckbox = false;
                 }
             }
-
         }
         catch (System.Exception e)
         {
@@ -2990,6 +3013,7 @@ public class GamePanel : MonoBehaviour
                         preBetButtonsPanel.toggleSitOutNextHand.Close();
                         preBetButtonsPanel.toggleSitOutNextBigBlind.Close();
                     }
+
                     plr.canvasGroup.alpha = 0.4f;
 
                     if (onIAmBackResp.waitingGameChips > 0)
@@ -3006,6 +3030,7 @@ public class GamePanel : MonoBehaviour
                         toggleSitOutNextHand.isOn = false;
                         toggleSitOutNextBigBlind.isOn = false;
                     }
+
                     plr.canvasGroup.alpha = 1f;
                 }
             }
@@ -3038,7 +3063,6 @@ public class GamePanel : MonoBehaviour
 
             if (OnChatdataResp.roomId.Equals(Constants.Poker.TableId))
             {
-
                 /*
                 if (!chatPanel.activeSelf && HasJoin)
                 {
@@ -3128,9 +3152,10 @@ public class GamePanel : MonoBehaviour
             {
                 orderPlayerPlace.openSeatButton.gameObject.SetActive(false);
             }
-            //_playerContainer.SetActiveOpenSeatButtons(false);
 
+            //_playerContainer.SetActiveOpenSeatButtons(false);
         }
+
         //  return; //OnSubscribeRoom broadcast integrated. dont need to run following lines.
         Debug.Log("OnSubscribeRoomDone received  : " + packet.ToString());
 
@@ -3179,6 +3204,7 @@ public class GamePanel : MonoBehaviour
                 this.TableCards[i].gameObject.SetActive(true);
                 this.TableCards[i].DisplayCardWithoutAnimation(subscribeResp.result.gameHistory.cards[i]);
             }
+
             if (subscribeResp.result.gameStatus.Equals("Running"))
             {
                 btnClockOpen.interactable = true;
@@ -3187,6 +3213,7 @@ public class GamePanel : MonoBehaviour
             {
                 btnClockOpen.interactable = false;
             }
+
             preBetButtonsPanel.SetPrebetOptions(subscribeResp.result.defaultButtons);
 
             if (subscribeResp.result.roomIdChanged)
@@ -3202,7 +3229,6 @@ public class GamePanel : MonoBehaviour
             string message = subscribeResp.message;
             if (string.IsNullOrEmpty(message))
             {
-
                 UIManager.Instance.DisplayMessagePanel(Constants.Messages.SomethingWentWrong, () =>
                 {
                     this.Close();
@@ -3222,6 +3248,7 @@ public class GamePanel : MonoBehaviour
                 });
             }
         }
+
         UIManager.Instance.HideLoader();
     }
 
@@ -3233,7 +3260,6 @@ public class GamePanel : MonoBehaviour
         PokerEventResponse response = JsonUtility.FromJson<PokerEventResponse>(Utility.Instance.GetPacketString(packet));
         if (response.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
         {
-
         }
         else
         {
@@ -3323,6 +3349,7 @@ public class GamePanel : MonoBehaviour
             {
                 rebuyChipsRes.result.maxBuyIn = UIManager.Instance.assetOfGame.SavedLoginData.chips;
             }
+
             BuyInAmountPanel.OpenReBuyinPanel(rebuyChipsRes.result.minBuyIn, rebuyChipsRes.result.maxBuyIn, rebuyChipsRes.result.playerChips);
         }
         else
@@ -3409,6 +3436,7 @@ public class GamePanel : MonoBehaviour
                         {
                             tableCardsListData.Add(onPlayerCardsResp.result.tableCards[j].ToString());
                         }
+
                         StopCoroutine("DistributeSuperPlayerTableCards");
                         StartCoroutine(DistributeSuperPlayerTableCards(onPlayerCardsResp.result.advanceTableCards));
                     }
@@ -3420,6 +3448,7 @@ public class GamePanel : MonoBehaviour
             //UIManager.Instance.DisplayMessagePanel(onPlayerCardsResp.message, null);
         }
     }
+
     private void OnPlayerAddChipsDone(Socket socket, BestHTTP.SocketIO.Packet packet, params object[] args)
     {
         Debug.Log("OnPlayerAddChipsDone  : " + packet.ToString());
@@ -3478,7 +3507,6 @@ public class GamePanel : MonoBehaviour
             {
                 StartCoroutine(NextScreen(0f));
                 HasJoinedRoom = false;
-
             }
             else
             {
@@ -3492,7 +3520,6 @@ public class GamePanel : MonoBehaviour
                     HasJoinedRoom = false;
                 }
             }
-
         }
         else
         {
@@ -3503,6 +3530,7 @@ public class GamePanel : MonoBehaviour
     #endregion
 
     #region PUBLIC_METHODS
+
     public void DisplayTime(double dueSeconds)
     {
         if (dueSeconds < 0)
@@ -3515,6 +3543,7 @@ public class GamePanel : MonoBehaviour
             }
         }
     }
+
     public void reBuyTorunamentButtonTap()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
@@ -3525,50 +3554,50 @@ public class GamePanel : MonoBehaviour
             PokerEventResponse<GetReBuyInChipsResponse> response = JsonUtility.FromJson<PokerEventResponse<GetReBuyInChipsResponse>>(Utility.Instance.GetPacketString(packet2));
 
             //Do you want to ReBuy 5000 from 10 chips?
-            UIManager.Instance.DisplayRebuyinConfirmationPanel("Do you want to Rebuy " /*+ response.result.buyInChips + " from " */+ response.result.buyIn + " chips?", "Rebuy", "Cancel", () =>
-        {
-            UIManager.Instance.DisplayLoader("Please wait...");
-            UIManager.Instance.RebuyInMessagePanel.btnAffirmativeAction.interactable = false;
-            UIManager.Instance.SocketGameManager.PlayerReBuyIn(currentRoomData.roomId, currentRoomData.tournamentId, (socket3, packet3, args3) =>
-        {
-            Debug.Log(Constants.PokerEvents.PlayerReBuyIn + " Response : " + packet3.ToString());
-            UIManager.Instance.HidePopup();
-            JSONArray arr = new JSONArray(packet3.ToString());
-            string Source;
-            Source = arr.getString(arr.length() - 1);
-            var resp1 = Source;
-            PokerEventResponse<ReBuyAcceptResult> resp = JsonUtility.FromJson<PokerEventResponse<ReBuyAcceptResult>>(resp1);
-            UIManager.Instance.HideLoader();
-            UIManager.Instance.RebuyInMessagePanel.btnAffirmativeAction.interactable = true;
-            if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+            UIManager.Instance.DisplayRebuyinConfirmationPanel("Do you want to Rebuy " /*+ response.result.buyInChips + " from " */ + response.result.buyIn + " chips?", "Rebuy", "Cancel", () =>
             {
-                GetRunningGameList(resp.result.roomId);
-                UIManager.Instance.HidePopup();
-                btnRebuyinTournament.Close();
-            }
-            else
+                UIManager.Instance.DisplayLoader("Please wait...");
+                UIManager.Instance.RebuyInMessagePanel.btnAffirmativeAction.interactable = false;
+                UIManager.Instance.SocketGameManager.PlayerReBuyIn(currentRoomData.roomId, currentRoomData.tournamentId, (socket3, packet3, args3) =>
+                {
+                    Debug.Log(Constants.PokerEvents.PlayerReBuyIn + " Response : " + packet3.ToString());
+                    UIManager.Instance.HidePopup();
+                    JSONArray arr = new JSONArray(packet3.ToString());
+                    string Source;
+                    Source = arr.getString(arr.length() - 1);
+                    var resp1 = Source;
+                    PokerEventResponse<ReBuyAcceptResult> resp = JsonUtility.FromJson<PokerEventResponse<ReBuyAcceptResult>>(resp1);
+                    UIManager.Instance.HideLoader();
+                    UIManager.Instance.RebuyInMessagePanel.btnAffirmativeAction.interactable = true;
+                    if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+                    {
+                        GetRunningGameList(resp.result.roomId);
+                        UIManager.Instance.HidePopup();
+                        btnRebuyinTournament.Close();
+                    }
+                    else
+                    {
+                        UIManager.Instance.DisplayMessagePanel(resp.message, null);
+                    }
+                });
+            }, () =>
             {
-                UIManager.Instance.DisplayMessagePanel(resp.message, null);
-            }
-
-        });
-        }, () =>
-    {
-        UIManager.Instance.SocketGameManager.DeclinedReBuyIn(currentRoomData.roomId, currentRoomData.tournamentId, (socket3, packet3, args3) =>
-        {
-            Debug.Log(Constants.PokerEvents.DeclinedReBuyIn + " Response : " + packet3.ToString());
-            UIManager.Instance.HidePopup();
-        });
-        //UIManager.Instance.HidePopup();
-    });
+                UIManager.Instance.SocketGameManager.DeclinedReBuyIn(currentRoomData.roomId, currentRoomData.tournamentId, (socket3, packet3, args3) =>
+                {
+                    Debug.Log(Constants.PokerEvents.DeclinedReBuyIn + " Response : " + packet3.ToString());
+                    UIManager.Instance.HidePopup();
+                });
+                //UIManager.Instance.HidePopup();
+            });
         });
     }
+
     public void ChatValue()
     {
         string str = inputfieldChat.text;
         HebrewOwn(str);
-
     }
+
     public static string Reverse(string s)
     {
         char[] charArray = s.ToCharArray();
@@ -3582,12 +3611,13 @@ public class GamePanel : MonoBehaviour
         Array.Reverse(charArray);
         return new string(charArray);
     }
+
     public void HebrewOwn(string msg)
     {
         bool isHebrew = false;
         bool isFirstHebrew = false;
         bool isprevious = false;
-        char[] separators = new char[] { ' ', '.' };
+        char[] separators = new char[] {' ', '.'};
         string example = "This is an example.";
         string str1 = msg;
         string pattern = @"[\p{IsHebrew} ]+";
@@ -3624,6 +3654,7 @@ public class GamePanel : MonoBehaviour
                 else
                     abc = word;
             }
+
             if (isFirstHebrew)
             {
                 newstat = abc + " " + newstat;
@@ -3632,20 +3663,24 @@ public class GamePanel : MonoBehaviour
             {
                 newstat += " " + abc;
             }
+
             chatMessage = newstat;
         }
     }
+
     public void straddleButtonTap()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         StraddleAccept();
         //UIManager.Instance.DisplayConfirmationPanel("Are you want to Be straddle Player ?", StraddleAccept, StraddleeReject);
     }
+
     public void twoXButtonTap()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         UIManager.Instance.DisplayConfirmationPanel("Would you like to Run it Twice?", runItTwiceAccept, runItTwiceReject);
     }
+
     public void StraddleAccept()
     {
         UIManager.Instance.SocketGameManager.StraddleRequest(true, (socket, packet, args) =>
@@ -3670,6 +3705,7 @@ public class GamePanel : MonoBehaviour
             }
         });
     }
+
     public void StraddleeReject()
     {
         UIManager.Instance.SocketGameManager.StraddleRequest(false, (socket, packet, args) =>
@@ -3690,7 +3726,6 @@ public class GamePanel : MonoBehaviour
 
             if (userPurchaseDataResp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
             {
-
                 //UIManager.Instance.DisplayMessagePanel(userPurchaseDataResp.message);
             }
             else
@@ -3699,11 +3734,11 @@ public class GamePanel : MonoBehaviour
             }
         });
     }
+
     public void runItTwiceAccept()
     {
         UIManager.Instance.SocketGameManager.RunItTwiceRequest(true, (socket, packet, args) =>
         {
-
             Debug.Log("RunItTwiceRequest  : " + packet.ToString());
 
             UIManager.Instance.HideLoader();
@@ -3721,21 +3756,19 @@ public class GamePanel : MonoBehaviour
 
             if (userPurchaseDataResp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
             {
-
                 //UIManager.Instance.DisplayMessagePanel(userPurchaseDataResp.message);
             }
             else
             {
                 UIManager.Instance.DisplayMessagePanel(userPurchaseDataResp.message);
             }
-
         });
     }
+
     public void runItTwiceReject()
     {
         UIManager.Instance.SocketGameManager.RunItTwiceRequest(false, (socket, packet, args) =>
         {
-
             Debug.Log("RunItTwiceRequest  : " + packet.ToString());
 
             UIManager.Instance.HideLoader();
@@ -3753,16 +3786,15 @@ public class GamePanel : MonoBehaviour
 
             if (userPurchaseDataResp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
             {
-
                 //UIManager.Instance.DisplayMessagePanel(userPurchaseDataResp.message);
             }
             else
             {
                 UIManager.Instance.DisplayMessagePanel(userPurchaseDataResp.message);
             }
-
         });
     }
+
     public void GetSuperPlayerRequest()
     {
         UIManager.Instance.SocketGameManager.ShowOtherPlayersCard(OnShowOtherPlayersCardDone);
@@ -3773,7 +3805,7 @@ public class GamePanel : MonoBehaviour
         UIManager.Instance.SoundManager.OnButtonClick();
         UIManager.Instance.SocketGameManager.GetPlayerReBuyInChips(OnGetPlayerReBuyInChipsDone);
     }
-    
+
     public void GetPlayerReBuyInMoney()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
@@ -3785,44 +3817,43 @@ public class GamePanel : MonoBehaviour
         UIManager.Instance.SoundManager.OnButtonClick();
         UIManager.Instance.SocketGameManager.PlayerAddChips(1000, OnPlayerAddChipsDone);
     }
+
     public void AddOnForTournament()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         UIManager.Instance.SocketGameManager.GetAddOnDetails(currentRoomData.roomId, currentRoomData.tournamentId, (socket2, packet2, args2) =>
-           {
-               Debug.Log(Constants.PokerEvents.GetReBuyInChips + " Response : " + packet2.ToString());
+        {
+            Debug.Log(Constants.PokerEvents.GetReBuyInChips + " Response : " + packet2.ToString());
 
-               PokerEventResponse<GetAddOnDetailsData> response = JsonUtility.FromJson<PokerEventResponse<GetAddOnDetailsData>>(Utility.Instance.GetPacketString(packet2));
+            PokerEventResponse<GetAddOnDetailsData> response = JsonUtility.FromJson<PokerEventResponse<GetAddOnDetailsData>>(Utility.Instance.GetPacketString(packet2));
 
-               //Do you want to ReBuy 5000 from 10 chips?
-               UIManager.Instance.DisplayConfirmationPanel("Do you want to Add On " /*+ response.result.buyInChips + " from " */+ response.result.buyIn + " chips?", "Add On", "Cancel", () =>
-          {
-              UIManager.Instance.SocketGameManager.BuyAddOnChips(currentRoomData.roomId, currentRoomData.tournamentId, (socket3, packet3, args3) =>
-          {
-              Debug.Log(Constants.PokerEvents.BuyAddOnChips + " Response : " + packet3.ToString());
-              UIManager.Instance.HidePopup();
-              JSONArray arr = new JSONArray(packet3.ToString());
-              string Source;
-              Source = arr.getString(arr.length() - 1);
-              var resp1 = Source;
-              PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(resp1);
+            //Do you want to ReBuy 5000 from 10 chips?
+            UIManager.Instance.DisplayConfirmationPanel("Do you want to Add On " /*+ response.result.buyInChips + " from " */ + response.result.buyIn + " chips?", "Add On", "Cancel", () =>
+            {
+                UIManager.Instance.SocketGameManager.BuyAddOnChips(currentRoomData.roomId, currentRoomData.tournamentId, (socket3, packet3, args3) =>
+                {
+                    Debug.Log(Constants.PokerEvents.BuyAddOnChips + " Response : " + packet3.ToString());
+                    UIManager.Instance.HidePopup();
+                    JSONArray arr = new JSONArray(packet3.ToString());
+                    string Source;
+                    Source = arr.getString(arr.length() - 1);
+                    var resp1 = Source;
+                    PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(resp1);
 
-              if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
-              {
-                  UIManager.Instance.HidePopup();
-                  btnRebuyinTournament.Close();
-              }
-              else
-              {
-                  UIManager.Instance.DisplayMessagePanel(resp.message, null);
-              }
-          });
-          }, () =>
-      {
-          UIManager.Instance.HidePopup();
-      });
-           });
+                    if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+                    {
+                        UIManager.Instance.HidePopup();
+                        btnRebuyinTournament.Close();
+                    }
+                    else
+                    {
+                        UIManager.Instance.DisplayMessagePanel(resp.message, null);
+                    }
+                });
+            }, () => { UIManager.Instance.HidePopup(); });
+        });
     }
+
     public void LobbyButtonTap()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
@@ -3856,28 +3887,28 @@ public class GamePanel : MonoBehaviour
     {
         UIManager.Instance.DisplayConfirmationPanel("Are you sure you want to leave game?",
             "Yes", "No", () =>
-             {
-                 UIManager.Instance.SoundManager.OnButtonClick();
-                 UIManager.Instance.SocketGameManager.CheckLeaveRoomEligibility((socket, packet, args) =>
-                 {
-                     print("CheckLeaveRoomEligibility 2 : " + packet.ToString());
+            {
+                UIManager.Instance.SoundManager.OnButtonClick();
+                UIManager.Instance.SocketGameManager.CheckLeaveRoomEligibility((socket, packet, args) =>
+                {
+                    print("CheckLeaveRoomEligibility 2 : " + packet.ToString());
 
-                     if (!gameObject.activeSelf)
-                         return;
+                    if (!gameObject.activeSelf)
+                        return;
 
-                     PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(Utility.Instance.GetPacketString(packet));
+                    PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(Utility.Instance.GetPacketString(packet));
 
-                     if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
-                     {
-                         OnLobbyDone();
-                         UIManager.Instance.HidePopup();
-                     }
-                 });
-             }, () =>
-             {
-                 UIManager.Instance.SoundManager.OnButtonClick();
-                 UIManager.Instance.HidePopup();
-             });
+                    if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+                    {
+                        OnLobbyDone();
+                        UIManager.Instance.HidePopup();
+                    }
+                });
+            }, () =>
+            {
+                UIManager.Instance.SoundManager.OnButtonClick();
+                UIManager.Instance.HidePopup();
+            });
     }
 
     public void BackButtonTap()
@@ -3886,11 +3917,13 @@ public class GamePanel : MonoBehaviour
         UIManager.Instance.tableManager.DeselectAllTableSelection();
         StartCoroutine(NextScreen(0f));
     }
+
     public void OnCancelTournamentDone()
     {
         OnLobbyDone();
         UIManager.Instance.HidePopup();
     }
+
     public void OnLobbyDone()
     {
         UIManager.Instance.DisplayLoader("");
@@ -3905,6 +3938,7 @@ public class GamePanel : MonoBehaviour
         {
             UIManager.Instance.SocketGameManager.UnSubscribeRoom(UIManager.Instance.gameType, OnUnSubscribeRoomDone);
         }
+
         /*}
         else 
         {
@@ -3916,6 +3950,7 @@ public class GamePanel : MonoBehaviour
             }
         }*/
     }
+
     public void OnStandupButtonTap()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
@@ -3924,6 +3959,7 @@ public class GamePanel : MonoBehaviour
             OnStandup(Constants.Poker.TableId);
         }
     }
+
     private void OnStandUpDone(Socket socket, Packet packet, params object[] args)
     {
         Debug.Log("StandUpDone Response : " + packet.ToString());
@@ -3939,16 +3975,13 @@ public class GamePanel : MonoBehaviour
         if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
         {
             OldPlayerBuyIn = resp.result.oldPlayerBuyIn;
-
         }
         else
         {
             UIManager.Instance.DisplayMessagePanel(resp.message);
         }
-
-
-
     }
+
     public void OnCloseButtonTap()
     {
         UIManager.Instance.messagePanel.Close();
@@ -4015,20 +4048,24 @@ public class GamePanel : MonoBehaviour
             });
         }
     }
+
     void CloseChatPanel()
     {
         chatPanel.gameObject.SetActive(false);
     }
+
     public void HebrewTick()
     {
         inputfieldChat.Close();
         inputfieldChatHebrew.Open();
     }
+
     public void EnglishTick()
     {
         inputfieldChat.Open();
         inputfieldChatHebrew.Close();
     }
+
     public void OnSeatButtonTap(int SeatIndex)
     {
         UIManager.Instance.SoundManager.OnButtonClick();
@@ -4101,7 +4138,7 @@ public class GamePanel : MonoBehaviour
     public void SetRoomDataAndPlay(RoomsListing.Room currentRoomData)
     {
         _currentRoomData.SetRoom(currentRoomData);
-        
+
         _pockerRoomCustomization.SetData(_currentRoomData);
 
         //this.currentRoomData = currentRoomData;
@@ -4183,6 +4220,7 @@ public class GamePanel : MonoBehaviour
         }
         */
     }
+
     /*
     public void SetRoomDataAndPlay(string roomId, string namespaceString, string pokerGameType, string pokerGameFormat)
     {
@@ -4272,9 +4310,11 @@ public class GamePanel : MonoBehaviour
             {
                 currentRoomData.maxBuyIn = UIManager.Instance.assetOfGame.SavedLoginData.chips;
             }
+
             BuyInAmountPanel.OpenWaitingPlayerBuyinPanel(currentRoomData.minBuyIn, currentRoomData.maxBuyIn, SeatIndex, true);
         }
     }
+
     public void OnShowCardButtonTap()
     {
         if (PreviousGameId == null || PreviousGameId == "")
@@ -4291,14 +4331,13 @@ public class GamePanel : MonoBehaviour
             try
             {
                 PokerEventResponse response = JsonUtility.FromJson<PokerEventResponse>(Utility.Instance.GetPacketString(packet));
-                if (response.result == Constants.PokerAPI.KeyStatusSuccess)
+                if (JsonUtility.ToJson(response.result) == Constants.PokerAPI.KeyStatusSuccess)
                 {
                     btnShowCards.interactable = true;
                     btnShowCards.Close();
                 }
                 else
                 {
-
                 }
             }
             catch (System.Exception e)
@@ -4334,12 +4373,15 @@ public class GamePanel : MonoBehaviour
                     {
                         btnClockOpen.Open();
                     }
+
                     btnRankingOpen.Open();
                     btnHistoryOpen.Open();
                 }
+
                 break;
             }
         }
+
         if (!HasJoin && isOwnPlayerSeatedInList)
             ResetData(!HasJoin);
         //#############################
@@ -4353,7 +4395,7 @@ public class GamePanel : MonoBehaviour
             int newSeatIndex = GetSeatIndexForPlayer(plr.seatIndex);
             var playerPlaceSeat = _playerPlaces[newSeatIndex];
             var pokerPlayer = playerPlaceSeat.pokerPlayer;
-  
+
             if (!pokerPlayer.gameObject.activeSelf)
             {
                 pokerPlayer.Open();
@@ -4376,9 +4418,9 @@ public class GamePanel : MonoBehaviour
                 {
                     playerPlaceSeat.SetAvatar(profilePic);
                 }
-                
+
                 playerPlaceSeat.SetFlag(plr.flag);
-                
+
                 playerPlaceSeat.SetName(plr.username);
                 playerPlaceSeat.SetChip(plr.chips);
                 //pokerPlayer.ProfilePic.sprite = UIManager.Instance.assetOfGame.profileAvatarList.profileAvatarSprite[profilePic];
@@ -4402,6 +4444,7 @@ public class GamePanel : MonoBehaviour
                         pokerPlayer.status = PlayerStatus.Fold;
                         plr.status = PlayerStatus.Fold.ToString();
                     }
+
                     if (plr.status.Equals("ReBuyIn") || plr.status.Equals("ReBuyWait"))
                     {
                         pokerPlayer.status = PlayerStatus.Waiting;
@@ -4506,6 +4549,7 @@ public class GamePanel : MonoBehaviour
                     UIManager.Instance.assetOfGame.SavedLoginData.isAbsolute = false;
                     UIManager.Instance.AbsolutePlayer = false;
                 }
+
                 if (currentRoomData.isTournament == false)
                 {
                     _rebuyinButtons.Open();
@@ -4543,6 +4587,7 @@ public class GamePanel : MonoBehaviour
                 {
                     orderPlayerPlace.openSeatButton.gameObject.SetActive(!HasJoin);
                 }
+
                 //_playerContainer.SetActiveOpenSeatButtons(!HasJoin);
             }
 
@@ -4556,17 +4601,17 @@ public class GamePanel : MonoBehaviour
 
                         //_playerContainer.SetActiveOpenSeatButton(k, false);
                     }
-                } 
+                }
             }
             else
             {
                 foreach (var playerPlace in _playerPlaces)
                 {
                     playerPlace.openSeatButton.gameObject.SetActive(false);
-                } 
+                }
             }
-            
-            
+
+
             /*for (int k = 0; k < _playerContainer.GetPlayerPlaceCount(); k++)
             {
                 if (UIManager.Instance.selectedGameType == GameType.cash)
@@ -4588,6 +4633,7 @@ public class GamePanel : MonoBehaviour
             pokerPlayer.Dealer.gameObject.SetActive(SpadePlayerData.dealerPlayerId == plr.id);
         }
     }
+
     private void ResetSeatIndexForOwnPlayer(int ownPlayerSeatIndex)
     {
         if (_playerPlaces[0].pokerPlayer.PlayerId != UIManager.Instance.assetOfGame.SavedLoginData.PlayerId)
@@ -4597,15 +4643,16 @@ public class GamePanel : MonoBehaviour
 
         var playerPlaceCount = _playerPlaces.Count;
         int count = ownPlayerSeatIndex;
-        
+
         for (int i = 0; i < playerPlaceCount - ownPlayerSeatIndex; i++)
         {
             int newSeatIndex = count;
             _orderPlayerPlaces[i].SetOpenSeat(() => OnSeatButtonTap(newSeatIndex));
-            
+
             //_playerContainer.InitOpenSeatButton(i, () => OnSeatButtonTap(newSeatIndex));
             count++;
         }
+
         count = 0;
         for (int i = playerPlaceCount - ownPlayerSeatIndex; i < playerPlaceCount; i++)
         {
@@ -4625,7 +4672,6 @@ public class GamePanel : MonoBehaviour
 
             if (plr != null)
             {
-
                 if (action.gameRound.ToEnum<PokerGameRound>() == CurrentRound)
                 {
                     //					plr.BetAmount += action.betAmount;
@@ -4683,7 +4729,6 @@ public class GamePanel : MonoBehaviour
             PokerEventResponse response = JsonUtility.FromJson<PokerEventResponse>(Utility.Instance.GetPacketString(packet));
             if (response.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
             {
-
             }
             else
             {
@@ -4712,11 +4757,13 @@ public class GamePanel : MonoBehaviour
 #endif
         }
     }
+
     public void OnStandup(string Room)
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         UIManager.Instance.SocketGameManager.Standup(1, Room, OnStandUpDone);
     }
+
     public void OnHistoryButtonTap()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
@@ -4736,6 +4783,7 @@ public class GamePanel : MonoBehaviour
             RankingScreen.gameObject.SetActive(!RankingScreen.gameObject.activeSelf);
         }
     }
+
     public void OnClockButtonTap()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
@@ -4760,13 +4808,11 @@ public class GamePanel : MonoBehaviour
                 PokerEventResponse<PlayerLoginResponse> loginResponse = JsonUtility.FromJson<PokerEventResponse<PlayerLoginResponse>>(resp);
                 if (loginResponse.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
                 {
-
                 }
                 else
                 {
                 }
             });
-
         }
     }
 
@@ -4788,7 +4834,7 @@ public class GamePanel : MonoBehaviour
             foreach (var playerPlace in _playerPlaces)
             {
                 var pokerPlayer = playerPlace.pokerPlayer;
-                
+
                 if (pokerPlayer.SidePotAmount > 0)
                 {
                     GameObject potChipsObj = Instantiate(txtPotAmount.gameObject.transform.parent.gameObject) as GameObject;
@@ -4862,6 +4908,7 @@ public class GamePanel : MonoBehaviour
             //PotAmountValue = round.topMainPot;
         }
     }
+
     DateTime currentDateupdate;
     /*  void StoreTimeNow()
       {
@@ -4925,10 +4972,11 @@ public class GamePanel : MonoBehaviour
             {
                 orderPlayerPlace.openSeatButton.gameObject.SetActive(false);
             }
+
             //_playerContainer.SetActiveOpenSeatButtons(false);
         }
     }
-    
+
     public void reconnectResetData()
     {
         TournamentBreakTableMessage = "";
@@ -4940,7 +4988,7 @@ public class GamePanel : MonoBehaviour
         foreach (var playerPlace in _playerPlaces)
         {
             var pokerPlayer = playerPlace.pokerPlayer;
-            
+
             pokerPlayer.txtUsername.text = "";
             pokerPlayer.PlayerId = "";
             pokerPlayer.txtChips.text = "";
@@ -4951,6 +4999,7 @@ public class GamePanel : MonoBehaviour
             pokerPlayer.Close();
             pokerPlayer.playerInfo = null;
         }
+
         /*foreach (PokerPlayer plr in GamePlayers)
         {
             plr.txtUsername.text = "";
@@ -5021,6 +5070,7 @@ public class GamePanel : MonoBehaviour
             var pokerPlayer = playerPlace.pokerPlayer;
             pokerPlayer.txtSidePot.transform.parent.gameObject.SetActive(false);
         }
+
         /*foreach (PokerPlayer pokerPlayer in GamePlayers)
         {
             pokerPlayer.txtSidePot.transform.parent.gameObject.SetActive(false);
@@ -5029,6 +5079,7 @@ public class GamePanel : MonoBehaviour
         {
             return;
         }
+
         allInPanel.Close();
         RaisePanel.Close();
         BreakTimerPanel.Close();
@@ -5088,8 +5139,8 @@ public class GamePanel : MonoBehaviour
 
                     Utility.Instance.MoveObject(imgBetIncr.transform, fromPos, toPos, 0.2f);
                     Destroy(imgBetIncr.gameObject, 0.23f);
-
                 }
+
                 //	UP ANIMATION
                 print("$$$$$$$$$$$$$$$$$ action.action.action1: " + action.action.action);
                 print("$$$$$$$$$$$$$$$$$ action.action.action2: " + (action.action.action == PokerPlayerAction.SmallBlind));
@@ -5157,6 +5208,7 @@ public class GamePanel : MonoBehaviour
                     plr.status = PlayerStatus.Allin;
                     plr.playerInfo.status = PlayerStatus.Allin.ToString();
                 }
+
                 //				try {
                 //					HistoryManager.GetInstance ().AddHistory (plr.PlayerId, plr.playerInfo.username, CurrentRound, action.action.betAmount, plr.BetAmount, (PokerPlayerAction)action.action.action, action.action.hasRaised);
                 //				} catch (System.Exception e) {
@@ -5281,6 +5333,7 @@ public class GamePanel : MonoBehaviour
                     }
                 }
             }
+
             pokerPlayer.Close();
             pokerPlayer.playerInfo = null;
             pokerPlayer.PlayerId = "";
@@ -5293,12 +5346,13 @@ public class GamePanel : MonoBehaviour
         foreach (var playerPlace in _playerPlaces)
         {
             var pokerPlayer = playerPlace.pokerPlayer;
-            
+
             pokerPlayer.Close();
             pokerPlayer.playerInfo = null;
             pokerPlayer.PlayerId = "";
             pokerPlayer.status = PlayerStatus.None;
         }
+
         /*foreach (PokerPlayer player in GamePlayers)
         {
             player.Close();
@@ -5314,6 +5368,7 @@ public class GamePanel : MonoBehaviour
         {
             pc.card.CrossFadeAlpha(Constants.Poker.MatchedCardAlpha, 0, true);
         }
+
         foreach (PokerCard pc in TableExtraCards)
         {
             pc.card.CrossFadeAlpha(Constants.Poker.MatchedCardAlpha, 0, true);
@@ -5326,10 +5381,12 @@ public class GamePanel : MonoBehaviour
         {
             Destroy(Objects.gameObject);
         }
+
         foreach (Transform Objects in cardGeneratePosition)
         {
             Destroy(Objects.gameObject);
         }
+
         foreach (Transform Objects in cardsParentForInstantiatedCards)
         {
             Destroy(Objects.gameObject);
@@ -5345,6 +5402,7 @@ public class GamePanel : MonoBehaviour
                 Destroy(obj);
             }
         }
+
         instantiatedObjList.Clear();
     }
 
@@ -5368,7 +5426,7 @@ public class GamePanel : MonoBehaviour
     private int GetActivePlayerCount()
     {
         int count = 0;
-        
+
         /*for (int i = 0; i < GamePlayers.Length; i++)
         {
             if (GamePlayers[i].isActiveAndEnabled)
@@ -5376,7 +5434,7 @@ public class GamePanel : MonoBehaviour
                 count++;
             }
         }*/
-        
+
         foreach (var playerPlace in _playerPlaces)
         {
             if (playerPlace.pokerPlayer.isActiveAndEnabled)
@@ -5441,7 +5499,6 @@ public class GamePanel : MonoBehaviour
 
     public void ClockRemainingTime(double startTime, string currentTime)
     {
-
         /*  DateTime bonusStartTime = DateTime.Parse(startTime);
 
           Debug.Log("startTime : " + bonusStartTime);
@@ -5497,10 +5554,12 @@ public class GamePanel : MonoBehaviour
           clocktotalSeconds = clockhoursInSeconds + clockminutesInSeconds + clocksecondsInSeconds;*/
         clocktotalSeconds = startTime;
     }
+
     public void RebuyRemainingTime(double startTime)
     {
         totalRebuySeconds = startTime;
     }
+
     public void GetRunningGameList(string RoomID)
     {
         if (!UIManager.Instance.IsMultipleTableAllowed || UIManager.Instance.MainHomeScreen.isActiveAndEnabled)
@@ -5513,7 +5572,6 @@ public class GamePanel : MonoBehaviour
 
             if (roomsResp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
             {
-
                 if (UIManager.Instance.MainHomeScreen.isActiveAndEnabled)
                     return;
 
@@ -5544,9 +5602,11 @@ public class GamePanel : MonoBehaviour
             }
         });
     }
+
     #endregion
 
     #region COROUTINES
+
     IEnumerator SidePotAnimation(Vector3 fromPos, Vector3 toPos, GameObject potChipsObj)
     {
         float time = 0.5f;
@@ -5565,6 +5625,7 @@ public class GamePanel : MonoBehaviour
         yield return new WaitForSeconds(timer);
         UIManager.Instance.HidemessagePanelInfoPopup();
     }
+
     IEnumerator RemovePLayerInfo(string ShowMessage)
     {
         UIManager.Instance.DisplayMessagePanelOnly(ShowMessage);
@@ -5594,6 +5655,7 @@ public class GamePanel : MonoBehaviour
             UIManager.Instance.HidePopup();
             btnRebuyinTournament.Close();
         }
+
         if (BlindLevelRaisedData.isNotify)
         {
             ShowMessage = BlindLevelRaisedData.message + " " + BlindLevelRaisedData.smallBlind + "/" + BlindLevelRaisedData.bigBlind;
@@ -5605,7 +5667,6 @@ public class GamePanel : MonoBehaviour
 
     private IEnumerator bountyTournamentDisplay(BlindLevelRaised BlindLevelRaisedData)
     {
-
         string ShowMessage = "";
         ShowMessage = BlindLevelRaisedData.message + " " + BlindLevelRaisedData.smallBlind + "/" + BlindLevelRaisedData.bigBlind;
         UIManager.Instance.DisplayMessagePanelOnly(ShowMessage);
@@ -5671,6 +5732,7 @@ public class GamePanel : MonoBehaviour
             _playerPlaces[i].pokerPlayer.BetAmount = 2000;
             yield return new WaitForSeconds(0.2f);
         }
+
         StartCoroutine("MovepotToAnimation");
     }
 
@@ -5766,6 +5828,7 @@ public class GamePanel : MonoBehaviour
         {
             cardsPerPlayer = 5;
         }
+
         Debug.Log("DistributeCards cardsPerPlayer => " + cardsPerPlayer);
 
         for (int totalCards = 0; totalCards < cardsPerPlayer; totalCards++)
@@ -5941,6 +6004,7 @@ public class GamePanel : MonoBehaviour
                 plr.HiddenCard5.Open();
             }
         }
+
         Destroy(card);
 
         //Debug.Log("$ Card open");
@@ -5980,6 +6044,7 @@ public class GamePanel : MonoBehaviour
                     this.TableCards[i].SetAlpha(0.5f);
                 }
             }
+
             //else
             //{
             //    this.TableCards[i].SetAlpha(1f);
@@ -5995,6 +6060,7 @@ public class GamePanel : MonoBehaviour
                 //   this.TableCards[i].SetAlpha(1f);
                 continue;
             }
+
             /*
                         GameObject tc = Instantiate(cardPrefab) as GameObject;
                         instantiatedObjList.Add(tc);
@@ -6035,9 +6101,11 @@ public class GamePanel : MonoBehaviour
             {
                 this.TableCards[i].SetAlpha(1f);
             }
+
             this.TableCards[i].PlayAnimation(tableCards[i]);
         }
     }
+
     private IEnumerator DistributeTableCards(List<string> tableCards)
     {
         int openedCardCount = 0;
@@ -6085,6 +6153,7 @@ public class GamePanel : MonoBehaviour
             Destroy(tc);
         }
     }
+
     private IEnumerator DistributeExtraTableCards(List<string> normalTableCards, List<string> extraTableCards, int extraCardsPosition)
     {
         //yield return new WaitForSeconds(0.5f);
@@ -6121,7 +6190,6 @@ public class GamePanel : MonoBehaviour
 
         for (int i = extraCardsPosition; i < chintan; i++)
         {
-
             //Debug.Log("Temp : " + temp);
             if (this.TableExtraCards[i].gameObject.activeSelf)
             {
@@ -6161,9 +6229,9 @@ public class GamePanel : MonoBehaviour
             this.TableExtraCards[i].PlayAnimation(extraTableCards[temp]);
             Destroy(tc);
             temp++;
-
         }
     }
+
     public GameObject winnerType;
 
     private IEnumerator DisplayWinningAnimation(PokerGameWinner winner)
@@ -6238,7 +6306,6 @@ public class GamePanel : MonoBehaviour
 
                 if (winnerTypeObj != null)
                     Destroy(winnerTypeObj, 1f);
-
             }
             else if (winnerPlayer != null)
             {
@@ -6249,6 +6316,7 @@ public class GamePanel : MonoBehaviour
                 {
                     continue;
                 }
+
                 if (SidePotAmountNew.sidePot[fromSeatPos].sidePotAmount <= 0)
                     continue;
 
@@ -6442,7 +6510,6 @@ public class GamePanel : MonoBehaviour
 
         if (DisplayRevertPlayer != null)
         {
-
             PlayerSidePot mainPot = SidePotAmountNew;
             mainPot.mainPot -= wnr.amount;
             TotalTablePotAmount -= wnr.amount;
@@ -6567,17 +6634,17 @@ public class GamePanel : MonoBehaviour
                     plr.Card3.PlayAnimation(plr.cards[2]);
                     plr.Card4.PlayAnimation(plr.cards[3]);
                     plr.Card5.PlayAnimation(plr.cards[4]);
-
                 }
             }
+
             yield return new WaitForSeconds(1.5f);
             plr.CloseAllHiddenCards();
         }
     }
+
     //Mobile Texas and Omaha player turn effect
     private IEnumerator OnNextTurnHighlightsPlayerEffect(string nextTurnPlayerId)
     {
-
         //foreach (PokerPlayer p in UIManager.Instance.GameScreeen.GamePlayers)
         foreach (var playerPlace in _playerPlaces)
         {
@@ -6597,12 +6664,13 @@ public class GamePanel : MonoBehaviour
                     yield return 0;
                 }
             }
-
         }
     }
+
     #endregion
 
     #region GETTER_SETTER
+
     public long MainPot1
     {
         set
@@ -6638,36 +6706,22 @@ public class GamePanel : MonoBehaviour
             txtSidePot2.gameObject.transform.parent.gameObject.SetActive(value > 0);
         }
     }
+
     public PokerGameRound CurrentRound
     {
-        get
-        {
-            return _currentRound;
-        }
-        set
-        {
-            _currentRound = value;
-        }
+        get { return _currentRound; }
+        set { _currentRound = value; }
     }
 
     public int TurnTime
     {
-        get
-        {
-            return _turnTime;
-        }
-        set
-        {
-            _turnTime = value;
-        }
+        get { return _turnTime; }
+        set { _turnTime = value; }
     }
 
     public double PotAmountValue
     {
-        get
-        {
-            return _PotAmount;
-        }
+        get { return _PotAmount; }
         set
         {
             _PotAmount = value;
@@ -6706,13 +6760,13 @@ public class GamePanel : MonoBehaviour
     public PokerPlayer GetOwnPlayer()
     {
         PokerPlayer pp = null;
-        
-       /* foreach (PokerPlayer p in GamePlayers)
-        {
-            if (p.PlayerId.Equals(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId))
-                pp = p;
-        }*/
-        
+
+        /* foreach (PokerPlayer p in GamePlayers)
+         {
+             if (p.PlayerId.Equals(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId))
+                 pp = p;
+         }*/
+
         foreach (var playerPlace in _playerPlaces)
         {
             var pokerPlayer = playerPlace.pokerPlayer;
@@ -6733,7 +6787,7 @@ public class GamePanel : MonoBehaviour
                 p.gameObject.activeSelf)
                 plr = p;
         }*/
-        
+
         foreach (var playerPlace in _playerPlaces)
         {
             var pokerPlayer = playerPlace.pokerPlayer;
@@ -6741,6 +6795,7 @@ public class GamePanel : MonoBehaviour
                 pokerPlayer.gameObject.activeSelf)
                 plr = pokerPlayer;
         }
+
         return plr;
     }
 
@@ -6761,8 +6816,8 @@ public class GamePanel : MonoBehaviour
                 p.gameObject.activeSelf)
                 plrname = p.txtUsername.text.ToString();
         }*/
-        
-        
+
+
         return plrname;
     }
 
@@ -6776,13 +6831,14 @@ public class GamePanel : MonoBehaviour
             if (p.SeatIndex == SeatId)
                 plr = p;
         }*/
-        
+
         foreach (var playerPlace in _playerPlaces)
         {
             var pokerPlayer = playerPlace.pokerPlayer;
             if (pokerPlayer.SeatIndex == SeatId)
                 plr = pokerPlayer;
         }
+
         return plr;
     }
 
@@ -6797,11 +6853,14 @@ public class GamePanel : MonoBehaviour
                 {
                     return i;
                 }
+
                 i++;
             }
         }
+
         return 0;
     }
+
     private string getplayerBysidePotPlayerID(int playerIndex)
     {
         string Id = "";
@@ -6816,8 +6875,10 @@ public class GamePanel : MonoBehaviour
                 }
             }
         }
+
         return Id;
     }
+
     /*	private int getPotIndexFromPlayerIndex (int playerIndex)
     {
         int i = 0;
@@ -6858,7 +6919,7 @@ public class GamePanel : MonoBehaviour
                 return i;
             }
         }*/
-        
+
         for (int i = 0; i < _playerPlaces.Count; i++)
         {
             var pokerPlayer = _playerPlaces[i].pokerPlayer;
@@ -6867,28 +6928,19 @@ public class GamePanel : MonoBehaviour
                 return i;
             }
         }
-        
+
         return -1;
     }
 
     public bool HasJoinedRoom
     {
-        get
-        {
-            return HasJoin;
-        }
-        set
-        {
-            HasJoin = value;
-        }
+        get { return HasJoin; }
+        set { HasJoin = value; }
     }
 
     public PlayerSidePot SidePotAmountNew
     {
-        get
-        {
-            return _sidePotAmountListNew;
-        }
+        get { return _sidePotAmountListNew; }
         set
         {
             _sidePotAmountListNew = value;
@@ -6907,6 +6959,7 @@ public class GamePanel : MonoBehaviour
                     pokerPlayer.txtSidePot.text = "0";
                     pokerPlayer.txtSidePot.transform.parent.gameObject.SetActive(false);
                 }
+
                 /*for (int i = 0; i < GamePlayers.Length; i++)
                 {
                     GamePlayers[i].txtSidePot.text = "0";
@@ -6917,7 +6970,6 @@ public class GamePanel : MonoBehaviour
 
             for (int i = 0; i < _sidePotAmountListNew.sidePot.Count; i++)
             {
-
                 //PokerPlayer plr = GamePlayers[_sidePotAmountListNew.sidePot[i].sidePotPlayerSeatIndex];
                 PokerPlayer plr = GetPlayerById(_sidePotAmountListNew.sidePot[i].sidePotPlayerID);
 
@@ -6929,7 +6981,6 @@ public class GamePanel : MonoBehaviour
                 }
                 else
                 {
-
                     if (_sidePotAmountListNew.sidePot[i].sidePotAmount < 1)
                     {
                         plr.txtSidePot.text = _sidePotAmountListNew.sidePot[i].sidePotAmount.ToString();
@@ -6938,6 +6989,7 @@ public class GamePanel : MonoBehaviour
                     {
                         plr.txtSidePot.text = _sidePotAmountListNew.sidePot[i].sidePotAmount.FormatNumberUS();
                     }
+
                     plr.txtSidePot.transform.parent.SetAsLastSibling();
                     plr.txtSidePot.transform.parent.gameObject.SetActive(_sidePotAmountListNew.sidePot[i].sidePotAmount > 0);
                     //plr.StartCoroutine (plr.ForceUpdateCanvasesNew ());
@@ -6959,10 +7011,7 @@ public class GamePanel : MonoBehaviour
 
     public double TotalTablePotAmount
     {
-        get
-        {
-            return _totalTablePotAmount;
-        }
+        get { return _totalTablePotAmount; }
         set
         {
             //print("TotalTablePotAmount:" + value);
@@ -6991,26 +7040,14 @@ public class GamePanel : MonoBehaviour
 
     public string GameId
     {
-        set
-        {
-            _gameId = value;
-        }
-        get
-        {
-            return _gameId;
-        }
+        set { _gameId = value; }
+        get { return _gameId; }
     }
 
     public double OldPlayerBuyIn
     {
-        set
-        {
-            _oldPlayerBuyIn = value;
-        }
-        get
-        {
-            return _oldPlayerBuyIn;
-        }
+        set { _oldPlayerBuyIn = value; }
+        get { return _oldPlayerBuyIn; }
     }
 
     public string tournamentPlayersNumbers
@@ -7027,14 +7064,11 @@ public class GamePanel : MonoBehaviour
             {
                 txtplayersPlayingTournament.text = "Players : " + value;
                 txtplayersPlayingTournament.Open();
-
             }
         }
-        get
-        {
-            return _tournamentPlayers;
-        }
+        get { return _tournamentPlayers; }
     }
+
     public string BreakLevelRank
     {
         set
@@ -7049,14 +7083,11 @@ public class GamePanel : MonoBehaviour
             {
                 txtbreakTournamentTimer.text = "BREAK : " + value;
                 txtbreakTournamentTimer.Open();
-
             }
         }
-        get
-        {
-            return _BreakLevel;
-        }
+        get { return _BreakLevel; }
     }
+
     public string BlindLevelRank
     {
         set
@@ -7080,11 +7111,9 @@ public class GamePanel : MonoBehaviour
                 }
             }
         }
-        get
-        {
-            return _BlindLevel;
-        }
+        get { return _BlindLevel; }
     }
+
     public string PreviousGameNumber
     {
         set
@@ -7108,30 +7137,18 @@ public class GamePanel : MonoBehaviour
                 }
             }
         }
-        get
-        {
-            return _previousGameNumber;
-        }
+        get { return _previousGameNumber; }
     }
 
     public string PreviousGameId
     {
-        set
-        {
-            _previousGameId = value;
-        }
-        get
-        {
-            return _previousGameId;
-        }
+        set { _previousGameId = value; }
+        get { return _previousGameId; }
     }
 
     public bool ShowBetPanelOption
     {
-        set
-        {
-            showBetPanel = value;
-        }
+        set { showBetPanel = value; }
     }
 
     public bool WaitForBigBlindCheckbox
@@ -7146,10 +7163,7 @@ public class GamePanel : MonoBehaviour
                 preBetButtonsPanel.toggleSitOutNextHand.gameObject.SetActive(false);
             }
         }
-        get
-        {
-            return toggleWaitForBigBlind.gameObject.activeSelf;
-        }
+        get { return toggleWaitForBigBlind.gameObject.activeSelf; }
     }
 
     public bool WaitForBigBlindCheckboxValue
@@ -7159,10 +7173,7 @@ public class GamePanel : MonoBehaviour
             print("WaitForBigBlindCheckboxValue value: " + value);
             toggleWaitForBigBlind.isOn = value;
         }
-        get
-        {
-            return toggleWaitForBigBlind.isOn;
-        }
+        get { return toggleWaitForBigBlind.isOn; }
     }
 
     public string TournamentBreakTableMessage
@@ -7180,6 +7191,7 @@ public class GamePanel : MonoBehaviour
             }
         }
     }
+
     /*public double Chips
     {
         set
@@ -7229,7 +7241,7 @@ public class GamePanel : MonoBehaviour
         string str = strmsg;
         string pattern = @"[\p{IsHebrew}]+";
         var hebrewMatchCollection = Regex.Matches(str, pattern);
-        string hebrewPart = string.Join(" ", hebrewMatchCollection.Cast<Match>().Select(m => m.Value));  //combine regex collection
+        string hebrewPart = string.Join(" ", hebrewMatchCollection.Cast<Match>().Select(m => m.Value)); //combine regex collection
         var englishPart = Regex.Split(str, pattern).Last();
 
         PokerPlayer plr = GetPlayerById(pid);
@@ -7245,15 +7257,16 @@ public class GamePanel : MonoBehaviour
                 for (int i = 0; i < plr.txtChatMessage.cachedTextGenerator.lines.Count; i++)
                 {
                     int startIndex = plr.txtChatMessage.cachedTextGenerator.lines[i].startCharIdx;
-                    int endIndex = (i == plr.txtChatMessage.cachedTextGenerator.lines.Count - 1) ? plr.txtChatMessage.text.Length
+                    int endIndex = (i == plr.txtChatMessage.cachedTextGenerator.lines.Count - 1)
+                        ? plr.txtChatMessage.text.Length
                         : plr.txtChatMessage.cachedTextGenerator.lines[i + 1].startCharIdx;
                     int length = endIndex - startIndex;
                     Debug.Log(plr.txtChatMessage.text.Substring(startIndex, length));
                     a = plr.txtChatMessage.text.Substring(startIndex, length) + "\n" + a;
                 }
+
                 plr.txtChatMessage.text = a;
             }
-
         }
         else
         {
@@ -7263,9 +7276,9 @@ public class GamePanel : MonoBehaviour
                     plr.txtChatMessage.alignment = TextAnchor.MiddleLeft;
                     plr.txtChatMessage.text = str + "\n";
                 }
-
             }
         }
+
         return true;
     }
 

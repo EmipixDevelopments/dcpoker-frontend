@@ -1,8 +1,8 @@
-﻿#if !BESTHTTP_DISABLE_SOCKETIO
+#if !BESTHTTP_DISABLE_SOCKETIO
 
 using System.Collections.Generic;
 
-using LitJson;
+using BestHTTP.JSON.LitJson;
 
 namespace BestHTTP.SocketIO.JsonEncoders
 {

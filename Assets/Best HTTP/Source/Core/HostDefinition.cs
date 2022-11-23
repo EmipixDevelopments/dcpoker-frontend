@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BestHTTP.Core
 {
@@ -63,8 +62,12 @@ namespace BestHTTP.Core
         {
             var headerValues = response.GetHeaderValues("alt-svc");
             if (headerValues == null)
-                HTTPManager.Logger.Warning(typeof(HostDefinition).Name, "Received HandleAltSvcHeader message, but no Alt-Svc header found!");
+                HTTPManager.Logger.Warning(typeof(HostDefinition).Name, "Received HandleAltSvcHeader message, but no Alt-Svc header found!", response.Context);
+        }
 
+        public void HandleConnectProtocol(HTTP2ConnectProtocolInfo info)
+        {
+            HTTPManager.Logger.Information(typeof(HostDefinition).Name, string.Format("Received HandleConnectProtocol message. Connect protocol for host {0}. Enabled: {1}", info.Host, info.Enabled));
         }
 
         internal void Shutdown()
@@ -127,7 +130,7 @@ namespace BestHTTP.Core
                 keyBuilder.Length = 0;
 
 #if !BESTHTTP_DISABLE_PROXY
-                if (proxy != null)
+                if (proxy != null && proxy.UseProxyForAddress(uri))
                 {
                     keyBuilder.Append(proxy.Address.Scheme);
                     keyBuilder.Append("://");

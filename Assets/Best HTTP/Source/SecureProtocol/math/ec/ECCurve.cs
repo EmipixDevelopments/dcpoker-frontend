@@ -7,7 +7,7 @@ using BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Abc;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Endo;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Math.Field;
-using BestHTTP.SecureProtocol.Org.BouncyCastle.Math.Raw;
+using BestHTTP.SecureProtocol.Org.BouncyCastle.Security;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities;
 
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
@@ -101,6 +101,10 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
         public abstract ECFieldElement FromBigInteger(BigInteger x);
         public abstract bool IsValidFieldElement(BigInteger x);
 
+        public abstract ECFieldElement RandomFieldElement(SecureRandom r);
+
+        public abstract ECFieldElement RandomFieldElementMult(SecureRandom r);
+
         public virtual Config Configure()
         {
             return new Config(this, this.m_coord, this.m_endomorphism, this.m_multiplier);
@@ -116,7 +120,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
             return p;
         }
 
-        [Obsolete("Per-point compression property will be removed")]
+
         public virtual ECPoint ValidatePoint(BigInteger x, BigInteger y, bool withCompression)
         {
             ECPoint p = CreatePoint(x, y, withCompression);
@@ -132,7 +136,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
             return CreatePoint(x, y, false);
         }
 
-        [Obsolete("Per-point compression property will be removed")]
+
         public virtual ECPoint CreatePoint(BigInteger x, BigInteger y, bool withCompression)
         {
             return CreateRawPoint(FromBigInteger(x), FromBigInteger(y), withCompression);
@@ -431,18 +435,17 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
         }
 
         /**
-         * Sets the default <code>ECMultiplier</code>, unless already set. 
+         * Sets the default <code>ECMultiplier</code>, unless already set.
+         *
+         * We avoid locking for performance reasons, so there is no uniqueness guarantee.
          */
         public virtual ECMultiplier GetMultiplier()
         {
-            lock (this)
+            if (this.m_multiplier == null)
             {
-                if (this.m_multiplier == null)
-                {
-                    this.m_multiplier = CreateDefaultMultiplier();
-                }
-                return this.m_multiplier;
+                this.m_multiplier = CreateDefaultMultiplier();
             }
+            return this.m_multiplier;
         }
 
         /**
@@ -600,6 +603,30 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
             return x != null && x.SignValue >= 0 && x.CompareTo(Field.Characteristic) < 0;
         }
 
+        public override ECFieldElement RandomFieldElement(SecureRandom r)
+        {
+            /*
+             * NOTE: BigInteger comparisons in the rejection sampling are not constant-time, so we
+             * use the product of two independent elements to mitigate side-channels.
+             */
+            BigInteger p = Field.Characteristic;
+            ECFieldElement fe1 = FromBigInteger(ImplRandomFieldElement(r, p));
+            ECFieldElement fe2 = FromBigInteger(ImplRandomFieldElement(r, p));
+            return fe1.Multiply(fe2);
+        }
+
+        public override ECFieldElement RandomFieldElementMult(SecureRandom r)
+        {
+            /*
+             * NOTE: BigInteger comparisons in the rejection sampling are not constant-time, so we
+             * use the product of two independent elements to mitigate side-channels.
+             */
+            BigInteger p = Field.Characteristic;
+            ECFieldElement fe1 = FromBigInteger(ImplRandomFieldElementMult(r, p));
+            ECFieldElement fe2 = FromBigInteger(ImplRandomFieldElementMult(r, p));
+            return fe1.Multiply(fe2);
+        }
+
         protected override ECPoint DecompressPoint(int yTilde, BigInteger X1)
         {
             ECFieldElement x = FromBigInteger(X1);
@@ -620,6 +647,28 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
 
             return CreateRawPoint(x, y, true);
         }
+
+        private static BigInteger ImplRandomFieldElement(SecureRandom r, BigInteger p)
+        {
+            BigInteger x;
+            do
+            {
+                x = BigIntegers.CreateRandomBigInteger(p.BitLength, r);
+            }
+            while (x.CompareTo(p) >= 0);
+            return x;
+        }
+
+        private static BigInteger ImplRandomFieldElementMult(SecureRandom r, BigInteger p)
+        {
+            BigInteger x;
+            do
+            {
+                x = BigIntegers.CreateRandomBigInteger(p.BitLength, r);
+            }
+            while (x.SignValue <= 0 || x.CompareTo(p) >= 0);
+            return x;
+        }
     }
 
     /**
@@ -633,7 +682,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
         protected readonly BigInteger m_q, m_r;
         protected readonly FpPoint m_infinity;
 
-        [Obsolete("Use constructor taking order/cofactor")]
+
         public FpCurve(BigInteger q, BigInteger a, BigInteger b)
             : this(q, a, b, null, null)
         {
@@ -653,7 +702,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
             this.m_coord = FP_DEFAULT_COORDS;
         }
 
-        [Obsolete("Use constructor taking order/cofactor")]
+
         protected FpCurve(BigInteger q, BigInteger r, ECFieldElement a, ECFieldElement b)
             : this(q, r, a, b, null, null)
         {
@@ -795,12 +844,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
         {
         }
 
-        public override bool IsValidFieldElement(BigInteger x)
-        {
-            return x != null && x.SignValue >= 0 && x.BitLength <= FieldSize;
-        }
 
-        [Obsolete("Per-point compression property will be removed")]
         public override ECPoint CreatePoint(BigInteger x, BigInteger y, bool withCompression)
         {
             ECFieldElement X = FromBigInteger(x), Y = FromBigInteger(y);
@@ -829,6 +873,29 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
             }
 
             return CreateRawPoint(X, Y, withCompression);
+        }
+
+        public override bool IsValidFieldElement(BigInteger x)
+        {
+            return x != null && x.SignValue >= 0 && x.BitLength <= FieldSize;
+        }
+
+        public override ECFieldElement RandomFieldElement(SecureRandom r)
+        {
+            int m = FieldSize;
+            return FromBigInteger(BigIntegers.CreateRandomBigInteger(m, r));
+        }
+
+        public override ECFieldElement RandomFieldElementMult(SecureRandom r)
+        {
+            /*
+             * NOTE: BigInteger comparisons in the rejection sampling are not constant-time, so we
+             * use the product of two independent elements to mitigate side-channels.
+             */
+            int m = FieldSize;
+            ECFieldElement fe1 = FromBigInteger(ImplRandomFieldElementMult(r, m));
+            ECFieldElement fe2 = FromBigInteger(ImplRandomFieldElementMult(r, m));
+            return fe1.Multiply(fe2);
         }
 
         protected override ECPoint DecompressPoint(int yTilde, BigInteger X1)
@@ -960,6 +1027,17 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
                 return m_order != null && m_cofactor != null && m_b.IsOne && (m_a.IsZero || m_a.IsOne);
             }
         }
+
+        private static BigInteger ImplRandomFieldElementMult(SecureRandom r, int m)
+        {
+            BigInteger x;
+            do
+            {
+                x = BigIntegers.CreateRandomBigInteger(m, r);
+            }
+            while (x.SignValue <= 0);
+            return x;
+        }
     }
 
     /**
@@ -1021,7 +1099,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
          * for non-supersingular elliptic curves over
          * <code>F<sub>2<sup>m</sup></sub></code>.
          */
-        [Obsolete("Use constructor taking order/cofactor")]
+
         public F2mCurve(
             int			m,
             int			k,
@@ -1079,7 +1157,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
          * for non-supersingular elliptic curves over
          * <code>F<sub>2<sup>m</sup></sub></code>.
          */
-        [Obsolete("Use constructor taking order/cofactor")]
+
         public F2mCurve(
             int			m,
             int			k1,

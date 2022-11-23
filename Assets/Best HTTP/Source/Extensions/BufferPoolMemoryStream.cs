@@ -68,11 +68,13 @@ namespace BestHTTP.Extensions
 
             canWrite = true;
 
-            internalBuffer = capacity > 0 ? BufferPool.Get(capacity, true) : BufferPool.NoData;
-            this.capacity = internalBuffer.Length;
-
-            expandable = true;
-            allowGetBuffer = true;
+            //internalBuffer = capacity > 0 ? BufferPool.Get(capacity, true) : BufferPool.NoData;
+            //this.capacity = internalBuffer.Length;
+            //
+            //expandable = true;
+            //allowGetBuffer = true;
+            var buffer = capacity > 0 ? BufferPool.Get(capacity, true) : BufferPool.NoData;
+            InternalConstructor(buffer, 0, buffer.Length, true, true, true, true);
         }
 
         public BufferPoolMemoryStream(byte[] buffer)
@@ -80,7 +82,7 @@ namespace BestHTTP.Extensions
             if (buffer == null)
                 throw new ArgumentNullException("buffer");
 
-            InternalConstructor(buffer, 0, buffer.Length, true, false, true);
+            InternalConstructor(buffer, 0, buffer.Length, true, false, true, false);
         }
 
         public BufferPoolMemoryStream(byte[] buffer, bool writable)
@@ -88,30 +90,35 @@ namespace BestHTTP.Extensions
             if (buffer == null)
                 throw new ArgumentNullException("buffer");
 
-            InternalConstructor(buffer, 0, buffer.Length, writable, false, true);
+            InternalConstructor(buffer, 0, buffer.Length, writable, false, true, false);
         }
 
         public BufferPoolMemoryStream(byte[] buffer, int index, int count)
         {
-            InternalConstructor(buffer, index, count, true, false, true);
+            InternalConstructor(buffer, index, count, true, false, true, false);
         }
 
         public BufferPoolMemoryStream(byte[] buffer, int index, int count, bool writable)
         {
-            InternalConstructor(buffer, index, count, writable, false, true);
+            InternalConstructor(buffer, index, count, writable, false, true, false);
         }
 
         public BufferPoolMemoryStream(byte[] buffer, int index, int count, bool writable, bool publiclyVisible)
         {
-            InternalConstructor(buffer, index, count, writable, publiclyVisible, true);
+            InternalConstructor(buffer, index, count, writable, publiclyVisible, true, false);
         }
 
         public BufferPoolMemoryStream(byte[] buffer, int index, int count, bool writable, bool publiclyVisible, bool releaseBuffer)
         {
-            InternalConstructor(buffer, index, count, writable, publiclyVisible, releaseBuffer);
+            InternalConstructor(buffer, index, count, writable, publiclyVisible, releaseBuffer, false);
         }
 
-        void InternalConstructor(byte[] buffer, int index, int count, bool writable, bool publicallyVisible, bool releaseBuffer)
+        public BufferPoolMemoryStream(byte[] buffer, int index, int count, bool writable, bool publiclyVisible, bool releaseBuffer, bool canExpand)
+        {
+            InternalConstructor(buffer, index, count, writable, publiclyVisible, releaseBuffer, canExpand);
+        }
+
+        void InternalConstructor(byte[] buffer, int index, int count, bool writable, bool publicallyVisible, bool releaseBuffer, bool canExpand)
         {
             if (buffer == null)
                 throw new ArgumentNullException("buffer");
@@ -127,13 +134,14 @@ namespace BestHTTP.Extensions
 
             internalBuffer = buffer;
             capacity = count + index;
-            length = capacity;
+            //length = capacity;
+            length = 0;
             position = index;
             initialIndex = index;
 
             allowGetBuffer = publicallyVisible;
             releaseInternalBuffer = releaseBuffer;
-            expandable = false;
+            expandable = canExpand;
         }
 
         void CheckIfClosedThrowDisposed()
@@ -235,7 +243,7 @@ namespace BestHTTP.Extensions
         {
             streamClosed = true;
             expandable = false;
-            if (internalBuffer != null && this.releaseInternalBuffer)
+            if (disposing && internalBuffer != null && this.releaseInternalBuffer)
                 BufferPool.Release(internalBuffer);
             internalBuffer = null;
         }

@@ -181,9 +181,19 @@ namespace BestHTTP.SignalRCore
         public TimeSpan PingInterval { get; set; }
 
         /// <summary>
-        /// The maximum count of redirect negoitiation result that the plugin will follow. Its default value is 100.
+        /// If the client doesn't see any message in this interval, considers the connection broken. Its default value is 30 seconds.
+        /// </summary>
+        public TimeSpan PingTimeoutInterval { get; set; }
+
+        /// <summary>
+        /// The maximum count of redirect negotiation result that the plugin will follow. Its default value is 100.
         /// </summary>
         public int MaxRedirects { get; set; }
+
+        /// <summary>
+        /// The maximum time that the plugin allowed to spend trying to connect. Its default value is 1 minute.
+        /// </summary>
+        public TimeSpan ConnectTimeout { get; set; }
 
         public HubOptions()
         {
@@ -194,7 +204,9 @@ namespace BestHTTP.SignalRCore
             this.PreferedTransport = TransportTypes.LongPolling;
 #endif
             this.PingInterval = TimeSpan.FromSeconds(15);
+            this.PingTimeoutInterval = TimeSpan.FromSeconds(30);
             this.MaxRedirects = 100;
+            this.ConnectTimeout = TimeSpan.FromSeconds(60);
         }
     }
 

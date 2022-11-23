@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 
 using BestHTTP.Connections;
-using BestHTTP.Extensions;
 using BestHTTP.Logger;
+
+// Required for ConcurrentQueue.Clear extension.
+using BestHTTP.Extensions;
 
 namespace BestHTTP.Core
 {
@@ -27,6 +29,8 @@ namespace BestHTTP.Core
 
         public readonly HostProtocolSupport ProtocolSupport;
 
+        public readonly HTTPRequest Request;
+
         public ConnectionEventInfo(ConnectionBase sourceConn, ConnectionEvents @event)
         {
             this.Source = sourceConn;
@@ -35,6 +39,8 @@ namespace BestHTTP.Core
             this.State = HTTPConnectionStates.Initial;
 
             this.ProtocolSupport = HostProtocolSupport.Unknown;
+
+            this.Request = null;
         }
 
         public ConnectionEventInfo(ConnectionBase sourceConn, HTTPConnectionStates newState)
@@ -46,6 +52,8 @@ namespace BestHTTP.Core
             this.State = newState;
 
             this.ProtocolSupport = HostProtocolSupport.Unknown;
+
+            this.Request = null;
         }
 
         public ConnectionEventInfo(ConnectionBase sourceConn, HostProtocolSupport protocolSupport)
@@ -56,6 +64,21 @@ namespace BestHTTP.Core
             this.State = HTTPConnectionStates.Initial;
 
             this.ProtocolSupport = protocolSupport;
+
+            this.Request = null;
+        }
+
+        public ConnectionEventInfo(ConnectionBase sourceConn, HTTPRequest request)
+        {
+            this.Source = sourceConn;
+
+            this.Event = ConnectionEvents.StateChange;
+
+            this.State = HTTPConnectionStates.ClosedResendRequest;
+
+            this.ProtocolSupport = HostProtocolSupport.Unknown;
+
+            this.Request = request;
         }
 
         public override string ToString()
@@ -65,7 +88,7 @@ namespace BestHTTP.Core
         }
     }
 
-    internal static class ConnectionEventHelper
+    public static class ConnectionEventHelper
     {
         private static ConcurrentQueue<ConnectionEventInfo> connectionEventQueue = new ConcurrentQueue<ConnectionEventInfo>();
 
@@ -75,6 +98,9 @@ namespace BestHTTP.Core
 
         public static void EnqueueConnectionEvent(ConnectionEventInfo @event)
         {
+            if (HTTPManager.Logger.Level == Loglevels.All)
+                HTTPManager.Logger.Information("ConnectionEventHelper", "Enqueue connection event: " + @event.ToString(), @event.Source.Context);
+
             connectionEventQueue.Enqueue(@event);
         }
 
@@ -89,7 +115,7 @@ namespace BestHTTP.Core
             while (connectionEventQueue.TryDequeue(out connectionEvent))
             {
                 if (HTTPManager.Logger.Level == Loglevels.All)
-                    HTTPManager.Logger.Information("ConnectionEventHelper", "Processing connection event: " + connectionEvent.ToString());
+                    HTTPManager.Logger.Information("ConnectionEventHelper", "Processing connection event: " + connectionEvent.ToString(), connectionEvent.Source.Context);
 
                 if (OnEvent != null)
                 {
@@ -99,8 +125,14 @@ namespace BestHTTP.Core
                     }
                     catch (Exception ex)
                     {
-                        HTTPManager.Logger.Exception("ConnectionEventHelper", "ProcessQueue", ex);
+                        HTTPManager.Logger.Exception("ConnectionEventHelper", "ProcessQueue", ex, connectionEvent.Source.Context);
                     }
+                }
+
+                if (connectionEvent.Source.LastProcessedUri == null)
+                {
+                    HTTPManager.Logger.Information("ConnectionEventHelper", String.Format("Ignoring ConnectionEventInfo({0}) because its LastProcessedUri is null!", connectionEvent.ToString()));
+                    return;
                 }
 
                 switch (connectionEvent.Event)
@@ -139,11 +171,15 @@ namespace BestHTTP.Core
                     break;
 
                 case HTTPConnectionStates.Closed:
+                case HTTPConnectionStates.ClosedResendRequest:
+                    // in case of ClosedResendRequest
+                    if (@event.Request != null)
+                        RequestEventHelper.EnqueueRequestEvent(new RequestEventInfo(@event.Request, RequestEvents.Resend));
+
                     HostManager.GetHost(connection.LastProcessedUri.Host)
                         .GetHostDefinition(connection.ServerAddress)
                         .RemoveConnection(connection, @event.State)
-                        .DecreaseActiveConnectionCount();
-
+                        .TryToSendQueuedRequests();
                     break;
             }
         }

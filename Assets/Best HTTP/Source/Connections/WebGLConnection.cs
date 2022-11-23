@@ -1,4 +1,4 @@
-﻿#if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
 
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace BestHTTP.Connections
         static Dictionary<int, WebGLConnection> Connections = new Dictionary<int, WebGLConnection>(4);
 
         int NativeId;
-        BufferPoolMemoryStream Stream;
+        BufferSegmentStream Stream;
 
         public WebGLConnection(string serverAddress)
             : base(serverAddress, false)
@@ -54,12 +54,10 @@ namespace BestHTTP.Connections
 
             CurrentRequest.EnumerateHeaders((header, values) =>
                 {
-                    if (header != "Content-Length")
+                    if (!header.Equals("Content-Length"))
                         for (int i = 0; i < values.Count; ++i)
                             XHR_SetRequestHeader(NativeId, header, values[i]);
                 }, /*callBeforeSendCallback:*/ true);
-
-            byte[] body = CurrentRequest.GetEntityBody();
 
             XHR_SetResponseHandler(NativeId, WebGLConnection.OnResponse, WebGLConnection.OnError, WebGLConnection.OnTimeout, WebGLConnection.OnAborted);
             // Setting OnUploadProgress result in an addEventListener("progress", ...) call making the request non-simple.
@@ -70,12 +68,46 @@ namespace BestHTTP.Connections
 
             XHR_SetTimeout(NativeId, (uint)(CurrentRequest.ConnectTimeout.TotalMilliseconds + CurrentRequest.Timeout.TotalMilliseconds));
 
-            XHR_Send(NativeId, body, body != null ? body.Length : 0);
+            byte[] body = CurrentRequest.GetEntityBody();
+            int length = 0;
+            bool releaseBodyBuffer = false;
+
+            if (body == null)
+            {
+                var upStreamInfo = CurrentRequest.GetUpStream();
+                if (upStreamInfo.Stream != null)
+                {
+                    var internalBuffer = BufferPool.Get(upStreamInfo.Length > 0 ? upStreamInfo.Length : HTTPRequest.UploadChunkSize, true);
+                    using (BufferPoolMemoryStream ms = new BufferPoolMemoryStream(internalBuffer, 0, internalBuffer.Length, true, true, false, true))
+                    {
+                        var buffer = BufferPool.Get(HTTPRequest.UploadChunkSize, true);
+                        int readCount = -1;
+                        while ((readCount = upStreamInfo.Stream.Read(buffer, 0, buffer.Length)) > 0)
+                            ms.Write(buffer, 0, readCount);
+
+                        BufferPool.Release(buffer);
+
+                        length = (int)ms.Position;
+                        body = ms.GetBuffer();
+
+                        releaseBodyBuffer = true;
+                    }
+                }
+            }
+            else
+            {
+                length = body.Length;
+            }
+
+            XHR_Send(NativeId, body, length);
+
+            if (releaseBodyBuffer)
+                BufferPool.Release(body);
         }
 
 #region Callback Implementations
 
-        void OnResponse(int httpStatus, byte[] buffer, int bufferLength)
+        void OnResponse(int httpStatus, BufferSegment payload)
         {
             HTTPConnectionStates proposedConnectionState = HTTPConnectionStates.Processing;
             bool resendRequest = false;
@@ -85,26 +117,20 @@ namespace BestHTTP.Connections
                 if (this.CurrentRequest.IsCancellationRequested)
                     return;
 
-                using (var ms = new BufferPoolMemoryStream())
+                using (var ms = new BufferSegmentStream())
                 {
                     Stream = ms;
 
                     XHR_GetStatusLine(NativeId, OnBufferCallback);
                     XHR_GetResponseHeaders(NativeId, OnBufferCallback);
 
-                    if (buffer != null && bufferLength > 0)
-                        ms.Write(buffer, 0, bufferLength);
+                    if (payload != BufferSegment.Empty)
+                        ms.Write(payload);
 
-                    ms.Seek(0L, SeekOrigin.Begin);
-
-                    var internalBuffer = ms.GetBuffer();
-                    string tmp = System.Text.Encoding.UTF8.GetString(internalBuffer);
-                    HTTPManager.Logger.Information(this.NativeId + " OnResponse - full response ", tmp);
-
-                    SupportedProtocols protocol = CurrentRequest.ProtocolHandler == SupportedProtocols.Unknown ? HTTPProtocolFactory.GetProtocolFromUri(CurrentRequest.CurrentUri) : CurrentRequest.ProtocolHandler;
+                    SupportedProtocols protocol = HTTPProtocolFactory.GetProtocolFromUri(CurrentRequest.CurrentUri);
                     CurrentRequest.Response = HTTPProtocolFactory.Get(protocol, CurrentRequest, ms, CurrentRequest.UseStreaming, false);
 
-                    CurrentRequest.Response.Receive(buffer != null && bufferLength > 0 ? (int)bufferLength : -1, true);
+                    CurrentRequest.Response.Receive(payload != BufferSegment.Empty && payload.Count > 0 ? (int)payload.Count : -1, true);
 
                     KeepAliveHeader keepAlive = null;
                     ConnectionHelper.HandleResponse(this.ToString(), this.CurrentRequest, out resendRequest, out proposedConnectionState, ref keepAlive);
@@ -112,7 +138,7 @@ namespace BestHTTP.Connections
             }
             catch (Exception e)
             {
-                HTTPManager.Logger.Exception(this.NativeId + " WebGLConnection", "OnResponse", e);
+                HTTPManager.Logger.Exception(this.NativeId + " WebGLConnection", "OnResponse", e, this.Context);
 
                 if (this.ShutdownType == ShutdownTypes.Immediate)
                     return;
@@ -181,12 +207,12 @@ namespace BestHTTP.Connections
             }
         }
 
-        void OnBuffer(byte[] buffer, int bufferLength)
+        void OnBuffer(BufferSegment buffer)
         {
             if (Stream != null)
             {
-                Stream.Write(buffer, 0, bufferLength);
-                Stream.Write(HTTPRequest.EOL, 0, HTTPRequest.EOL.Length);
+                Stream.Write(buffer);
+                //Stream.Write(HTTPRequest.EOL, 0, HTTPRequest.EOL.Length);
             }
         }
 
@@ -202,7 +228,7 @@ namespace BestHTTP.Connections
 
         void OnError(string error)
         {
-            HTTPManager.Logger.Information(this.NativeId + " WebGLConnection - OnError", error);
+            HTTPManager.Logger.Information(this.NativeId + " WebGLConnection - OnError", error, this.Context);
 
             LastProcessTime = DateTime.UtcNow;
 
@@ -214,7 +240,7 @@ namespace BestHTTP.Connections
 
         void OnTimeout()
         {
-            HTTPManager.Logger.Information(this.NativeId + " WebGLConnection - OnResponse", string.Empty);
+            HTTPManager.Logger.Information(this.NativeId + " WebGLConnection - OnResponse", string.Empty, this.Context);
 
             CurrentRequest.Response = null;
             CurrentRequest.State = HTTPRequestStates.TimedOut;
@@ -223,7 +249,7 @@ namespace BestHTTP.Connections
 
         void OnAborted()
         {
-            HTTPManager.Logger.Information(this.NativeId + " WebGLConnection - OnAborted", string.Empty);
+            HTTPManager.Logger.Information(this.NativeId + " WebGLConnection - OnAborted", string.Empty, this.Context);
 
             CurrentRequest.Response = null;
             CurrentRequest.State = HTTPRequestStates.Aborted;
@@ -249,8 +275,6 @@ namespace BestHTTP.Connections
         [AOT.MonoPInvokeCallback(typeof(OnWebGLRequestHandlerDelegate))]
         static void OnResponse(int nativeId, int httpStatus, IntPtr pBuffer, int length, int err)
         {
-            HTTPManager.Logger.Information("WebGLConnection - OnResponse", string.Format("{0} {1} {2} {3}", nativeId, httpStatus, length, err));
-
             WebGLConnection conn = null;
             if (!Connections.TryGetValue(nativeId, out conn))
             {
@@ -258,14 +282,19 @@ namespace BestHTTP.Connections
                 return;
             }
 
-            byte[] buffer = BufferPool.Get(length, true);
+            HTTPManager.Logger.Information("WebGLConnection - OnResponse", string.Format("{0} {1} {2} {3}", nativeId, httpStatus, length, err), conn.Context);
 
-            // Copy data from the 'unmanaged' memory to managed memory. Buffer will be reclaimed by the GC.
-            Marshal.Copy(pBuffer, buffer, 0, length);
+            BufferSegment payload = BufferSegment.Empty;
+            if (length > 0)
+            {
+                var buffer = BufferPool.Get(length, true);
 
-            conn.OnResponse(httpStatus, buffer, length);
+                XHR_CopyResponseTo(nativeId, buffer, length);
 
-            BufferPool.Release(buffer);
+                payload = new BufferSegment(buffer, 0, length);
+            }
+
+            conn.OnResponse(httpStatus, payload);
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnWebGLBufferDelegate))]
@@ -283,16 +312,12 @@ namespace BestHTTP.Connections
             // Copy data from the 'unmanaged' memory to managed memory. Buffer will be reclaimed by the GC.
             Marshal.Copy(pBuffer, buffer, 0, length);
 
-            conn.OnBuffer(buffer, length);
-
-            BufferPool.Release(buffer);
+            conn.OnBuffer(new BufferSegment(buffer, 0, length));
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnWebGLProgressDelegate))]
         static void OnDownloadProgress(int nativeId, int downloaded, int total)
         {
-            HTTPManager.Logger.Information(nativeId + " OnDownloadProgress", downloaded.ToString() + " / " + total.ToString());
-
             WebGLConnection conn = null;
             if (!Connections.TryGetValue(nativeId, out conn))
             {
@@ -300,20 +325,22 @@ namespace BestHTTP.Connections
                 return;
             }
 
+            HTTPManager.Logger.Information(nativeId + " OnDownloadProgress", downloaded.ToString() + " / " + total.ToString(), conn.Context);
+
             conn.OnDownloadProgress(downloaded, total);
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnWebGLProgressDelegate))]
         static void OnUploadProgress(int nativeId, int uploaded, int total)
         {
-            HTTPManager.Logger.Information(nativeId + " OnUploadProgress", uploaded.ToString() + " / " + total.ToString());
-
             WebGLConnection conn = null;
             if (!Connections.TryGetValue(nativeId, out conn))
             {
                 HTTPManager.Logger.Error("WebGLConnection - OnUploadProgress", "No WebGL connection found for nativeId: " + nativeId.ToString());
                 return;
             }
+
+            HTTPManager.Logger.Information(nativeId + " OnUploadProgress", uploaded.ToString() + " / " + total.ToString(), conn.Context);
 
             conn.OnUploadProgress(uploaded, total);
         }
@@ -378,6 +405,9 @@ namespace BestHTTP.Connections
 
         [DllImport("__Internal")]
         private static extern void XHR_SetProgressHandler(int nativeId, OnWebGLProgressDelegate onDownloadProgress, OnWebGLProgressDelegate onUploadProgress);
+
+        [DllImport("__Internal")]
+        private static extern void XHR_CopyResponseTo(int nativeId, [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U1, SizeParamIndex = 2)] byte[] response, int length);
 
         [DllImport("__Internal")]
         private static extern void XHR_Send(int nativeId, [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U1, SizeParamIndex = 2)] byte[] body, int length);

@@ -1,4 +1,4 @@
-﻿#if (!UNITY_WEBGL || UNITY_EDITOR) && !BESTHTTP_DISABLE_ALTERNATE_SSL && !BESTHTTP_DISABLE_HTTP2
+#if (!UNITY_WEBGL || UNITY_EDITOR) && !BESTHTTP_DISABLE_ALTERNATE_SSL && !BESTHTTP_DISABLE_HTTP2
 
 using System;
 using System.Collections.Generic;
@@ -179,6 +179,18 @@ namespace BestHTTP.Connections.HTTP2
                 this.DynamicTable.RemoveAt(this.DynamicTable.Count - 1);
                 this.DynamicTableSize -= CalculateEntrySize(entry);
             }
+        }
+
+        public override string ToString()
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder("[HeaderTable ");
+            sb.AppendFormat("DynamicTable count: {0}, DynamicTableSize: {1}, MaxDynamicTableSize: {2}, ", this.DynamicTable.Count, this.DynamicTableSize, this.MaxDynamicTableSize);
+
+            foreach(var kvp in this.DynamicTable)
+                sb.AppendFormat("\"{0}\": \"{1}\", ", kvp.Key, kvp.Value);
+
+            sb.Append("]");
+            return sb.ToString();
         }
     }
 }

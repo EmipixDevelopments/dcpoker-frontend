@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using BestHTTP.Logger;
 
 namespace BestHTTP.Connections
 {
@@ -37,6 +38,8 @@ namespace BestHTTP.Connections
 
         public DateTime LastProcessTime { get; protected set; }
 
+        internal LoggingContext Context;
+
         #endregion
 
         #region Privates
@@ -56,6 +59,10 @@ namespace BestHTTP.Connections
             this.LastProcessTime = DateTime.Now;
             this.KeepAliveTime = HTTPManager.MaxConnectionIdleTime;
             this.IsThreaded = threaded;
+
+            this.Context = new LoggingContext(this);
+            this.Context.Add("ServerAddress", serverAddress);
+            this.Context.Add("Threaded", threaded);
         }
 
         internal virtual void Process(HTTPRequest request)
@@ -113,5 +120,7 @@ namespace BestHTTP.Connections
         {
             return string.Format("[{0}:{1}]", this.GetHashCode(), this.ServerAddress);
         }
+
+        public virtual bool TestConnection() => true;
     }
 }

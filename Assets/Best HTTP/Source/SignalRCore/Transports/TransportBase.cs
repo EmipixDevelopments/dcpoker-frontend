@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using BestHTTP.Logger;
 using BestHTTP.PlatformSupport.Memory;
 
 namespace BestHTTP.SignalRCore.Transports
@@ -42,6 +43,8 @@ namespace BestHTTP.SignalRCore.Transports
         /// </summary>
         public event Action<TransportStates, TransportStates> OnStateChanged;
 
+        public LoggingContext Context { get; protected set; }
+
         /// <summary>
         /// Cached list of parsed messages.
         /// </summary>
@@ -55,6 +58,8 @@ namespace BestHTTP.SignalRCore.Transports
         internal TransportBase(HubConnection con)
         {
             this.connection = con;
+            this.Context = new LoggingContext(this);
+            this.Context.Add("Hub", this.connection.Context);
             this.State = TransportStates.Initial;
         }
 
@@ -116,6 +121,9 @@ namespace BestHTTP.SignalRCore.Transports
                 queryBuilder.Append("&id=").Append(this.connection.NegotiationResult.ConnectionId);
 
             builder.Query = queryBuilder.ToString();
+
+            if (builder.Query.StartsWith("??"))
+                builder.Query = builder.Query.Substring(2);
 
             return builder.Uri;
         }

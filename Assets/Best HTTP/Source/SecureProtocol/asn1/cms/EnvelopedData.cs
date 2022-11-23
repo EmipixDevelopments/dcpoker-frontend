@@ -42,7 +42,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Cms
             this.unprotectedAttrs = Asn1Set.GetInstance(unprotectedAttrs);
         }
 
-        [Obsolete("Use 'GetInstance' instead")]
+
         public EnvelopedData(
             Asn1Sequence seq)
         {
@@ -156,7 +156,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Cms
             {
                 RecipientInfo ri = RecipientInfo.GetInstance(o);
 
-                if (ri.Version.IntValueExact != 0)
+                if (!ri.Version.HasValue(0))
                 {
                     return 2;
                 }

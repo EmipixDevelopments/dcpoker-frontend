@@ -51,15 +51,17 @@ namespace BestHTTP.SignalRCore.Transports
             if (this.State != TransportStates.Initial)
                 return;
 
-            HTTPManager.Logger.Information("LongPollingTransport", "StartConnect");
+            HTTPManager.Logger.Information("LongPollingTransport", "StartConnect", this.Context);
 
             this.State = TransportStates.Connecting;
 
-            // https://github.com/aspnet/SignalR/blob/dev/specs/HubProtocol.md#overview
+            // https://github.com/dotnet/aspnetcore/blob/master/src/SignalR/docs/specs/HubProtocol.md#overview
             // When our connection is open, send the 'negotiation' message to the server.
-            
-            var request = new HTTPRequest(BuildUri(this.connection.Uri), HTTPMethods.Post, OnHandshakeRequestFinished);
 
+            var request = new HTTPRequest(BuildUri(this.connection.Uri), HTTPMethods.Post, OnHandshakeRequestFinished);
+            request.Context.Add("Transport", this.Context);
+
+            this.stream.Reset();
             this.stream.Write(JsonProtocol.WithSeparator(string.Format("{{\"protocol\":\"{0}\", \"version\": 1}}", this.connection.Protocol.Name)));
 
             request.UploadStream = this.stream;
@@ -85,7 +87,7 @@ namespace BestHTTP.SignalRCore.Transports
             if (this.State != TransportStates.Connected)
                 return;
 
-            HTTPManager.Logger.Information("LongPollingTransport", "StartClose");
+            HTTPManager.Logger.Information("LongPollingTransport", "StartClose", this.Context);
 
             this.State = TransportStates.Closing;
 
@@ -105,6 +107,9 @@ namespace BestHTTP.SignalRCore.Transports
                 return;
 
             var request = new HTTPRequest(BuildUri(this.connection.Uri), HTTPMethods.Post, OnSendMessagesFinished);
+            request.Context.Add("Transport", this.Context);
+
+            this.stream.Reset();
 
             BufferSegment buffer;
             while (this.outgoingMessages.TryDequeue(out buffer))
@@ -125,9 +130,10 @@ namespace BestHTTP.SignalRCore.Transports
             if (this.State != TransportStates.Connecting && this.State != TransportStates.Connected)
                 return;
 
-            HTTPManager.Logger.Information("LongPollingTransport", "Sending Poll request");
+            HTTPManager.Logger.Information("LongPollingTransport", "Sending Poll request", this.Context);
 
             var request = new HTTPRequest(BuildUri(this.connection.Uri), OnPollRequestFinished);
+            request.Context.Add("Transport", this.Context);
 
             request.AddHeader("Accept", " application/octet-stream");
             request.Timeout = TimeSpan.FromMinutes(2);
@@ -143,9 +149,11 @@ namespace BestHTTP.SignalRCore.Transports
             if (this.State != TransportStates.Closing)
                 return;
 
-            HTTPManager.Logger.Information("LongPollingTransport", "Sending DELETE request");
+            HTTPManager.Logger.Information("LongPollingTransport", "Sending DELETE request", this.Context);
 
             var request = new HTTPRequest(BuildUri(this.connection.Uri), HTTPMethods.Delete, OnConnectionCloseRequestFinished);
+            request.Context.Add("Transport", this.Context);
+
             request.Tag = retryCount;
 
             if (this.connection.AuthenticationProvider != null)
@@ -201,6 +209,9 @@ namespace BestHTTP.SignalRCore.Transports
 
             if (!string.IsNullOrEmpty(this.ErrorReason))
                 this.State = TransportStates.Failed;
+
+            // To skip disposing the stream (because we reuse it), set the request's UploadStream to null
+            req.UploadStream = null;
         }
 
         private void OnSendMessagesFinished(HTTPRequest req, HTTPResponse resp)
@@ -226,6 +237,17 @@ namespace BestHTTP.SignalRCore.Transports
                         // Upon receipt of the entire payload, the server will process the payload and responds with 200 OK if the payload was successfully processed.
                         case 200:
                             Interlocked.Exchange(ref this.sendingInProgress, 0);
+
+                            // The connections is OK, call OnMessages with an empty list to update HubConnection's lastMessageReceivedAt.
+                            this.messages.Clear();
+                            try
+                            {
+                                this.connection.OnMessages(this.messages);
+                            }
+                            finally
+                            {
+                                this.messages.Clear();
+                            }
 
                             SendMessages();
 
@@ -254,6 +276,12 @@ namespace BestHTTP.SignalRCore.Transports
                     }
                     break;
             }
+
+            if (!string.IsNullOrEmpty(this.ErrorReason))
+                this.State = TransportStates.Failed;
+
+            // To skip disposing the stream (because we reuse it), set the request's UploadStream to null
+            req.UploadStream = null;
         }
 
         private void OnPollRequestFinished(HTTPRequest req, HTTPResponse resp)
@@ -298,13 +326,16 @@ namespace BestHTTP.SignalRCore.Transports
                                 this.messages.Clear();
                                 try
                                 {
-                                    this.connection.Protocol.ParseMessages(new BufferSegment(resp.Data, offset, resp.Data.Length), ref this.messages);
+                                    if (resp.Data.Length - offset > 0)
+                                        this.connection.Protocol.ParseMessages(new BufferSegment(resp.Data, offset, resp.Data.Length - offset), ref this.messages);
+                                    else
+                                        this.messages.Add(new Messages.Message { type = Messages.MessageTypes.Ping });
 
                                     this.connection.OnMessages(this.messages);
                                 }
                                 catch (Exception ex)
                                 {
-                                    HTTPManager.Logger.Exception("LongPollingTransport", "OnMessage(byte[])", ex);
+                                    HTTPManager.Logger.Exception("LongPollingTransport", "OnMessage(byte[])", ex, this.Context);
                                 }
                                 finally
                                 {
@@ -333,7 +364,6 @@ namespace BestHTTP.SignalRCore.Transports
                             else if (this.State != TransportStates.Closed)
                             {
                                 this.ErrorReason = resp.DataAsText;
-                                this.State = TransportStates.Failed;
                             }
                             break;
 
@@ -353,6 +383,9 @@ namespace BestHTTP.SignalRCore.Transports
                         DoPoll();
                     break;
             }
+
+            if (!string.IsNullOrEmpty(this.ErrorReason))
+                this.State = TransportStates.Failed;
         }
 
         private void OnConnectionCloseRequestFinished(HTTPRequest req, HTTPResponse resp)
@@ -370,28 +403,28 @@ namespace BestHTTP.SignalRCore.Transports
                         HTTPManager.Logger.Warning("LongPollingTransport", string.Format("Connection Close Request finished Successfully, but the server sent an error. Status Code: {0}-{1} Message: {2}",
                                                         resp.StatusCode,
                                                         resp.Message,
-                                                        resp.DataAsText));
+                                                        resp.DataAsText), this.Context);
                     }
                     break;
 
                 // The request finished with an unexpected error. The request's Exception property may contain more info about the error.
                 case HTTPRequestStates.Error:
-                    HTTPManager.Logger.Warning("LongPollingTransport", "Connection Close Request Finished with Error! " + (req.Exception != null ? (req.Exception.Message + "\n" + req.Exception.StackTrace) : "No Exception"));
+                    HTTPManager.Logger.Warning("LongPollingTransport", "Connection Close Request Finished with Error! " + (req.Exception != null ? (req.Exception.Message + "\n" + req.Exception.StackTrace) : "No Exception"), this.Context);
                     break;
 
                 // The request aborted, initiated by the user.
                 case HTTPRequestStates.Aborted:
-                    HTTPManager.Logger.Warning("LongPollingTransport", "Connection Close Request Aborted!");
+                    HTTPManager.Logger.Warning("LongPollingTransport", "Connection Close Request Aborted!", this.Context);
                     break;
 
                 // Connecting to the server is timed out.
                 case HTTPRequestStates.ConnectionTimedOut:
-                    HTTPManager.Logger.Warning("LongPollingTransport", "Connection Close - Connection Timed Out!");
+                    HTTPManager.Logger.Warning("LongPollingTransport", "Connection Close - Connection Timed Out!", this.Context);
                     break;
 
                 // The request didn't finished in the given time.
                 case HTTPRequestStates.TimedOut:
-                    HTTPManager.Logger.Warning("LongPollingTransport", "Connection Close - Processing the request Timed Out!");
+                    HTTPManager.Logger.Warning("LongPollingTransport", "Connection Close - Processing the request Timed Out!", this.Context);
                     break;
             }
 

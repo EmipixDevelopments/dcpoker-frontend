@@ -21,7 +21,7 @@ public class LoginPanel : MonoBehaviour
 
     private void Start()
     {
-        _flags.Init();
+//        _flags.Init();
         _phoneAndCodeList.InitializeUsingSettings();
         // or download JSON online
         //string url = "https://drive.google.com/uc?export=download&id=1Qs9VTpx-n8IT2FpXI_jhIJwomLbsuo_P";
@@ -68,14 +68,17 @@ public class LoginPanel : MonoBehaviour
             optionData.image = _flags.GetSpriteByName(item.FlagName);
             _phoneCodeDropdown.options.Add(optionData);
         }
+
         _phoneCodeDropdown.options.Add(new TMP_Dropdown.OptionData());
     }
+
     private void LoadFieldsState()
     {
         if (_messageText != null)
         {
             _messageText.text = "";
         }
+
         _showPasswordToggle.isOn = false;
 
         if (UIManager.Instance && UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe)
@@ -89,6 +92,7 @@ public class LoginPanel : MonoBehaviour
                     index = i;
                 }
             }
+
             _phoneCodeDropdown.value = index;
 
             _rememberMeToggle.isOn = UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe;
@@ -101,14 +105,23 @@ public class LoginPanel : MonoBehaviour
             {
                 _rememberMeToggle.isOn = UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe;
             }
+
             _phoneNumber.text = "";
             _password.text = "";
             _phoneCodeDropdown.value = 0;
         }
+
         if (UIManager.Instance)
         {
             UIManager.Instance.HideLoader();
         }
+    }
+
+    public void ForceLogin(string userName, string password)
+    {
+        _phoneNumber.text = userName;
+        _password.text = password;
+        OnClickLoginButton(true);
     }
 
     public void OnClickLoginButton(bool forceLoin = false)
@@ -118,8 +131,9 @@ public class LoginPanel : MonoBehaviour
             UIManager.Instance.SoundManager.OnButtonClick();
             if (UIManager.Instance.SocketGameManager.HasInternetConnection())
             {
-                string fullPhoneNumber = _phoneCodeDropdown.options[_phoneCodeDropdown.value].text + _phoneNumber.text;
-                fullPhoneNumber = fullPhoneNumber.Replace("+","");
+//                string fullPhoneNumber = _phoneCodeDropdown.options[_phoneCodeDropdown.value].text + _phoneNumber.text;
+                string fullPhoneNumber = _phoneNumber.text;
+                fullPhoneNumber = fullPhoneNumber.Replace("+", "");
                 fullPhoneNumber = fullPhoneNumber.Replace("-", "");
                 string password = _password.text;
                 string AuthTokenverify = tokenHack(fullPhoneNumber, password);
@@ -137,8 +151,9 @@ public class LoginPanel : MonoBehaviour
                     {
                         ipAddress = data.getString("query");
                     }
+
                     // login and password not used
-                    UIManager.Instance.SocketGameManager.Login(AuthTokenverify, ipAddress, forceLoin, (socket, packet, args) =>
+                    UIManager.Instance.SocketGameManager.Login(fullPhoneNumber, password, AuthTokenverify, ipAddress, forceLoin, (socket, packet, args) =>
                     {
                         Debug.Log("login = " + packet.ToString());
                         UIManager.Instance.HideLoader();
@@ -163,7 +178,7 @@ public class LoginPanel : MonoBehaviour
 
                             UIManager.Instance.assetOfGame.SavedLoginData.isInAppPurchaseAllowed = loginResponse.result.isInAppPurchaseAllowed;
                             UIManager.Instance.ProfilePic = UIManager.Instance.assetOfGame.SavedLoginData.SelectedAvatar;
-                            UIManager.Instance.assetOfGame.SavedLoginData.Username = loginResponse.result.username;//LoginUsername.text;
+                            UIManager.Instance.assetOfGame.SavedLoginData.Username = loginResponse.result.username; //LoginUsername.text;
 
                             UIManager.Instance.assetOfGame.SavedLoginData.password = _password.text;
                             UIManager.Instance.assetOfGame.SavedLoginData.phoneNumber = _phoneNumber.text;
@@ -176,6 +191,7 @@ public class LoginPanel : MonoBehaviour
                             {
                                 UIManager.Instance.SetPlayerLoginType(1);
                             }
+
                             UIManager.Instance.assetOfGame.SavedLoginData.isRememberMe = _rememberMeToggle.isOn;
                             SaveLoad.SaveGame();
                             //------------------//
@@ -189,6 +205,7 @@ public class LoginPanel : MonoBehaviour
                             {
                                 UIManager.Instance.currencyType = UIManager.CurrencyType.coin;
                             }
+
                             UIManager.Instance.SetCurrencyImages();
                             UIManager.Instance.ipLocationService.SendIPAddress("login");
 
@@ -200,30 +217,20 @@ public class LoginPanel : MonoBehaviour
                             if (loginResponse.message == "updateApp")
                             {
                                 UIManager.Instance.DisplayConfirmationPanel("Please update the game By click on Update", "Update", "Exit Game",
-                                    () =>
-                                    {
-                                        Application.OpenURL(loginResponse.result.storeUrl);
-                                    },
-                                    () =>
-                                    {
-                                        Application.Quit();
-                                    });
+                                    () => { Application.OpenURL(loginResponse.result.storeUrl); },
+                                    () => { Application.Quit(); });
                             }
                             else if (loginResponse.message == "alreadyLogin")
                             {
                                 UIManager.Instance.DisplayConfirmationPanel("Same player is already logged in from another device, are you sure you want to login?", "Login", "Cancel",
-                                        () =>
-                                        {
-                                            UIManager.Instance.messagePanel.Close();
-                                            OnClickLoginButton(true);
-                                        }, () =>
-                                        {
-                                            UIManager.Instance.messagePanel.Close();
-                                        });
+                                    () =>
+                                    {
+                                        UIManager.Instance.messagePanel.Close();
+                                        OnClickLoginButton(true);
+                                    }, () => { UIManager.Instance.messagePanel.Close(); });
                             }
                             else if (loginResponse.status == "forceLogout")
                             {
-
                             }
                             else
                             {
@@ -247,6 +254,7 @@ public class LoginPanel : MonoBehaviour
         {
             _password.contentType = TMP_InputField.ContentType.Password;
         }
+
         _password.ForceLabelUpdate();
     }
 
@@ -281,6 +289,7 @@ public class LoginPanel : MonoBehaviour
             _messageText.text = Constants.Messages.Login.PhoneCodeEmpty;
             return false;
         }
+
         if (string.IsNullOrEmpty(phoneNumber))
         {
             _messageText.text = Constants.Messages.Login.PhoneNumberEmpty;
@@ -299,13 +308,14 @@ public class LoginPanel : MonoBehaviour
 
         return true;
     }
+
     public string tokenHack(string mobile, string password)
     {
         string syndicate = null;
         rootHackBase root = new rootHackBase();
         root.mobile = mobile;
         root.password = password;
-        var dateTime = DateTime.UtcNow;//.AddSeconds(-9); // fix: not work
+        var dateTime = DateTime.UtcNow; //.AddSeconds(-9); // fix: not work
         Debug.LogError("Data: " + dateTime.ToString());
         root.timestamp = DateTimeToUnix(dateTime);
         Debug.LogError("Timestamp: " + root.timestamp);
@@ -319,9 +329,10 @@ public class LoginPanel : MonoBehaviour
         //print(syndicate);
         return syndicate;
     }
+
     public long DateTimeToUnix(DateTime MyDateTime)
     {
         TimeSpan timeSpan = MyDateTime - new DateTime(1970, 1, 1, 0, 0, 0);
-        return (long)timeSpan.TotalSeconds;
+        return (long) timeSpan.TotalSeconds;
     }
 }

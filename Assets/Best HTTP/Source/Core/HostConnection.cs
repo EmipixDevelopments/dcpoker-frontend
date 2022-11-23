@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using BestHTTP.Connections;
 using BestHTTP.Extensions;
+using BestHTTP.Logger;
 
 namespace BestHTTP.Core
 {
@@ -27,6 +28,8 @@ namespace BestHTTP.Core
         
         public int QueuedRequests { get { return this.Queue.Count; } }
 
+        public LoggingContext Context { get; private set; }
+
         private List<ConnectionBase> Connections = new List<ConnectionBase>();
         private List<HTTPRequest> Queue = new List<HTTPRequest>();
 
@@ -34,6 +37,10 @@ namespace BestHTTP.Core
         {
             this.Host = host;
             this.VariantId = variantId;
+
+            this.Context = new LoggingContext(this);
+            this.Context.Add("Host", this.Host.Host);
+            this.Context.Add("VariantId", this.VariantId);
         }
 
         internal void AddProtocol(HostProtocolSupport protocolSupport)
@@ -46,12 +53,13 @@ namespace BestHTTP.Core
             {
                 this.ProtocolSupport = protocolSupport;
 
-                HTTPManager.Logger.Information(typeof(HostConnection).Name, string.Format("'{0}': AddProtocol({1}) - changing from {2} to {3}", this.VariantId, protocolSupport, oldProtocol, this.ProtocolSupport));
+                HTTPManager.Logger.Information(typeof(HostConnection).Name, string.Format("AddProtocol({0}) - changing from {1} to {2}", this.VariantId, oldProtocol, protocolSupport), this.Context);
 
                 HostManager.Save();
-
-                TryToSendQueuedRequests();
             }
+
+            if (protocolSupport == HostProtocolSupport.HTTP2)
+                TryToSendQueuedRequests();
         }
 
         internal HostConnection Send(HTTPRequest request)
@@ -80,7 +88,7 @@ namespace BestHTTP.Core
         {
             int activeConnections = 0;
             ConnectionBase conn = null;
-            // Check the last created connection first. This way, if a higher level protocol is present that can handle more requests (== HTTP/2) that protocol will be choosen
+            // Check the last created connection first. This way, if a higher level protocol is present that can handle more requests (== HTTP/2) that protocol will be chosen
             //  and others will be closed when their inactivity time is reached.
             for (int i = Connections.Count - 1; i >= 0; --i)
             {
@@ -88,7 +96,15 @@ namespace BestHTTP.Core
 
                 if (conn.State == HTTPConnectionStates.Initial || conn.State == HTTPConnectionStates.Free || conn.CanProcessMultiple)
                 {
-                    HTTPManager.Logger.Verbose("HostConnection", string.Format("'{0}': GetNextAvailable - returning with connection. state: {1}, CanProcessMultiple: {2}", this.VariantId, conn.State, conn.CanProcessMultiple));
+                    if (!conn.TestConnection())
+                    {
+                        HTTPManager.Logger.Verbose("HostConnection", "GetNextAvailable - TestConnection returned false!", this.Context, request.Context, conn.Context);
+
+                        RemoveConnectionImpl(conn, HTTPConnectionStates.Closed);
+                        continue;
+                    }
+
+                    HTTPManager.Logger.Verbose("HostConnection", string.Format("GetNextAvailable - returning with connection. state: {0}, CanProcessMultiple: {1}", conn.State, conn.CanProcessMultiple), this.Context, request.Context, conn.Context);
                     return conn;
                 }
 
@@ -97,7 +113,7 @@ namespace BestHTTP.Core
 
             if (activeConnections >= HTTPManager.MaxConnectionPerServer)
             {
-                HTTPManager.Logger.Verbose("HostConnection", string.Format("'{0}': GetNextAvailable - activeConnections({1}) >= HTTPManager.MaxConnectionPerServer({2})", this.VariantId, activeConnections, HTTPManager.MaxConnectionPerServer));
+                HTTPManager.Logger.Verbose("HostConnection", string.Format("GetNextAvailable - activeConnections({0}) >= HTTPManager.MaxConnectionPerServer({1})", activeConnections, HTTPManager.MaxConnectionPerServer), this.Context, request.Context);
                 return null;
             }
 
@@ -117,19 +133,18 @@ namespace BestHTTP.Core
                 // If we send out multiple requests at once it will execute the first and delay the others. 
                 // While it will decrease performance initially, it will prevent the creation of TCP connections
                 //  that will be unused after their first request processing if the server supports HTTP/2.
-                if (activeConnections >= 1 && (this.ProtocolSupport == HostProtocolSupport.Unknown /*|| this.ProtocolSupport == HostProtocolSupport.HTTP2*/))
+                if (activeConnections >= 1 && (this.ProtocolSupport == HostProtocolSupport.Unknown || this.ProtocolSupport == HostProtocolSupport.HTTP2))
                 {
-                    HTTPManager.Logger.Verbose("HostConnection", string.Format("'{0}': GetNextAvailable - waiting for protocol support message. activeConnections: {1}, ProtocolSupport: {2} ", this.VariantId, activeConnections, this.ProtocolSupport));
+                    HTTPManager.Logger.Verbose("HostConnection", string.Format("GetNextAvailable - waiting for protocol support message. activeConnections: {0}, ProtocolSupport: {1} ", activeConnections, this.ProtocolSupport), this.Context, request.Context);
                     return null;
                 }
 #endif
 
-                HTTPManager.Logger.Verbose("HostConnection", string.Format("'{0}': GetNextAvailable - creating new connection, key: {1} ", this.VariantId, key));
                 conn = new HTTPConnection(key);
+                HTTPManager.Logger.Verbose("HostConnection", string.Format("GetNextAvailable - creating new connection, key: {0} ", key), this.Context, request.Context, conn.Context);
             }
 #endif
-
-                Connections.Add(conn);
+            Connections.Add(conn);
 
             return conn;
         }
@@ -143,7 +158,7 @@ namespace BestHTTP.Core
             return this;
         }
 
-        internal HostConnection RemoveConnection(ConnectionBase conn, HTTPConnectionStates setState)
+        private bool RemoveConnectionImpl(ConnectionBase conn, HTTPConnectionStates setState)
         {
             conn.State = setState;
             conn.Dispose();
@@ -151,14 +166,14 @@ namespace BestHTTP.Core
             bool found = this.Connections.Remove(conn);
 
             if (!found)
-                HTTPManager.Logger.Warning(typeof(HostConnection).Name, string.Format("'{0}': RemoveConnection - Couldn't find connection! key: {1}", this.VariantId, conn.ServerAddress));
+                HTTPManager.Logger.Information(typeof(HostConnection).Name, string.Format("RemoveConnection - Couldn't find connection! key: {0}", conn.ServerAddress), this.Context, conn.Context);
 
-            return this;
+            return found;
         }
 
-        internal HostConnection DecreaseActiveConnectionCount()
+        internal HostConnection RemoveConnection(ConnectionBase conn, HTTPConnectionStates setState)
         {
-            TryToSendQueuedRequests();
+            RemoveConnectionImpl(conn, setState);
 
             return this;
         }
@@ -174,22 +189,40 @@ namespace BestHTTP.Core
             return this;
         }
 
-        private bool CloseConnectionAfterInactivity(object context)
+        public ConnectionBase Find(Predicate<ConnectionBase> match)
+        {
+            return this.Connections.Find(match);
+        }
+
+        private bool CloseConnectionAfterInactivity(DateTime now, object context)
         {
             var conn = context as ConnectionBase;
-
-            DateTime now = DateTime.Now;
 
             bool closeConnection = conn.State == HTTPConnectionStates.Free && now - conn.LastProcessTime >= conn.KeepAliveTime;
             if (closeConnection)
             {
-                HTTPManager.Logger.Information(typeof(HostConnection).Name, string.Format("'{0}': CloseConnectionAfterInactivity - [{1}] Closing! State: {2}, Now: {3}, LastProcessTime: {4}, KeepAliveTime: {5}",
-                    this.VariantId, conn.ToString(), conn.State, now, conn.LastProcessTime, conn.KeepAliveTime));
+                HTTPManager.Logger.Information(typeof(HostConnection).Name, string.Format("CloseConnectionAfterInactivity - [{0}] Closing! State: {1}, Now: {2}, LastProcessTime: {3}, KeepAliveTime: {4}",
+                    conn.ToString(), conn.State, now.ToString(System.Globalization.CultureInfo.InvariantCulture), conn.LastProcessTime.ToString(System.Globalization.CultureInfo.InvariantCulture), conn.KeepAliveTime), this.Context, conn.Context);
 
                 RemoveConnection(conn, HTTPConnectionStates.Closed);
+                return false;
             }
 
-            return !closeConnection;
+            // repeat until the connection's state is free
+            return conn.State == HTTPConnectionStates.Free;
+        }
+
+        public void RemoveAllIdleConnections()
+        {
+            for (int i = 0; i < this.Connections.Count; i++)
+                if (this.Connections[i].State == HTTPConnectionStates.Free)
+                {
+                    int countBefore = this.Connections.Count;
+                    RemoveConnection(this.Connections[i], HTTPConnectionStates.Closed);
+
+                    if (countBefore != this.Connections.Count)
+                        i--;
+                }
         }
 
         internal void Shutdown()
@@ -221,11 +254,11 @@ namespace BestHTTP.Core
 
             if (DateTime.UtcNow - this.LastProtocolSupportUpdate >= TimeSpan.FromDays(1))
             {
-                HTTPManager.Logger.Verbose("HostConnection", string.Format("'{0}': LoadFrom - Too Old! LastProtocolSupportUpdate: {1}, ProtocolSupport: {2}", this.VariantId, this.LastProtocolSupportUpdate, this.ProtocolSupport));
+                HTTPManager.Logger.Verbose("HostConnection", string.Format("LoadFrom - Too Old! LastProtocolSupportUpdate: {0}, ProtocolSupport: {1}", this.LastProtocolSupportUpdate.ToString(System.Globalization.CultureInfo.InvariantCulture), this.ProtocolSupport), this.Context);
                 this.ProtocolSupport = HostProtocolSupport.Unknown;                
             }
             else
-                HTTPManager.Logger.Verbose("HostConnection", string.Format("'{0}': LoadFrom - LastProtocolSupportUpdate: {1}, ProtocolSupport: {2}", this.VariantId, this.LastProtocolSupportUpdate, this.ProtocolSupport));
+                HTTPManager.Logger.Verbose("HostConnection", string.Format("LoadFrom - LastProtocolSupportUpdate: {0}, ProtocolSupport: {1}", this.LastProtocolSupportUpdate.ToString(System.Globalization.CultureInfo.InvariantCulture), this.ProtocolSupport), this.Context);
         }
     }
 }

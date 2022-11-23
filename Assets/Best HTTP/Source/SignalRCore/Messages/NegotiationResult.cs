@@ -25,7 +25,7 @@ namespace BestHTTP.SignalRCore.Messages
 
     /// <summary>
     /// Negotiation result of the /negotiation request.
-    /// <see cref="https://github.com/aspnet/SignalR/blob/dev/specs/TransportProtocols.md#post-endpoint-basenegotiate-request"/>
+    /// <see cref="https://github.com/dotnet/aspnetcore/blob/master/src/SignalR/docs/specs/TransportProtocols.md#post-endpoint-basenegotiate-request"/>
     /// </summary>
     public sealed class NegotiationResult
     {
@@ -51,16 +51,19 @@ namespace BestHTTP.SignalRCore.Messages
         /// </summary>
         public Uri Url { get; private set; }
 
+
         /// <summary>
         /// The accessToken which is an optional bearer token for accessing the specified url.
         /// </summary>
         public string AccessToken { get; private set; }
 
-        internal static NegotiationResult Parse(string json, out string error, HubConnection hub)
+        public HTTPResponse NegotiationResponse { get; internal set; }
+
+        internal static NegotiationResult Parse(HTTPResponse resp, out string error, HubConnection hub)
         {
             error = null;
 
-            Dictionary<string, object> response = BestHTTP.JSON.Json.Decode(json) as Dictionary<string, object>;
+            Dictionary<string, object> response = BestHTTP.JSON.Json.Decode(resp.DataAsText) as Dictionary<string, object>;
             if (response == null)
             {
                 error = "Json decoding failed!";
@@ -70,6 +73,8 @@ namespace BestHTTP.SignalRCore.Messages
             try
             {
                 NegotiationResult result = new NegotiationResult();
+                result.NegotiationResponse = resp;
+
                 object value;
 
                 if (response.TryGetValue("negotiateVersion", out value))
@@ -138,8 +143,16 @@ namespace BestHTTP.SignalRCore.Messages
                     {
                         Uri oldUri = hub.Uri;
                         var builder = new UriBuilder(oldUri);
-                        builder.Query = string.Empty;
-                        builder.Path = uriStr;
+
+                        // ?, /
+                        var pathAndQuery = uriStr.Split(new string[] { "?", "%3F", "%3f", "/", "%2F", "%2f" }, StringSplitOptions.RemoveEmptyEntries);
+
+                        if (pathAndQuery.Length > 1)
+                            builder.Query = pathAndQuery[1];
+                        else
+                            builder.Query = string.Empty;
+
+                        builder.Path = pathAndQuery[0];
 
                         redirectUri = builder.Uri;
                     }

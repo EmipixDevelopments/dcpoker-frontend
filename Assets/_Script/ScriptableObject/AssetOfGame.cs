@@ -12,6 +12,7 @@ public class AssetOfGame : ScriptableObject
     public LoginSaved SavedLoginData;
     public GamePlay SavedGamePlayData;
     public Cards PokerCards;
+
     public ProfileAvatarList profileAvatarList;
     //public GameObjects SettedGameObjects;
 }
@@ -38,14 +39,18 @@ public class LoginSaved
     public bool isAbsolute;
     public string timeZone;
     public double cash;
+
+    // Registration....
+    public string publicKey;
+    public int[] privateKey;
 }
+
 [Serializable]
 public class GamePlay
 {
     public string TableId;
     public string PlayerId;
     public Sprite spDefaultImage;
-
 }
 
 [Serializable]
@@ -62,5 +67,4 @@ public class Cards
 public class ProfileAvatarList
 {
     public Sprite[] profileAvatarSprite;
-
 }

@@ -1,8 +1,8 @@
-﻿#if !BESTHTTP_DISABLE_SIGNALR
+#if !BESTHTTP_DISABLE_SIGNALR
 
 using System.Collections.Generic;
 
-using LitJson;
+using BestHTTP.JSON.LitJson;
 
 namespace BestHTTP.SignalR.JsonEncoders
 {

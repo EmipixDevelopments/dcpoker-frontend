@@ -1,7 +1,6 @@
 #if !BESTHTTP_DISABLE_SIGNALR_CORE && BESTHTTP_SIGNALR_CORE_ENABLE_GAMEDEVWARE_MESSAGEPACK
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using BestHTTP.PlatformSupport.Memory;
 using BestHTTP.SignalRCore.Messages;
@@ -9,8 +8,18 @@ using GameDevWare.Serialization;
 using GameDevWare.Serialization.MessagePack;
 using GameDevWare.Serialization.Serializers;
 
+using UnityEngine;
+
 namespace BestHTTP.SignalRCore.Encoders
 {
+    public sealed class MessagePackProtocolSerializationOptions
+    {
+        /// <summary>
+        /// A function that must return a TypeSerializer for the given Type. To serialize an enum it can return an EnumNumberSerializer (default) to serialize enums as numbers or EnumSerializer to serialize them as strings.
+        /// </summary>
+        public Func<Type, TypeSerializer> EnumSerializerFactory;
+    }
+
     /// <summary>
     /// IPRotocol implementation using the "Json & MessagePack Serialization" asset store package (https://assetstore.unity.com/packages/tools/network/json-messagepack-serialization-59918).
     /// </summary>
@@ -23,6 +32,51 @@ namespace BestHTTP.SignalRCore.Encoders
         public IEncoder Encoder { get; private set; }
 
         public HubConnection Connection { get; set; }
+
+        public MessagePackProtocolSerializationOptions Options { get; set; }
+
+        public MessagePackProtocol()
+            : this(new MessagePackProtocolSerializationOptions { EnumSerializerFactory = (enumType) => new EnumNumberSerializer(enumType) })
+        {
+            
+        }
+
+        public MessagePackProtocol(MessagePackProtocolSerializationOptions options)
+        {
+            this.Options = options;
+
+            GameDevWare.Serialization.Json.DefaultSerializers.Clear();
+            GameDevWare.Serialization.Json.DefaultSerializers.AddRange(new TypeSerializer[]
+            {
+                new BinarySerializer(),
+                new DateTimeOffsetSerializer(),
+                new DateTimeSerializer(),
+                new GuidSerializer(),
+                new StreamSerializer(),
+                new UriSerializer(),
+                new VersionSerializer(),
+                new TimeSpanSerializer(),
+                new DictionaryEntrySerializer(),
+
+                new BestHTTP.SignalRCore.Encoders.Vector2Serializer(),
+                new BestHTTP.SignalRCore.Encoders.Vector3Serializer(),
+                new BestHTTP.SignalRCore.Encoders.Vector4Serializer(),
+
+                new PrimitiveSerializer(typeof (bool)),
+                new PrimitiveSerializer(typeof (byte)),
+                new PrimitiveSerializer(typeof (decimal)),
+                new PrimitiveSerializer(typeof (double)),
+                new PrimitiveSerializer(typeof (short)),
+                new PrimitiveSerializer(typeof (int)),
+                new PrimitiveSerializer(typeof (long)),
+                new PrimitiveSerializer(typeof (sbyte)),
+                new PrimitiveSerializer(typeof (float)),
+                new PrimitiveSerializer(typeof (ushort)),
+                new PrimitiveSerializer(typeof (uint)),
+                new PrimitiveSerializer(typeof (ulong)),
+                new PrimitiveSerializer(typeof (string)),
+            });
+        }
 
         /// <summary>
         /// This function must convert all element in the arguments array to the corresponding type from the argTypes array.
@@ -84,7 +138,7 @@ namespace BestHTTP.SignalRCore.Encoders
         public BufferSegment EncodeMessage(Message message)
         {
             var memBuffer = BufferPool.Get(256, true);
-            var stream = new BestHTTP.Extensions.BufferPoolMemoryStream(memBuffer, 0, memBuffer.Length, true, true, false);
+            var stream = new BestHTTP.Extensions.BufferPoolMemoryStream(memBuffer, 0, memBuffer.Length, true, true, false, true);
 
             // Write 5 bytes for placeholder for length prefix
             stream.WriteByte(0);
@@ -94,8 +148,14 @@ namespace BestHTTP.SignalRCore.Encoders
             stream.WriteByte(0);
 
             var buffer = BufferPool.Get(MsgPackWriter.DEFAULT_BUFFER_SIZE, true);
+            
+            var context = new SerializationContext {
+                Options = SerializationOptions.SuppressTypeInformation,
+                EnumSerializerFactory = this.Options.EnumSerializerFactory,
+                ExtensionTypeHandler = CustomMessagePackExtensionTypeHandler.Instance
+            };
 
-            var writer = new MsgPackWriter(stream, new SerializationContext { Options = SerializationOptions.None, EnumSerializerFactory = (enumType) => new EnumNumberSerializer(enumType) }, buffer);
+            var writer = new MsgPackWriter(stream, context, buffer);
 
             switch (message.type)
             {
@@ -251,14 +311,18 @@ namespace BestHTTP.SignalRCore.Encoders
             int offset = segment.Offset;
             while (offset < segment.Count)
             {
-                int length = ReadVarInt(segment.Data, ref offset);
+                int length = (int)ReadVarInt(segment.Data, ref offset);
 
                 using (var stream = new System.IO.MemoryStream(segment.Data, offset, length))
                 {
                     var buff = BufferPool.Get(MsgPackReader.DEFAULT_BUFFER_SIZE, true);
                     try
                     {
-                        var reader = new MsgPackReader(stream, new SerializationContext { Options = SerializationOptions.None }, Endianness.BigEndian, buff);
+                        var context = new SerializationContext {
+                            Options = SerializationOptions.SuppressTypeInformation,
+                            ExtensionTypeHandler = CustomMessagePackExtensionTypeHandler.Instance
+                        };
+                        var reader = new MsgPackReader(stream, context, Endianness.BigEndian, buff);
                         
                         reader.NextToken();
                         reader.NextToken();
@@ -444,8 +508,6 @@ namespace BestHTTP.SignalRCore.Encoders
 
         private object[] ReadArguments(MsgPackReader reader, string target)
         {
-            reader.NextToken();
-
             var subscription = this.Connection.GetSubscription(target);
 
             object[] args;
@@ -455,12 +517,19 @@ namespace BestHTTP.SignalRCore.Encoders
             }
             else
             {
-                args = new object[subscription.callbacks[0].ParamTypes.Length];
-                for (int i = 0; i < subscription.callbacks[0].ParamTypes.Length; ++i)
-                    args[i] = reader.ReadValue(subscription.callbacks[0].ParamTypes[i]);
-            }
+                reader.NextToken();
 
-            reader.NextToken();
+                if (subscription.callbacks[0].ParamTypes != null)
+                {
+                    args = new object[subscription.callbacks[0].ParamTypes.Length];
+                    for (int i = 0; i < subscription.callbacks[0].ParamTypes.Length; ++i)
+                        args[i] = reader.ReadValue(subscription.callbacks[0].ParamTypes[i]);
+                }
+                else
+                    args = null;
+
+                reader.NextToken();
+            }
 
             return args;
         }
@@ -502,16 +571,296 @@ namespace BestHTTP.SignalRCore.Encoders
             return offset;
         }
 
-        public static int ReadVarInt(byte[] data, ref int offset)
+        public static uint ReadVarInt(byte[] data, ref int offset)
         {
-            int num = 0;
+            var length = 0U;
+            var numBytes = 0;
+
+            byte byteRead;
             do
             {
-                num <<= 7;
-                num |= data[offset] & 0x7F;
-            } while ((data[offset++] & 0x80) != 0);
+                byteRead = data[offset + numBytes];
+                length = length | (((uint)(byteRead & 0x7f)) << (numBytes * 7));
+                numBytes++;
+            }
+            while (offset + numBytes < data.Length && ((byteRead & 0x80) != 0));
 
-            return num;
+            offset += numBytes;
+
+            return length;
+        }
+    }
+
+    public sealed class CustomMessagePackExtensionTypeHandler : MessagePackExtensionTypeHandler
+    {
+        public const int EXTENSION_TYPE_DATE_TIME = -1;
+        public const int DATE_TIME_SIZE = 8;
+
+        public const long BclSecondsAtUnixEpoch = 62135596800;
+        public const int NanosecondsPerTick = 100;
+        public static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        private static readonly Type[] DefaultExtensionTypes = new[] { typeof(DateTime) };
+        public static CustomMessagePackExtensionTypeHandler Instance = new CustomMessagePackExtensionTypeHandler();
+
+        public override IEnumerable<Type> ExtensionTypes
+        {
+            get { return DefaultExtensionTypes; }
+        }
+
+        
+        public override bool TryRead(sbyte type, ArraySegment<byte> data, out object value)
+        {
+            if (data.Array == null) throw new ArgumentNullException("data");
+
+            value = default(object);
+            switch (type)
+            {
+                case EXTENSION_TYPE_DATE_TIME:
+                    switch (data.Count)
+                    {
+                        case 4:
+                            {
+                                var intValue = unchecked((int)(FromBytes(data.Array, data.Offset, 4)));
+                                value = CustomMessagePackExtensionTypeHandler.UnixEpoch.AddSeconds(unchecked((uint)intValue));
+                                return true;
+                            }
+                        case 8:
+                            {
+                                long longValue = FromBytes(data.Array, data.Offset, 8);
+                                ulong ulongValue = unchecked((ulong)longValue);
+                                long nanoseconds = (long)(ulongValue >> 34);
+                                ulong seconds = ulongValue & 0x00000003ffffffffL;
+                                value = CustomMessagePackExtensionTypeHandler.UnixEpoch.AddSeconds(seconds).AddTicks(nanoseconds / CustomMessagePackExtensionTypeHandler.NanosecondsPerTick);
+                                return true;
+                            }
+                        case 12:
+                            {
+                                var intValue = unchecked((int)(FromBytes(data.Array, data.Offset, 4)));
+                                long longValue = FromBytes(data.Array, data.Offset, 8);
+
+                                var nanoseconds = unchecked((uint)intValue);
+                                value = CustomMessagePackExtensionTypeHandler.UnixEpoch.AddSeconds(longValue).AddTicks(nanoseconds / CustomMessagePackExtensionTypeHandler.NanosecondsPerTick);
+                                return true;
+                            }
+                        default:
+                            throw new Exception($"Length of extension was {data.Count}. Either 4, 8 or 12 were expected.");
+                    }
+                default:
+                    return false;
+            }
+        }
+        
+        public override bool TryWrite(object value, out sbyte type, ref ArraySegment<byte> data)
+        {
+            if (value == null)
+            {
+                type = 0;
+                return false;
+            }
+            else if (value is DateTime)
+            {
+                type = EXTENSION_TYPE_DATE_TIME;
+
+                var dateTime = (DateTime)(object)value;
+
+                // The spec requires UTC. Convert to UTC if we're sure the value was expressed as Local time.
+                // If it's Unspecified, we want to leave it alone since .NET will change the value when we convert
+                // and we simply don't know, so we should leave it as-is.
+                if (dateTime.Kind == DateTimeKind.Local)
+                {
+                    dateTime = dateTime.ToUniversalTime();
+                }
+
+                var secondsSinceBclEpoch = dateTime.Ticks / TimeSpan.TicksPerSecond;
+                var seconds = secondsSinceBclEpoch - CustomMessagePackExtensionTypeHandler.BclSecondsAtUnixEpoch;
+                var nanoseconds = (dateTime.Ticks % TimeSpan.TicksPerSecond) * CustomMessagePackExtensionTypeHandler.NanosecondsPerTick;
+
+                if ((seconds >> 34) == 0)
+                {
+                    var data64 = unchecked((ulong)((nanoseconds << 34) | seconds));
+                    if ((data64 & 0xffffffff00000000L) == 0)
+                    {
+                        // timestamp 32(seconds in 32-bit unsigned int)
+                        var data32 = (UInt32)data64;
+
+                        const int TIMESTAMP_SIZE = 4;
+
+                        if (data.Array == null || data.Count < TIMESTAMP_SIZE)
+                            data = new ArraySegment<byte>(new byte[TIMESTAMP_SIZE]);
+
+                        CopyBytesImpl(data32, 4, data.Array, data.Offset);
+
+                        if (data.Count != DATE_TIME_SIZE)
+                            data = new ArraySegment<byte>(data.Array, data.Offset, DATE_TIME_SIZE);
+                    }
+                    else
+                    {
+                        // timestamp 64(nanoseconds in 30-bit unsigned int | seconds in 34-bit unsigned int)
+                        const int TIMESTAMP_SIZE = 8;
+                        if (data.Array == null || data.Count < TIMESTAMP_SIZE)
+                            data = new ArraySegment<byte>(new byte[TIMESTAMP_SIZE]);
+
+                        CopyBytesImpl(unchecked((long)data64), 8, data.Array, data.Offset);
+
+                        if (data.Count != DATE_TIME_SIZE)
+                            data = new ArraySegment<byte>(data.Array, data.Offset, DATE_TIME_SIZE);
+                    }
+                }
+                else
+                {
+                    // timestamp 96( nanoseconds in 32-bit unsigned int | seconds in 64-bit signed int )
+
+                    const int TIMESTAMP_SIZE = 12;
+
+                    if (data.Array == null || data.Count < TIMESTAMP_SIZE)
+                        data = new ArraySegment<byte>(new byte[TIMESTAMP_SIZE]);
+
+                    CopyBytesImpl((uint)nanoseconds, 4, data.Array, data.Offset);
+                    CopyBytesImpl(seconds, 8, data.Array, data.Offset + 4);
+
+                    if (data.Count != DATE_TIME_SIZE)
+                        data = new ArraySegment<byte>(data.Array, data.Offset, DATE_TIME_SIZE);
+                }
+
+                return true;
+            }
+
+            type = default(sbyte);
+            return false;
+        }
+
+        private void CopyBytesImpl(long value, int bytes, byte[] buffer, int index)
+        {
+            var endOffset = index + bytes - 1;
+            for (var i = 0; i < bytes; i++)
+            {
+                buffer[endOffset - i] = unchecked((byte)(value & 0xff));
+                value = value >> 8;
+            }
+        }
+
+        private long FromBytes(byte[] buffer, int startIndex, int bytesToConvert)
+        {
+            long ret = 0;
+            for (var i = 0; i < bytesToConvert; i++)
+            {
+                ret = unchecked((ret << 8) | buffer[startIndex + i]);
+            }
+            return ret;
+        }
+    }
+
+    // https://github.com/neuecc/MessagePack-CSharp/blob/13c299a5172c60154bae53395612af194c02d286/src/MessagePack.UnityClient/Assets/Scripts/MessagePack/Unity/Formatters.cs#L15
+    public sealed class Vector2Serializer : TypeSerializer
+    {
+        public override Type SerializedType { get { return typeof(Vector2); } }
+
+        public override object Deserialize(IJsonReader reader)
+        {
+            if (reader == null) throw new ArgumentNullException("reader");
+
+            if (reader.Token == JsonToken.Null)
+                return null;
+
+            var value = new Vector2();
+            reader.ReadArrayBegin();
+
+            int idx = 0;
+            while (reader.Token != JsonToken.EndOfArray)
+                value[idx++] = reader.ReadSingle();
+
+            reader.ReadArrayEnd(nextToken: false);
+
+            return value;
+        }
+
+        public override void Serialize(IJsonWriter writer, object value)
+        {
+            if (writer == null) throw new ArgumentNullException("writer");
+            if (value == null) throw new ArgumentNullException("value");
+
+            var vector2 = (Vector2)value;
+            writer.WriteArrayBegin(2);
+            writer.Write(vector2.x);
+            writer.Write(vector2.y);
+            writer.WriteArrayEnd();
+        }
+    }
+
+    // https://github.com/neuecc/MessagePack-CSharp/blob/13c299a5172c60154bae53395612af194c02d286/src/MessagePack.UnityClient/Assets/Scripts/MessagePack/Unity/Formatters.cs#L56
+    public sealed class Vector3Serializer : TypeSerializer
+    {
+        public override Type SerializedType { get { return typeof(Vector3); } }
+
+        public override object Deserialize(IJsonReader reader)
+        {
+            if (reader == null) throw new ArgumentNullException("reader");
+
+            if (reader.Token == JsonToken.Null)
+                return null;
+
+            var value = new Vector3();
+            reader.ReadArrayBegin();
+
+            int idx = 0;
+            while (reader.Token != JsonToken.EndOfArray)
+                value[idx++] = reader.ReadSingle();
+
+            reader.ReadArrayEnd(nextToken: false);
+
+            return value;
+        }
+
+        public override void Serialize(IJsonWriter writer, object value)
+        {
+            if (writer == null) throw new ArgumentNullException("writer");
+            if (value == null) throw new ArgumentNullException("value");
+
+            var vector3 = (Vector3)value;
+            writer.WriteArrayBegin(3);
+            writer.Write(vector3.x);
+            writer.Write(vector3.y);
+            writer.Write(vector3.z);
+            writer.WriteArrayEnd();
+        }
+    }
+
+    // https://github.com/neuecc/MessagePack-CSharp/blob/13c299a5172c60154bae53395612af194c02d286/src/MessagePack.UnityClient/Assets/Scripts/MessagePack/Unity/Formatters.cs#L102
+    public sealed class Vector4Serializer : TypeSerializer
+    {
+        public override Type SerializedType { get { return typeof(Vector4); } }
+
+        public override object Deserialize(IJsonReader reader)
+        {
+            if (reader == null) throw new ArgumentNullException("reader");
+
+            if (reader.Token == JsonToken.Null)
+                return null;
+
+            var value = new Vector4();
+            reader.ReadArrayBegin();
+
+            int idx = 0;
+            while (reader.Token != JsonToken.EndOfArray)
+                value[idx++] = reader.ReadSingle();
+
+            reader.ReadArrayEnd(nextToken: false);
+
+            return value;
+        }
+        public override void Serialize(IJsonWriter writer, object value)
+        {
+            if (writer == null) throw new ArgumentNullException("writer");
+            if (value == null) throw new ArgumentNullException("value");
+
+            var vector4 = (Vector4)value;
+            writer.WriteArrayBegin(4);
+            writer.Write(vector4.x);
+            writer.Write(vector4.y);
+            writer.Write(vector4.z);
+            writer.Write(vector4.z);
+            writer.WriteArrayEnd();
         }
     }
 }

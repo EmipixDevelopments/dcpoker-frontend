@@ -1,8 +1,11 @@
-﻿using BestHTTP.PlatformSupport.Memory;
+using BestHTTP.PlatformSupport.Memory;
 using System;
 
 namespace BestHTTP.Extensions
 {
+    /// <summary>
+    /// Wrapper of multiple streams. Writes and reads are both supported. Read goes trough all the streams.
+    /// </summary>
     public sealed class StreamList : System.IO.Stream
     {
         private System.IO.Stream[] Streams;
@@ -68,8 +71,19 @@ namespace BestHTTP.Extensions
 
             int readCount = Streams[CurrentIdx].Read(buffer, offset, count);
 
-            while (readCount < count && CurrentIdx++ < Streams.Length)
+            while (readCount < count && ++CurrentIdx < Streams.Length)
             {
+                // Dispose previous stream
+                try
+                {
+                    Streams[CurrentIdx - 1].Dispose();
+                    Streams[CurrentIdx - 1] = null;
+                }
+                catch (Exception ex)
+                {
+                    HTTPManager.Logger.Exception("StreamList", "Dispose", ex);
+                }
+
                 readCount += Streams[CurrentIdx].Read(buffer, offset + readCount, count - readCount);
             }
 
@@ -86,24 +100,27 @@ namespace BestHTTP.Extensions
 
         public void Write(string str)
         {
-            byte[] bytes = str.GetASCIIBytes();
-
-            this.Write(bytes, 0, bytes.Length);
-            BufferPool.Release(bytes);
+            var buffer = str.GetASCIIBytes();
+            this.Write(buffer.Data, buffer.Offset, buffer.Count);
+            BufferPool.Release(buffer);
         }
 
         protected override void Dispose(bool disposing)
         {
-            for (int i = 0; i < Streams.Length; ++i)
+            if (disposing)
             {
-                try
-                {
-                    Streams[i].Dispose();
-                }
-                catch (Exception ex)
-                {
-                    HTTPManager.Logger.Exception("StreamList", "Dispose", ex);
-                }
+                for (int i = 0; i < Streams.Length; ++i)
+                    if (Streams[i] != null)
+                    {
+                        try
+                        {
+                            Streams[i].Dispose();
+                        }
+                        catch (Exception ex)
+                        {
+                            HTTPManager.Logger.Exception("StreamList", "Dispose", ex);
+                        }
+                    }
             }
         }
 

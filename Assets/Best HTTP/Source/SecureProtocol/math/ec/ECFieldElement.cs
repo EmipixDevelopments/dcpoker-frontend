@@ -3,7 +3,6 @@
 using System;
 using System.Diagnostics;
 
-using BestHTTP.SecureProtocol.Org.BouncyCastle.Math.Raw;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities;
 
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
@@ -131,7 +130,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
             return null;
         }
 
-        [Obsolete("Use ECCurve.FromBigInteger to construct field elements")]
+
         public FpFieldElement(BigInteger q, BigInteger x)
             : this(q, CalculateResidue(q), x)
         {
@@ -436,13 +435,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
 
         protected virtual BigInteger ModInverse(BigInteger x)
         {
-            int bits = FieldSize;
-            int len = (bits + 31) >> 5;
-            uint[] p = Nat.FromBigInteger(bits, q);
-            uint[] n = Nat.FromBigInteger(bits, x);
-            uint[] z = Nat.Create(len);
-            Mod.Invert(p, n, z);
-            return Nat.ToBigInteger(len, z);
+            return BigIntegers.ModOddInverse(q, x);
         }
 
         protected virtual BigInteger ModMult(BigInteger x1, BigInteger x2)
@@ -673,7 +666,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
          * represents the reduction polynomial <code>f(z)</code>.
          * @param x The BigInteger representing the value of the field element.
          */
-        [Obsolete("Use ECCurve.FromBigInteger to construct field elements")]
+
         public F2mFieldElement(
             int			m,
             int			k1,
@@ -713,7 +706,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC
          * polynomial <code>f(z)</code>.
          * @param x The BigInteger representing the value of the field element.
          */
-        [Obsolete("Use ECCurve.FromBigInteger to construct field elements")]
+
         public F2mFieldElement(
             int			m,
             int			k,

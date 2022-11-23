@@ -1,8 +1,10 @@
-﻿using BestHTTP.Extensions;
-using BestHTTP.Logger;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
+
+using BestHTTP.Logger;
+
+// Required for ConcurrentQueue.Clear extension.
+using BestHTTP.Extensions;
 
 namespace BestHTTP.Core
 {
@@ -15,6 +17,8 @@ namespace BestHTTP.Core
         SaveCacheLibrary,
 
         AltSvcHeader,
+
+        HTTP2ConnectProtocol
     }
 
     public
@@ -44,14 +48,19 @@ namespace BestHTTP.Core
         }
     }
 
-    internal static class PluginEventHelper
+    public static class PluginEventHelper
     {
         private static ConcurrentQueue<PluginEventInfo> pluginEvents = new ConcurrentQueue<PluginEventInfo>();
 
+#pragma warning disable 0649
         public static Action<PluginEventInfo> OnEvent;
+#pragma warning restore
 
         public static void EnqueuePluginEvent(PluginEventInfo @event)
         {
+            if (HTTPManager.Logger.Level == Loglevels.All)
+                HTTPManager.Logger.Information("PluginEventHelper", "Enqueue plugin event: " + @event.ToString());
+
             pluginEvents.Enqueue(@event);
         }
 
@@ -107,6 +116,12 @@ namespace BestHTTP.Core
                         HostManager.GetHost(altSvcEventInfo.Host)
                                     .HandleAltSvcHeader(altSvcEventInfo.Response);
                         break;
+
+                    case PluginEvents.HTTP2ConnectProtocol:
+                        HTTP2ConnectProtocolInfo info = pluginEvent.Payload as HTTP2ConnectProtocolInfo;
+                        HostManager.GetHost(info.Host)
+                                    .HandleConnectProtocol(info);
+                        break;
                 }
             }
 
@@ -134,4 +149,15 @@ namespace BestHTTP.Core
         }
     }
 
+    public sealed class HTTP2ConnectProtocolInfo
+    {
+        public readonly string Host;
+        public readonly bool Enabled;
+
+        public HTTP2ConnectProtocolInfo(string host, bool enabled)
+        {
+            this.Host = host;
+            this.Enabled = enabled;
+        }
+    }
 }

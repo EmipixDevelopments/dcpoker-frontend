@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 
 #if NET_STANDARD_2_0
@@ -9,6 +9,19 @@ namespace BestHTTP.PlatformSupport.Threading
 {
     public static class ThreadedRunner
     {
+        public static void SetThreadName(string name)
+        {
+            try
+            {
+                System.Threading.Thread.CurrentThread.Name = name;
+            }
+            catch(Exception ex)
+            {
+                if (HTTPManager.Logger.Level == Logger.Loglevels.All)
+                    HTTPManager.Logger.Exception("ThreadedRunner", "SetThreadName", ex);
+            }
+        }
+
         public static void RunShortLiving<T>(Action<T> job, T param)
         {
 #if NETFX_CORE
@@ -54,6 +67,21 @@ namespace BestHTTP.PlatformSupport.Threading
 #endif
         }
 
+        public static void RunShortLiving<T1, T2, T3, T4>(Action<T1, T2, T3, T4> job, T1 param1, T2 param2, T3 param3, T4 param4)
+        {
+#if NETFX_CORE
+#pragma warning disable 4014
+            Windows.System.Threading.ThreadPool.RunAsync((param) => job(param1, param2, param3, param4));
+#pragma warning restore 4014
+#elif NET_STANDARD_2_0
+            var _task = new Task(() => job(param1, param2, param3, param4));
+            _task.ConfigureAwait(false);
+            _task.Start();
+#else
+            ThreadPool.QueueUserWorkItem(new WaitCallback(_ => job(param1, param2, param3, param4)));
+#endif
+        }
+
         public static void RunShortLiving(Action job)
         {
 #if NETFX_CORE
@@ -81,6 +109,7 @@ namespace BestHTTP.PlatformSupport.Threading
             _task.Start();
 #else
             var thread = new Thread(new ParameterizedThreadStart((param) => job()));
+            thread.IsBackground = true;
             thread.Start();
 #endif
         }

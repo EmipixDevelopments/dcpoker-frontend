@@ -22,8 +22,11 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Macs
     /// by Andrew M (@floodyberry).
     /// </remarks>
     /// <seealso cref="BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Generators.Poly1305KeyGenerator"/>
-    public class Poly1305
-        : IMac
+    
+    
+    
+    [BestHTTP.PlatformSupport.IL2CPP.Il2CppEagerStaticClassConstructionAttribute]
+    public sealed class Poly1305 : IMac
     {
         private const int BlockSize = 16;
 
@@ -170,50 +173,49 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Macs
         }
 
         public void BlockUpdate(byte[] input, int inOff, int len)
-        {
-            int copied = 0;
-            while (len > copied)
             {
-                if (currentBlockOffset == BlockSize)
+                int copied = 0;
+                while (len > copied)
                 {
+                    if (currentBlockOffset == BlockSize)
+                    {
                     ProcessBlock();
-                    currentBlockOffset = 0;
-                }
+                        currentBlockOffset = 0;
+                    }
 
-                int toCopy = System.Math.Min((len - copied), BlockSize - currentBlockOffset);
+                    int toCopy = System.Math.Min((len - copied), BlockSize - currentBlockOffset);
                 Array.Copy(input, copied + inOff, currentBlock, currentBlockOffset, toCopy);
-                copied += toCopy;
-                currentBlockOffset += toCopy;
+                    copied += toCopy;
+                    currentBlockOffset += toCopy;
+                }
             }
-
-        }
 
         private void ProcessBlock()
-        {
-            if (currentBlockOffset < BlockSize)
             {
-                currentBlock[currentBlockOffset] = 1;
-                for (int i = currentBlockOffset + 1; i < BlockSize; i++)
+                if (currentBlockOffset < BlockSize)
                 {
-                    currentBlock[i] = 0;
+                    currentBlock[currentBlockOffset] = 1;
+                    for (int i = currentBlockOffset + 1; i < BlockSize; i++)
+                    {
+                        currentBlock[i] = 0;
+                    }
                 }
-            }
 
             ulong t0 = Pack.LE_To_UInt32(currentBlock, 0);
             ulong t1 = Pack.LE_To_UInt32(currentBlock, 4);
             ulong t2 = Pack.LE_To_UInt32(currentBlock, 8);
             ulong t3 = Pack.LE_To_UInt32(currentBlock, 12);
 
-            h0 += (uint)(t0 & 0x3ffffffU);
-            h1 += (uint)((((t1 << 32) | t0) >> 26) & 0x3ffffff);
-            h2 += (uint)((((t2 << 32) | t1) >> 20) & 0x3ffffff);
-            h3 += (uint)((((t3 << 32) | t2) >> 14) & 0x3ffffff);
-            h4 += (uint)(t3 >> 8);
+                h0 += (uint)(t0 & 0x3ffffffU);
+                h1 += (uint)((((t1 << 32) | t0) >> 26) & 0x3ffffff);
+                h2 += (uint)((((t2 << 32) | t1) >> 20) & 0x3ffffff);
+                h3 += (uint)((((t3 << 32) | t2) >> 14) & 0x3ffffff);
+                h4 += (uint)(t3 >> 8);
 
-            if (currentBlockOffset == BlockSize)
-            {
-                h4 += (1 << 24);
-            }
+                if (currentBlockOffset == BlockSize)
+                {
+                    h4 += (1 << 24);
+                }
 
             ulong tp0 = mul32x32_64(h0,r0) + mul32x32_64(h1,s4) + mul32x32_64(h2,s3) + mul32x32_64(h3,s2) + mul32x32_64(h4,s1);
             ulong tp1 = mul32x32_64(h0,r1) + mul32x32_64(h1,r0) + mul32x32_64(h2,s4) + mul32x32_64(h3,s3) + mul32x32_64(h4,s2);
@@ -221,13 +223,13 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Macs
             ulong tp3 = mul32x32_64(h0,r3) + mul32x32_64(h1,r2) + mul32x32_64(h2,r1) + mul32x32_64(h3,r0) + mul32x32_64(h4,s4);
             ulong tp4 = mul32x32_64(h0,r4) + mul32x32_64(h1,r3) + mul32x32_64(h2,r2) + mul32x32_64(h3,r1) + mul32x32_64(h4,r0);
 
-            h0 = (uint)tp0 & 0x3ffffff; tp1 += (tp0 >> 26);
-            h1 = (uint)tp1 & 0x3ffffff; tp2 += (tp1 >> 26);
-            h2 = (uint)tp2 & 0x3ffffff; tp3 += (tp2 >> 26);
-            h3 = (uint)tp3 & 0x3ffffff; tp4 += (tp3 >> 26);
-            h4 = (uint)tp4 & 0x3ffffff;
-            h0 += (uint)(tp4 >> 26) * 5;
-            h1 += (h0 >> 26); h0 &= 0x3ffffff;
+                h0 = (uint)tp0 & 0x3ffffff; tp1 += (tp0 >> 26);
+                h1 = (uint)tp1 & 0x3ffffff; tp2 += (tp1 >> 26);
+                h2 = (uint)tp2 & 0x3ffffff; tp3 += (tp2 >> 26);
+                h3 = (uint)tp3 & 0x3ffffff; tp4 += (tp3 >> 26);
+                h4 = (uint)tp4 & 0x3ffffff;
+                h0 += (uint)(tp4 >> 26) * 5;
+                h1 += (h0 >> 26); h0 &= 0x3ffffff;
         }
 
         public int DoFinal(byte[] output, int outOff)

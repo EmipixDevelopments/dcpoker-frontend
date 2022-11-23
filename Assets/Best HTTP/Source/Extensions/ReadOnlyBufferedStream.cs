@@ -1,4 +1,4 @@
-﻿using BestHTTP.PlatformSupport.Memory;
+using BestHTTP.PlatformSupport.Memory;
 using System;
 using System.IO;
 
@@ -11,7 +11,7 @@ namespace BestHTTP.Extensions
         byte[] buf;
         int available = 0;
         int pos = 0;
-
+        
         public ReadOnlyBufferedStream(Stream nstream)
             :this(nstream, READBUFFER)
         {
@@ -25,70 +25,32 @@ namespace BestHTTP.Extensions
 
         public override int Read(byte[] buffer, int offset, int size)
         {
-            if (size <= available)
+            if (available > 0)
             {
-                Array.Copy(buf, pos, buffer, offset, size);
-                available -= size;
-                pos += size;
-                return size;
+                // copy & return
+                int copyCount = Math.Min(available, size);
+                Array.Copy(buf, pos, buffer, offset, copyCount);
+                pos += copyCount;
+                available -= copyCount;
+                return copyCount;
             }
             else
             {
-                int readcount = 0;
-                if (available > 0)
+                if (size >= buf.Length)
                 {
-                    Array.Copy(buf, pos, buffer, offset, available);
-                    offset += available;
-                    readcount += available;
-                    available = 0;
-                    pos = 0;
+                    // read directly to buffer
+                    return stream.Read(buffer, offset, size);
                 }
-
-                while (true)
+                else
                 {
-                    try
-                    {
-                        available = stream.Read(buf, 0, buf.Length);
-                        pos = 0;
-                    }
-                    catch (Exception ex)
-                    {
-                        if (readcount > 0)
-                        {
-                            return readcount;
-                        }
+                    // read to buf and copy
+                    pos = 0;
+                    available = stream.Read(buf, 0, buf.Length);
 
-                        throw (ex);
-                    }
-                    if (available < 1)
-                    {
-                        if (readcount > 0)
-                        {
-                            return readcount;
-                        }
-
-                        return 0;
-                    }
+                    if (available > 0)
+                        return Read(buffer, offset, size);
                     else
-                    {
-                        int toread = size - readcount;
-                        if (toread <= available)
-                        {
-                            Array.Copy(buf, pos, buffer, offset, toread);
-                            available -= toread;
-                            pos += toread;
-                            readcount += toread;
-                            return readcount;
-                        }
-                        else
-                        {
-                            Array.Copy(buf, pos, buffer, offset, available);
-                            offset += available;
-                            readcount += available;
-                            pos = 0;
-                            available = 0;
-                        }
-                    }
+                        return 0;
                 }
             }
         }
@@ -127,7 +89,7 @@ namespace BestHTTP.Extensions
 
         protected override void Dispose(bool disposing)
         {
-            if (buf != null)
+            if (disposing && buf != null)
                 BufferPool.Release(buf);
 
             buf = null;

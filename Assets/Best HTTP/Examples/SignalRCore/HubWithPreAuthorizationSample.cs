@@ -62,8 +62,28 @@ namespace BestHTTP.Examples
             // Server side of this example can be found here:
             // https://github.com/Benedicht/BestHTTP_DemoSite/blob/master/BestHTTP_DemoSite/Hubs/
 
+#if BESTHTTP_SIGNALR_CORE_ENABLE_MESSAGEPACK_CSHARP
+            try
+            {
+                MessagePack.Resolvers.StaticCompositeResolver.Instance.Register(
+                    MessagePack.Resolvers.DynamicEnumAsStringResolver.Instance,
+                    MessagePack.Unity.UnityResolver.Instance,
+                    //MessagePack.Unity.Extension.UnityBlitWithPrimitiveArrayResolver.Instance,
+                    //MessagePack.Resolvers.StandardResolver.Instance,
+                    MessagePack.Resolvers.ContractlessStandardResolver.Instance
+                );
+
+                var options = MessagePack.MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.StaticCompositeResolver.Instance);
+                MessagePack.MessagePackSerializer.DefaultOptions = options;
+            }
+            catch
+            { }
+#endif
+
             IProtocol protocol = null;
-#if BESTHTTP_SIGNALR_CORE_ENABLE_GAMEDEVWARE_MESSAGEPACK
+#if BESTHTTP_SIGNALR_CORE_ENABLE_MESSAGEPACK_CSHARP
+            protocol = new MessagePackCSharpProtocol();
+#elif BESTHTTP_SIGNALR_CORE_ENABLE_GAMEDEVWARE_MESSAGEPACK
             protocol = new MessagePackProtocol();
 #else
             protocol = new JsonProtocol(new LitJsonEncoder());
@@ -183,9 +203,12 @@ namespace BestHTTP.Examples
 
 #pragma warning restore 0067
 
+        public string Token { get; private set; }
+
         private Uri authenticationUri;
 
-        public string Token { get; private set; }
+        private HTTPRequest authenticationRequest;
+        private bool isCancellationRequested;
 
         public PreAuthAccessTokenAuthenticator(Uri authUri)
         {
@@ -194,8 +217,8 @@ namespace BestHTTP.Examples
 
         public void StartAuthentication()
         {
-            var request = new HTTPRequest(this.authenticationUri, OnAuthenticationRequestFinished);
-            request.Send();
+            this.authenticationRequest = new HTTPRequest(this.authenticationUri, OnAuthenticationRequestFinished);
+            this.authenticationRequest.Send();
         }
 
         private void OnAuthenticationRequestFinished(HTTPRequest req, HTTPResponse resp)
@@ -206,6 +229,7 @@ namespace BestHTTP.Examples
                 case HTTPRequestStates.Finished:
                     if (resp.IsSuccess)
                     {
+                        this.authenticationRequest = null;
                         this.Token = resp.DataAsText;
                         if (this.OnAuthenticationSucceded != null)
                             this.OnAuthenticationSucceded(this);
@@ -241,6 +265,11 @@ namespace BestHTTP.Examples
 
         private void AuthenticationFailed(string reason)
         {
+            this.authenticationRequest = null;
+
+            if (this.isCancellationRequested)
+                return;
+
             if (this.OnAuthenticationFailed != null)
                 this.OnAuthenticationFailed(this, reason);
         }
@@ -264,6 +293,13 @@ namespace BestHTTP.Examples
             }
             else
                 return uri;
+        }
+
+        public void Cancel()
+        {
+            this.isCancellationRequested = true;
+            if (this.authenticationRequest != null)
+                this.authenticationRequest.Abort();
         }
     }
 }

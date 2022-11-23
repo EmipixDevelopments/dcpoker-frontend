@@ -18,10 +18,17 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
 
         private readonly byte[] data = new byte[KeySize];
 
+        private Ed25519PublicKeyParameters cachedPublicKey;
+
         public Ed25519PrivateKeyParameters(SecureRandom random)
             : base(true)
         {
             Ed25519.GeneratePrivateKey(random, data);
+        }
+
+        public Ed25519PrivateKeyParameters(byte[] buf)
+            : this(Validate(buf), 0)
+        {
         }
 
         public Ed25519PrivateKeyParameters(byte[] buf, int off)
@@ -49,23 +56,33 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
 
         public Ed25519PublicKeyParameters GeneratePublicKey()
         {
-            byte[] publicKey = new byte[Ed25519.PublicKeySize];
-            Ed25519.GeneratePublicKey(data, 0, publicKey, 0);
-            return new Ed25519PublicKeyParameters(publicKey, 0);
+            lock (data)
+            {
+                if (null == cachedPublicKey)
+                {
+                    byte[] publicKey = new byte[Ed25519.PublicKeySize];
+                    Ed25519.GeneratePublicKey(data, 0, publicKey, 0);
+                    cachedPublicKey = new Ed25519PublicKeyParameters(publicKey, 0);
+                }
+
+                return cachedPublicKey;
+            }
         }
+
 
         public void Sign(Ed25519.Algorithm algorithm, Ed25519PublicKeyParameters publicKey, byte[] ctx, byte[] msg, int msgOff, int msgLen,
             byte[] sig, int sigOff)
         {
+            Sign(algorithm, ctx, msg, msgOff, msgLen, sig, sigOff);
+        }
+
+        public void Sign(Ed25519.Algorithm algorithm, byte[] ctx, byte[] msg, int msgOff, int msgLen,
+            byte[] sig, int sigOff)
+        {
+            Ed25519PublicKeyParameters publicKey = GeneratePublicKey();
+
             byte[] pk = new byte[Ed25519.PublicKeySize];
-            if (null == publicKey)
-            {
-                Ed25519.GeneratePublicKey(data, 0, pk, 0);
-            }
-            else
-            {
-                publicKey.Encode(pk, 0);
-            }
+            publicKey.Encode(pk, 0);
 
             switch (algorithm)
             {
@@ -95,6 +112,14 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
                 throw new ArgumentException("algorithm");
             }
             }
+        }
+
+        private static byte[] Validate(byte[] buf)
+        {
+            if (buf.Length != KeySize)
+                throw new ArgumentException("must have length " + KeySize, "buf");
+
+            return buf;
         }
     }
 }

@@ -10,7 +10,15 @@ namespace BestHTTP.SignalRCore
             if (hub.State != ConnectionStates.Connected)
                 return null;
 
-            return hub.GetUpStreamController<TResult>(target, 1, true);
+            return hub.GetUpStreamController<TResult>(target, 1, true, HubConnection.EmptyArgs);
+        }
+
+        public static UpStreamItemController<TResult> GetUpAndDownStreamController<TResult, T1>(this HubConnection hub, string target, params object[] args)
+        {
+            if (hub.State != ConnectionStates.Connected)
+                return null;
+
+            return hub.GetUpStreamController<TResult>(target, 1, true, args);
         }
 
         public static UpStreamItemController<TResult> GetUpAndDownStreamController<TResult, T1, T2>(this HubConnection hub, string target)
@@ -18,7 +26,15 @@ namespace BestHTTP.SignalRCore
             if (hub.State != ConnectionStates.Connected)
                 return null;
 
-            return hub.GetUpStreamController<TResult>(target, 2, true);
+            return hub.GetUpStreamController<TResult>(target, 2, true, HubConnection.EmptyArgs);
+        }
+
+        public static UpStreamItemController<TResult> GetUpAndDownStreamController<TResult, T1, T2>(this HubConnection hub, string target, params object[] args)
+        {
+            if (hub.State != ConnectionStates.Connected)
+                return null;
+
+            return hub.GetUpStreamController<TResult>(target, 2, true, args);
         }
 
         public static UpStreamItemController<TResult> GetUpAndDownStreamController<TResult, T1, T2, T3>(this HubConnection hub, string target)
@@ -26,7 +42,15 @@ namespace BestHTTP.SignalRCore
             if (hub.State != ConnectionStates.Connected)
                 return null;
 
-            return hub.GetUpStreamController<TResult>(target, 3, true);
+            return hub.GetUpStreamController<TResult>(target, 3, true, HubConnection.EmptyArgs);
+        }
+
+        public static UpStreamItemController<TResult> GetUpAndDownStreamController<TResult, T1, T2, T3>(this HubConnection hub, string target, params object[] args)
+        {
+            if (hub.State != ConnectionStates.Connected)
+                return null;
+
+            return hub.GetUpStreamController<TResult>(target, 3, true, args);
         }
 
         public static UpStreamItemController<TResult> GetUpAndDownStreamController<TResult, T1, T2, T3, T4>(this HubConnection hub, string target)
@@ -34,7 +58,15 @@ namespace BestHTTP.SignalRCore
             if (hub.State != ConnectionStates.Connected)
                 return null;
 
-            return hub.GetUpStreamController<TResult>(target, 4, true);
+            return hub.GetUpStreamController<TResult>(target, 4, true, HubConnection.EmptyArgs);
+        }
+
+        public static UpStreamItemController<TResult> GetUpAndDownStreamController<TResult, T1, T2, T3, T4>(this HubConnection hub, string target, params object[] args)
+        {
+            if (hub.State != ConnectionStates.Connected)
+                return null;
+
+            return hub.GetUpStreamController<TResult>(target, 4, true, args);
         }
 
         public static UpStreamItemController<TResult> GetUpAndDownStreamController<TResult, T1, T2, T3, T4, T5>(this HubConnection hub, string target)
@@ -42,7 +74,15 @@ namespace BestHTTP.SignalRCore
             if (hub.State != ConnectionStates.Connected)
                 return null;
 
-            return hub.GetUpStreamController<TResult>(target, 5, true);
+            return hub.GetUpStreamController<TResult>(target, 5, true, HubConnection.EmptyArgs);
+        }
+
+        public static UpStreamItemController<TResult> GetUpAndDownStreamController<TResult, T1, T2, T3, T4, T5>(this HubConnection hub, string target, params object[] args)
+        {
+            if (hub.State != ConnectionStates.Connected)
+                return null;
+
+            return hub.GetUpStreamController<TResult>(target, 5, true, args);
         }
 
         public static UpStreamItemController<TResult> GetUpStreamController<TResult, T1>(this HubConnection hub, string target)
@@ -50,7 +90,15 @@ namespace BestHTTP.SignalRCore
             if (hub.State != ConnectionStates.Connected)
                 return null;
 
-            return hub.GetUpStreamController<TResult>(target, 1);
+            return hub.GetUpStreamController<TResult>(target, 1, false, HubConnection.EmptyArgs);
+        }
+
+        public static UpStreamItemController<TResult> GetUpStreamController<TResult, T1>(this HubConnection hub, string target, params object[] args)
+        {
+            if (hub.State != ConnectionStates.Connected)
+                return null;
+
+            return hub.GetUpStreamController<TResult>(target, 1, false, args);
         }
 
         public static UpStreamItemController<TResult> GetUpStreamController<TResult, T1, T2>(this HubConnection hub, string target)
@@ -58,7 +106,15 @@ namespace BestHTTP.SignalRCore
             if (hub.State != ConnectionStates.Connected)
                 return null;
 
-            return hub.GetUpStreamController<TResult>(target, 2);
+            return hub.GetUpStreamController<TResult>(target, 2, false, HubConnection.EmptyArgs);
+        }
+
+        public static UpStreamItemController<TResult> GetUpStreamController<TResult, T1, T2>(this HubConnection hub, string target, params object[] args)
+        {
+            if (hub.State != ConnectionStates.Connected)
+                return null;
+
+            return hub.GetUpStreamController<TResult>(target, 2, false, args);
         }
 
         public static UpStreamItemController<TResult> GetUpStreamController<TResult, T1, T2, T3>(this HubConnection hub, string target)
@@ -66,7 +122,15 @@ namespace BestHTTP.SignalRCore
             if (hub.State != ConnectionStates.Connected)
                 return null;
 
-            return hub.GetUpStreamController<TResult>(target, 3);
+            return hub.GetUpStreamController<TResult>(target, 3, false, HubConnection.EmptyArgs);
+        }
+
+        public static UpStreamItemController<TResult> GetUpStreamController<TResult, T1, T2, T3>(this HubConnection hub, string target, params object[] args)
+        {
+            if (hub.State != ConnectionStates.Connected)
+                return null;
+
+            return hub.GetUpStreamController<TResult>(target, 3, false, args);
         }
 
         public static UpStreamItemController<TResult> GetUpStreamController<TResult, T1, T2, T3, T4>(this HubConnection hub, string target)
@@ -74,7 +138,15 @@ namespace BestHTTP.SignalRCore
             if (hub.State != ConnectionStates.Connected)
                 return null;
 
-            return hub.GetUpStreamController<TResult>(target, 4);
+            return hub.GetUpStreamController<TResult>(target, 4, false, HubConnection.EmptyArgs);
+        }
+
+        public static UpStreamItemController<TResult> GetUpStreamController<TResult, T1, T2, T3, T4>(this HubConnection hub, string target, params object[] args)
+        {
+            if (hub.State != ConnectionStates.Connected)
+                return null;
+
+            return hub.GetUpStreamController<TResult>(target, 4, false, args);
         }
 
         public static UpStreamItemController<TResult> GetUpStreamController<TResult, T1, T2, T3, T4, T5>(this HubConnection hub, string target)
@@ -82,7 +154,15 @@ namespace BestHTTP.SignalRCore
             if (hub.State != ConnectionStates.Connected)
                 return null;
 
-            return hub.GetUpStreamController<TResult>(target, 5);
+            return hub.GetUpStreamController<TResult>(target, 5, false, HubConnection.EmptyArgs);
+        }
+
+        public static UpStreamItemController<TResult> GetUpStreamController<TResult, T1, T2, T3, T4, T5>(this HubConnection hub, string target, params object[] args)
+        {
+            if (hub.State != ConnectionStates.Connected)
+                return null;
+
+            return hub.GetUpStreamController<TResult>(target, 5, false, args);
         }
     }
 

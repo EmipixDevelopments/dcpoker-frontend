@@ -1,4 +1,4 @@
-﻿#if !BESTHTTP_DISABLE_COOKIES
+#if !BESTHTTP_DISABLE_COOKIES
 
 using System;
 using System.Collections.Generic;
@@ -83,6 +83,14 @@ namespace BestHTTP.Cookies
         /// </summary>
         public bool IsHttpOnly { get; private set; }
 
+        /// <summary>
+        /// SameSite prevents the browser from sending this cookie along with cross-site requests.
+        /// The main goal is mitigate the risk of cross-origin information leakage.
+        /// It also provides some protection against cross-site request forgery attacks. Possible values for the flag are lax or strict.
+        /// <seealso cref="https://web.dev/samesite-cookies-explained/"/>
+        /// </summary>
+        public string SameSite { get; private set; }
+
         #endregion
 
         #region Public Constructors
@@ -118,6 +126,7 @@ namespace BestHTTP.Cookies
             this.MaxAge = maxAge;
             this.IsSession = isSession;
             this.Date = DateTime.UtcNow;
+            this.SameSite = "none";
         }
 
         #endregion
@@ -149,15 +158,16 @@ namespace BestHTTP.Cookies
         /// <returns></returns>
         public uint GuessSize()
         {
-            return (uint)((Name != null ? Name.Length * sizeof(char) : 0) +
-                          (Value != null ? Value.Length * sizeof(char) : 0) +
-                          (Domain != null ? Domain.Length * sizeof(char) : 0) +
-                          (Path != null ? Path.Length * sizeof(char) : 0) +
+            return (uint)((this.Name != null ? this.Name.Length * sizeof(char) : 0) +
+                          (this.Value != null ? this.Value.Length * sizeof(char) : 0) +
+                          (this.Domain != null ? this.Domain.Length * sizeof(char) : 0) +
+                          (this.Path != null ? this.Path.Length * sizeof(char) : 0) +
+                          (this.SameSite != null ? this.SameSite.Length * sizeof(char) : 0) +
                           (sizeof(long) * 4) +
                           (sizeof(bool) * 3));
         }
 
-        public static Cookie Parse(string header, Uri defaultDomain)
+        public static Cookie Parse(string header, Uri defaultDomain, Logger.LoggingContext context)
         {
             Cookie cookie = new Cookie();
             try
@@ -202,9 +212,17 @@ namespace BestHTTP.Cookies
                             cookie.IsHttpOnly = true;
                             break;
 
+                        case "samesite":
+                            cookie.SameSite = kvp.Value;
+                            break;
+
                         default:
-                            cookie.Name = kvp.Key;
-                            cookie.Value = kvp.Value;
+                            // check whether name is already set to avoid overwriting it with a non-listed setting
+                            if (string.IsNullOrEmpty(cookie.Name))
+                            {
+                                cookie.Name = kvp.Key;
+                                cookie.Value = kvp.Value;
+                            }
                             break;
                     }
                 }
@@ -231,7 +249,7 @@ namespace BestHTTP.Cookies
             }
             catch (Exception ex)
             {
-                HTTPManager.Logger.Warning("Cookie", "Parse - Couldn't parse header: " + header + " exception: " + ex.ToString() + " " + ex.StackTrace);
+                HTTPManager.Logger.Warning("Cookie", "Parse - Couldn't parse header: " + header + " exception: " + ex.ToString() + " " + ex.StackTrace, context);
             }
             return cookie;
         }
