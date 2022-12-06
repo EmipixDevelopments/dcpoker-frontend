@@ -198,16 +198,9 @@ public class RegisterPanelNew : MonoBehaviour
                         Source = arr.getString(arr.length() - 1);
                         var resp = Source;
                         PokerEventResponse registrationResp = JsonUtility.FromJson<PokerEventResponse>(resp);
-                        Debug.LogError("message " + registrationResp.message);
-                        Debug.LogError("public " + registrationResp.result.publicKey);
-                        Debug.LogError("private " + registrationResp.result.privateKey.Length);
-                        Debug.LogError("status " + registrationResp.status);
-
                         if (registrationResp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
                         {
                             // set timer here....
-                            Debug.LogError("Response Success");
-
                             UIManager.Instance.assetOfGame.SavedLoginData.publicKey = registrationResp.result.publicKey;
                             UIManager.Instance.assetOfGame.SavedLoginData.privateKey = registrationResp.result.privateKey;
 
@@ -219,14 +212,11 @@ public class RegisterPanelNew : MonoBehaviour
                         }
                         else if (registrationResp.message == "Username already taken.")
                         {
-                            Debug.LogError("Response fail");
                             panelUsername.SetActive(true);
                             panelPassword.SetActive(false);
                         }
                         else
                         {
-                            Debug.LogError("Response Else");
-
                             UIManager.Instance.DisplayMessagePanel(registrationResp.message, null);
                         }
                     });

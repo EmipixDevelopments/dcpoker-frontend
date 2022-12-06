@@ -39,7 +39,8 @@ public class LoginSaved
     public bool isAbsolute;
     public string timeZone;
     public double cash;
-
+    public double solBalance;
+    public double userUSDBal;
     // Registration....
     public string publicKey;
     public int[] privateKey;

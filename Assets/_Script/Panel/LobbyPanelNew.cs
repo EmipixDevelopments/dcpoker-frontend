@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,8 +48,11 @@ public class LobbyPanelNew : MonoBehaviour
     [SerializeField] private Background _background;
     [SerializeField] private RectTransform _content;
 
+    [Header("Public Key")] public TMP_Text textPublicKey;
+
     private ScrollRect _scrollRect;
     private bool _isScrollHide;
+    private string serverPublicKey;
     private Action<LobbyPanel> _onSwitchLobbyPanel;
 
     public enum LobbyPanel
@@ -85,6 +89,9 @@ public class LobbyPanelNew : MonoBehaviour
         //SwitchAtlHome(true);
 
         _soundToggleImageNormal.AddListener(OnChangeSoundToggle);
+
+        serverPublicKey = UIManager.Instance.assetOfGame.SavedLoginData.publicKey;
+        textPublicKey.text = "SOL Wallet : " + serverPublicKey;
     }
 
     private void OnDisable()
@@ -128,8 +135,7 @@ public class LobbyPanelNew : MonoBehaviour
     [ContextMenu("UserWalletBalance")]
     private void UserWalletBalance()
     {
-        string privateKeyString = JsonUtility.ToJson(UIManager.Instance.assetOfGame.SavedLoginData.privateKey);
-        Debug.LogError("privateKeyString " + privateKeyString);
+        string privateKeyString = JsonConvert.SerializeObject(UIManager.Instance.assetOfGame.SavedLoginData.privateKey);
         if (UIManager.Instance.SocketGameManager.HasInternetConnection())
         {
             UIManager.Instance.SoundManager.OnButtonClick();
@@ -443,6 +449,12 @@ public class LobbyPanelNew : MonoBehaviour
     }
 
     #endregion
+
+    public void On_Button_Click_PublickKey_Copy()
+    {
+        UIManager.Instance.SoundManager.OnButtonClick();
+        GUIUtility.systemCopyBuffer = serverPublicKey;
+    }
 
     public void UpdateUi()
     {

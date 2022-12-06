@@ -13,25 +13,27 @@ MonoBehaviour:
   m_Name: GameAsset
   m_EditorClassIdentifier: 
   SavedLoginData:
-    Username: vlad_s79
-    password: 123123
+    Username: dcpoker
+    password: 123456
     phoneCode: +1
-    phoneNumber: 666666
+    phoneNumber: dcpoker
     isRememberMe: 0
-    isCash: 1
+    isCash: 0
     isInAppPurchaseAllowed: 1
-    PlayerId: 630df9b7189d1909eaa435f6
+    PlayerId: 6385b83b888c7400136049a4
     chips: 10000
     accountNumber: 
-    SelectedAvatar: 3
+    SelectedAvatar: 6
     fcmRegistrationToken: 
     userUuid: 
-    mobile: 1666666
+    mobile: 
     IsLogin: 1
     isSuperPlayer: 0
     isAbsolute: 0
     timeZone: 
     cash: 0
+    publicKey: 
+    privateKey: 
   SavedGamePlayData:
     TableId: 
     PlayerId: 

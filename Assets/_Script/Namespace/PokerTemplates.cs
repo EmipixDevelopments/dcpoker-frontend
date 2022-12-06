@@ -88,6 +88,12 @@ public class PlayerLoginResponse
 
     public string userUuid = "";
     public string deviceId = "";
+    
+    public double solBalance;
+    public double userUSDBal;
+    
+    public string publicKey;
+    public int[] privateKey;
 }
 
 [Serializable]
