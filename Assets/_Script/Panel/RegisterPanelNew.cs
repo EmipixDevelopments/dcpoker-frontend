@@ -348,8 +348,9 @@ public class RegisterPanelNew : MonoBehaviour
     public void On_Button_Click_Recovery_Copy()
     {
         UIManager.Instance.SoundManager.OnButtonClick();
+        Debug.Log("copy!!!");
         GUIUtility.systemCopyBuffer = textRecoveryPhraseFromServer.text;
-        Debug.LogError(GUIUtility.systemCopyBuffer);
+        Debug.Log(GUIUtility.systemCopyBuffer);
         textMessage.text = "phrase copied successfully";
         StartCoroutine(textempti());
     }
