@@ -2974,6 +2974,7 @@
         <e p="StreamingAssets" t="Include">
           <e p="build_info.txt" t="Include" />
           <e p="google-services-desktop.json" t="Include" />
+          <e p="UnityServicesProjectConfiguration.json" t="Include" />
         </e>
         <e p="TextMesh Pro" t="Include">
           <e p="Examples _ Extras" t="Include">

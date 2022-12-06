@@ -218,7 +218,8 @@ public class PanelProfileNew : MonoBehaviour
         }
 
         _chipsValue.text = uiManager.assetOfGame.SavedLoginData.chips.ToString();
-        _cashValue.text = uiManager.assetOfGame.SavedLoginData.cash + " | " + UIManager.Instance.assetOfGame.SavedLoginData.solBalance + " (US$ " + (float) UIManager.Instance.assetOfGame.SavedLoginData.userUSDBal + ")";
+//        _cashValue.text = uiManager.assetOfGame.SavedLoginData.cash + " | " + UIManager.Instance.assetOfGame.SavedLoginData.solBalance + " (US$ " + (float) UIManager.Instance.assetOfGame.SavedLoginData.userUSDBal + ")";
+        _cashValue.text = UIManager.Instance.assetOfGame.SavedLoginData.solBalance + " Sol (US$ " + (float) UIManager.Instance.assetOfGame.SavedLoginData.userUSDBal + ")";
 
         _phoneNumber.text = $"{uiManager.assetOfGame.SavedLoginData.phoneCode} {uiManager.assetOfGame.SavedLoginData.phoneNumber}";
         _userName.text = uiManager.assetOfGame.SavedLoginData.Username;
