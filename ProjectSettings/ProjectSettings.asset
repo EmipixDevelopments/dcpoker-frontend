@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: AIS Technolabs Pvt Ltd
-  productName: Macau Poker
+  productName: DC Poker
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.039215688, g: 0.039215688, b: 0.039215688,
@@ -135,7 +135,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.17
+  bundleVersion: 1.18
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0

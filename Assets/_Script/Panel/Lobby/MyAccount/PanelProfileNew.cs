@@ -21,23 +21,21 @@ public class PanelProfileNew : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _phoneNumber;
     [SerializeField] private Toggle _chipsToggle;
     [SerializeField] private Toggle _cashToggle;
-    [Space]
-    [SerializeField] private GameObject _panelChangeName;
+    [Space] [SerializeField] private GameObject _panelChangeName;
     [SerializeField] private GameObject _panelChangePassword;
     [SerializeField] private GameObject _panelInformationAboutMoneyOnAccountPopup;
-    [Space] 
-    [SerializeField] private MessageBubble _messageBubbleElement;
+    [Space] [SerializeField] private MessageBubble _messageBubbleElement;
     [SerializeField] private Transform _infoListTransform;
-    
+
     [SerializeField] private GameObject _avatarImageContainer;
     [SerializeField] private Image _avatarImageUrl;
-    
+
     private TableContainer<MessageBubble> _messageBubbleTableContainer;
     private RectTransform _rectTransform;
 
     private Messages _messages;
     private List<MessageData> _messagesData;
-    
+
     private FileUploader _fileUploader;
 
     private Coroutine _updateFieldsCoroutine;
@@ -45,8 +43,8 @@ public class PanelProfileNew : MonoBehaviour
     private void Awake()
     {
         _rectTransform = gameObject.GetComponent<RectTransform>();
-        
-        _messageBubbleTableContainer = new TableContainer<MessageBubble>(_infoListTransform,_messageBubbleElement, 
+
+        _messageBubbleTableContainer = new TableContainer<MessageBubble>(_infoListTransform, _messageBubbleElement,
             element => element.Init(this), true);
     }
 
@@ -57,13 +55,13 @@ public class PanelProfileNew : MonoBehaviour
         _deleteAccountButton.onClick.RemoveAllListeners();
         _cashToggle.onValueChanged.RemoveAllListeners();
 
-        _changeNameButton.onClick.AddListener(()=> _panelChangeName.SetActive(true));
+        _changeNameButton.onClick.AddListener(() => _panelChangeName.SetActive(true));
         _changePasswordButton.onClick.AddListener(() => _panelChangePassword.SetActive(true));
         _deleteAccountButton.onClick.AddListener(() => _panelInformationAboutMoneyOnAccountPopup.SetActive(true));
         _cashToggle.onValueChanged.AddListener(OnClickChipsOrCashs);
-        
+
         _uploadImageAvatarButton.onClick.AddListener(UploadImageAvatarAsync);
-        
+
         _fileUploader = new FileUploader();
     }
 
@@ -81,13 +79,13 @@ public class PanelProfileNew : MonoBehaviour
     private IEnumerator SetPlayerProfilePic(string base64)
     {
         yield return new WaitForSeconds(1);
-        
+
         var socketManager = Lobby.socketManager;
         while (socketManager.State != SocketManager.States.Open)
         {
             yield return new WaitForSeconds(1);
         }
-        
+
         UIManager.Instance.SocketGameManager.GetplayerProfilePic(-1, base64, PlayerProfile);
     }
 
@@ -100,15 +98,15 @@ public class PanelProfileNew : MonoBehaviour
     void OnEnable()
     {
         var uiManager = UIManager.Instance;
-        if(uiManager == null)
+        if (uiManager == null)
             return;
-        
+
         CallProfileEvent();
-        
+
         _messages = uiManager.LobbyPanelNew.Messages;
         _messages.AddUpdateListener(out _messagesData, UpdateMessages);
         UpdateMessages();
-        
+
         LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
         UIManager.Instance.LobbyPanelNew.UpdateUi();
 
@@ -118,7 +116,7 @@ public class PanelProfileNew : MonoBehaviour
     private void OnDisable()
     {
         var uiManager = UIManager.Instance;
-        if(uiManager == null)
+        if (uiManager == null)
             return;
 
         uiManager.LobbyPanelNew.Messages.RemoveUpdateListener(UpdateMessages);
@@ -133,7 +131,8 @@ public class PanelProfileNew : MonoBehaviour
             {
                 CallProfileEvent();
             }
-            yield return new WaitForSeconds(3); 
+
+            yield return new WaitForSeconds(3);
         }
     }
 
@@ -177,7 +176,7 @@ public class PanelProfileNew : MonoBehaviour
         });
     }
 
-    public void OnClickChipsOrCashs(bool isCashe) 
+    public void OnClickChipsOrCashs(bool isCashe)
     {
         UIManager.Instance.SocketGameManager.UpdateIsCashe(isCashe, (socket, packet, args) =>
         {
@@ -201,24 +200,27 @@ public class PanelProfileNew : MonoBehaviour
     private void UpdateFields()
     {
         var uiManager = UIManager.Instance;
-        
+
         var profilePic = uiManager.assetOfGame.SavedLoginData.SelectedAvatar;
         if (profilePic == -1)
         {
             _avatarImageContainer.SetActive(true);
             _avatarImage.gameObject.SetActive(false);
-            
+
             _avatarImageUrl.sprite = uiManager._avatarUrlSprite.GetCurrentSprite();
         }
         else
         {
             _avatarImageContainer.SetActive(false);
             _avatarImage.gameObject.SetActive(true);
-            
+
             _avatarImage.sprite = uiManager.assetOfGame.profileAvatarList.profileAvatarSprite[profilePic];
         }
+
         _chipsValue.text = uiManager.assetOfGame.SavedLoginData.chips.ToString();
-        _cashValue.text = uiManager.assetOfGame.SavedLoginData.cash.ToString();
+//        _cashValue.text = uiManager.assetOfGame.SavedLoginData.cash + " | " + UIManager.Instance.assetOfGame.SavedLoginData.solBalance + " (US$ " + (float) UIManager.Instance.assetOfGame.SavedLoginData.userUSDBal + ")";
+        _cashValue.text = UIManager.Instance.assetOfGame.SavedLoginData.solBalance + " Sol (US$ " + (float) UIManager.Instance.assetOfGame.SavedLoginData.userUSDBal + ")";
+
         _phoneNumber.text = $"{uiManager.assetOfGame.SavedLoginData.phoneCode} {uiManager.assetOfGame.SavedLoginData.phoneNumber}";
         _userName.text = uiManager.assetOfGame.SavedLoginData.Username;
     }
@@ -229,14 +231,14 @@ public class PanelProfileNew : MonoBehaviour
         {
             _messageBubbleTableContainer.GetElement(i).SetData(_messagesData[i]);
         }
+
         _messageBubbleTableContainer.HideFromIndex(_messagesData.Count);
-        
+
         LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
         LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
         UIManager.Instance.LobbyPanelNew.UpdateUi();
-
     }
-    
+
     public void AddMessageToRead(MessageData messageData)
     {
         _messages.AddReedMessage(messageData);

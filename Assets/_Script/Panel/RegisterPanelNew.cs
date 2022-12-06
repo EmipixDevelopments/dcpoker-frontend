@@ -7,6 +7,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using UnityEngine.UI;
 
 public class RegisterPanelNew : MonoBehaviour
 {
@@ -33,6 +34,9 @@ public class RegisterPanelNew : MonoBehaviour
     [Header("Phrase Recovery Verify Success")]
     public TMP_Text textTimer;
 
+    [SerializeField] private Toggle _showPasswordToggle;
+    [SerializeField] private Toggle _showRepeatPasswordToggle;
+    
     #endregion
 
     #region PRIVATE_VARIABLE
@@ -46,6 +50,35 @@ public class RegisterPanelNew : MonoBehaviour
 
     #endregion
 
+    
+    public void OnClickShowPasswordToggle()
+    {
+        if (_showPasswordToggle.isOn)
+        {
+            inputFieldPassword.contentType = TMP_InputField.ContentType.Standard;
+        }
+        else
+        {
+            inputFieldPassword.contentType = TMP_InputField.ContentType.Password;
+        }
+
+        inputFieldPassword.ForceLabelUpdate();
+    }
+    
+    public void OnClickShowRePasswordToggle()
+    {
+        if (_showRepeatPasswordToggle.isOn)
+        {
+            inputFieldRePassword.contentType = TMP_InputField.ContentType.Standard;
+        }
+        else
+        {
+            inputFieldRePassword.contentType = TMP_InputField.ContentType.Password;
+        }
+
+        inputFieldRePassword.ForceLabelUpdate();
+    }
+    
     private void OnEnable()
     {
         panelUsername.SetActive(true);
@@ -198,16 +231,9 @@ public class RegisterPanelNew : MonoBehaviour
                         Source = arr.getString(arr.length() - 1);
                         var resp = Source;
                         PokerEventResponse registrationResp = JsonUtility.FromJson<PokerEventResponse>(resp);
-                        Debug.LogError("message " + registrationResp.message);
-                        Debug.LogError("public " + registrationResp.result.publicKey);
-                        Debug.LogError("private " + registrationResp.result.privateKey.Length);
-                        Debug.LogError("status " + registrationResp.status);
-
                         if (registrationResp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
                         {
                             // set timer here....
-                            Debug.LogError("Response Success");
-
                             UIManager.Instance.assetOfGame.SavedLoginData.publicKey = registrationResp.result.publicKey;
                             UIManager.Instance.assetOfGame.SavedLoginData.privateKey = registrationResp.result.privateKey;
 
@@ -219,14 +245,11 @@ public class RegisterPanelNew : MonoBehaviour
                         }
                         else if (registrationResp.message == "Username already taken.")
                         {
-                            Debug.LogError("Response fail");
                             panelUsername.SetActive(true);
                             panelPassword.SetActive(false);
                         }
                         else
                         {
-                            Debug.LogError("Response Else");
-
                             UIManager.Instance.DisplayMessagePanel(registrationResp.message, null);
                         }
                     });

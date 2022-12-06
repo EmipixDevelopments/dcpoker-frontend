@@ -206,6 +206,13 @@ public class LoginPanel : MonoBehaviour
                         UIManager.Instance.assetOfGame.SavedLoginData.userUuid = loginResponse.result.userUuid;
                         UIManager.Instance.assetOfGame.SavedLoginData.accountNumber = loginResponse.result.accountNumber;
                         UIManager.Instance.assetOfGame.SavedLoginData.mobile = loginResponse.result.mobile;
+
+                        UIManager.Instance.assetOfGame.SavedLoginData.solBalance = loginResponse.result.solBalance;
+                        UIManager.Instance.assetOfGame.SavedLoginData.userUSDBal = loginResponse.result.userUSDBal;
+
+                        UIManager.Instance.assetOfGame.SavedLoginData.publicKey = loginResponse.result.publicKey;
+                        UIManager.Instance.assetOfGame.SavedLoginData.privateKey = loginResponse.result.privateKey;
+
                         if (_rememberMeToggle.isOn)
                         {
                             UIManager.Instance.SetPlayerLoginType(1);
