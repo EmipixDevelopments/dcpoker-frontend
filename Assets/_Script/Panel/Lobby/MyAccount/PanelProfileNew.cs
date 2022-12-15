@@ -158,6 +158,14 @@ public class PanelProfileNew : MonoBehaviour
                 UIManager.Instance.assetOfGame.SavedLoginData.cash = resp.result.cash;
                 UIManager.Instance.assetOfGame.SavedLoginData.Username = resp.result.username;
                 UIManager.Instance.assetOfGame.SavedLoginData.PlayerId = resp.result.playerId;
+
+
+                UIManager.Instance.assetOfGame.SavedLoginData.solBalance = resp.result.solBalance;
+                UIManager.Instance.assetOfGame.SavedLoginData.userUSDBal = resp.result.userUSDBal;
+
+                UIManager.Instance.assetOfGame.SavedLoginData.publicKey = resp.result.publicKey;
+                UIManager.Instance.assetOfGame.SavedLoginData.privateKey = resp.result.privateKey;
+
                 UpdateFields();
 
                 if (resp.result.isCash)
@@ -219,7 +227,7 @@ public class PanelProfileNew : MonoBehaviour
 
         _chipsValue.text = uiManager.assetOfGame.SavedLoginData.chips.ToString();
 //        _cashValue.text = uiManager.assetOfGame.SavedLoginData.cash + " | " + UIManager.Instance.assetOfGame.SavedLoginData.solBalance + " (US$ " + (float) UIManager.Instance.assetOfGame.SavedLoginData.userUSDBal + ")";
-        _cashValue.text = UIManager.Instance.assetOfGame.SavedLoginData.solBalance + " Sol (US$ " + (float) UIManager.Instance.assetOfGame.SavedLoginData.userUSDBal + ")";
+        _cashValue.text = UIManager.Instance.assetOfGame.SavedLoginData.solBalance.ToString("F") + " Sol (US$ " + UIManager.Instance.assetOfGame.SavedLoginData.userUSDBal.ToString("F") + ")";
 
         _phoneNumber.text = $"{uiManager.assetOfGame.SavedLoginData.phoneCode} {uiManager.assetOfGame.SavedLoginData.phoneNumber}";
         _userName.text = uiManager.assetOfGame.SavedLoginData.Username;

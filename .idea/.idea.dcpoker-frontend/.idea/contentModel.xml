@@ -9,6 +9,7 @@
       <e p="Assembly-CSharp-firstpass.csproj" t="IncludeRecursive" />
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
+        <e p="_Scene" t="Include" />
         <e p="_Script" t="Include">
           <e p="Animation" t="Include">
             <e p="ScalePunch.cs" t="Include" />
@@ -30,6 +31,9 @@
             <e p="EditorFileUploader.cs" t="Include" />
             <e p="FileUploader.cs" t="Include" />
             <e p="IFileUploader.cs" t="Include" />
+            <e p="Plugins" t="Include">
+              <e p="WebGL" t="Include" />
+            </e>
             <e p="WebGlFileUploader.cs" t="Include" />
           </e>
           <e p="HomePanel.cs" t="Include" />
@@ -280,6 +284,23 @@
           <e p="WebGLCopyAndPaste.cs" t="Include" />
           <e p="WithdrawPanel.cs" t="Include" />
         </e>
+        <e p="Animation" t="Include">
+          <e p="ButtonAnimation" t="Include" />
+          <e p="Game" t="Include">
+            <e p="allIn" t="Include">
+              <e p="New" t="Include" />
+            </e>
+            <e p="Raise" t="Include" />
+            <e p="straddle" t="Include" />
+            <e p="TournamentWinner" t="Include" />
+          </e>
+          <e p="Home" t="Include" />
+          <e p="Loader" t="Include" />
+          <e p="Login" t="Include" />
+          <e p="Panel" t="Include" />
+          <e p="Selection" t="Include" />
+          <e p="SplashPanel" t="Include" />
+        </e>
         <e p="Best HTTP" t="Include">
           <e p="BestHTTP.asmdef" t="Include" />
           <e p="Documentation.txt" t="Include" />
@@ -291,6 +312,9 @@
               </e>
               <e p="GUIHelper.cs" t="Include" />
               <e p="Link.cs" t="Include" />
+              <e p="Plugins" t="Include">
+                <e p="WebGL" t="Include" />
+              </e>
               <e p="SampleBase.cs" t="Include" />
               <e p="SelectorUI" t="Include">
                 <e p="Category.cs" t="Include" />
@@ -374,6 +398,9 @@
           <e p="License.txt" t="Include" />
           <e p="link.xml" t="Include" />
           <e p="link_android_subset.xml" t="Include" />
+          <e p="Plugins" t="Include">
+            <e p="WebGL" t="Include" />
+          </e>
           <e p="ReleaseNotes.txt" t="Include" />
           <e p="Source" t="Include">
             <e p="Authentication" t="Include">
@@ -2777,6 +2804,9 @@
             <e p="Example" t="Include">
               <e p="UPersianTextExample.cs" t="Include" />
             </e>
+            <e p="Resources" t="Include">
+              <e p="Icon" t="Include" />
+            </e>
             <e p="Scripts" t="Include">
               <e p="Components" t="Include">
                 <e p="RtlText.cs" t="Include" />
@@ -2789,14 +2819,31 @@
                 <e p="UPersianUtils.cs" t="Include" />
               </e>
             </e>
+            <e p="StaticAssets" t="Include" />
           </e>
         </e>
         <e p="ExternalDependencyManager" t="Include">
           <e p="Editor" t="Include">
+            <e p="1.2.169" t="Include" />
             <e p="external-dependency-manager_version-1.2.169_manifest.txt" t="Include" />
           </e>
         </e>
+        <e p="Font" t="Include">
+          <e p="Arial And Mongolian" t="Include" />
+          <e p="Font bold" t="Include" />
+          <e p="Font New" t="Include" />
+        </e>
+        <e p="Graphy - Ultimate Stats Monitor" t="Include">
+          <e p="Prefab Variants" t="Include" />
+        </e>
         <e p="LeanTween" t="Include">
+          <e p="Documentation" t="Include">
+            <e p="Assets" t="Include">
+              <e p="css" t="Include" />
+            </e>
+            <e p="classes" t="Include" />
+            <e p="elements" t="Include" />
+          </e>
           <e p="Editor" t="Include">
             <e p="LeanTweenDocumentationEditor.cs" t="Include" />
           </e>
@@ -2807,6 +2854,12 @@
               <e p="TestingPunch.cs" t="Include" />
               <e p="TestingRigidbodyCS.cs" t="Include" />
             </e>
+            <e p="Material" t="Include" />
+            <e p="Models" t="Include">
+              <e p="Materials" t="Include" />
+            </e>
+            <e p="Prefabs" t="Include" />
+            <e p="Scenes" t="Include" />
             <e p="Scripts" t="Include">
               <e p="Following.cs" t="Include" />
               <e p="GeneralAdvancedTechniques.cs" t="Include" />
@@ -2831,6 +2884,7 @@
               <e p="TestingZLegacy.cs" t="Include" />
               <e p="TestingZLegacyExt.cs" t="Include" />
             </e>
+            <e p="Textures" t="Include" />
           </e>
           <e p="Framework" t="Include">
             <e p="LeanAudio.cs" t="Include" />
@@ -2846,10 +2900,16 @@
           <e p="ReadMe.txt" t="Include" />
         </e>
         <e p="LinkOpener.cs" t="Include" />
+        <e p="Parse" t="Include">
+          <e p="Plugins" t="Include">
+            <e p="dotNet45" t="Include" />
+          </e>
+        </e>
         <e p="Plugins" t="Include">
           <e p="Android" t="Include">
             <e p="Unimgpicker" t="Include">
               <e p="AndroidManifest.xml" t="Include" />
+              <e p="libs" t="Include" />
             </e>
           </e>
           <e p="Editor" t="Include">
@@ -2866,6 +2926,8 @@
               <e p="IngameDebugConsole.Editor.asmdef" t="Include" />
             </e>
             <e p="IngameDebugConsole.Runtime.asmdef" t="Include" />
+            <e p="iOS" t="Include" />
+            <e p="Prefabs" t="Include" />
             <e p="ReadMe.txt" t="Include" />
             <e p="Scripts" t="Include">
               <e p="CircularBuffer.cs" t="Include" />
@@ -2887,6 +2949,13 @@
               <e p="DebugsOnScrollListener.cs" t="Include" />
               <e p="EventSystemHandler.cs" t="Include" />
             </e>
+            <e p="Sprites" t="Include">
+              <e p="Unused" t="Include" />
+            </e>
+            <e p="WebGL" t="Include" />
+          </e>
+          <e p="iOS" t="Include">
+            <e p="Unimgpicker" t="Include" />
           </e>
           <e p="LitJson" t="Include">
             <e p="IJsonWrapper.cs" t="Include" />
@@ -2902,11 +2971,59 @@
             <e p="ParserToken.cs" t="Include" />
           </e>
         </e>
+        <e p="Poker sounds" t="Include" />
+        <e p="Prefab" t="Include">
+          <e p="Default" t="Include" />
+          <e p="Game" t="Include">
+            <e p="Table" t="Include">
+              <e p="Panel" t="Include" />
+              <e p="Profile" t="Include" />
+            </e>
+          </e>
+          <e p="Gameplay" t="Include">
+            <e p="Chat" t="Include" />
+            <e p="chathistory" t="Include" />
+            <e p="Players" t="Include" />
+          </e>
+          <e p="In-app" t="Include" />
+          <e p="Lobby" t="Include">
+            <e p="Full Game History Prefabs" t="Include" />
+            <e p="Normal" t="Include" />
+            <e p="TournamentListing" t="Include" />
+          </e>
+          <e p="Pagination" t="Include" />
+          <e p="Panel" t="Include">
+            <e p="_HomePageDublicate" t="Include" />
+            <e p="Common" t="Include" />
+            <e p="LobyPanel" t="Include">
+              <e p="HomePagePanel" t="Include">
+                <e p="TableElements" t="Include" />
+              </e>
+              <e p="MyAccountPanel" t="Include" />
+            </e>
+          </e>
+          <e p="Popup" t="Include" />
+          <e p="SelectionGame" t="Include" />
+          <e p="UI" t="Include">
+            <e p="Panel-HomePageComponents" t="Include" />
+            <e p="PanelSitNGo" t="Include" />
+            <e p="PanelTournaments" t="Include" />
+          </e>
+          <e p="Ui-Common" t="Include">
+            <e p="BackgroundPanel" t="Include" />
+            <e p="Button" t="Include" />
+            <e p="Text" t="Include" />
+          </e>
+        </e>
         <e p="Resources" t="Include">
           <e p="BillingMode.json" t="Include" />
+          <e p="Common" t="Include">
+            <e p="Room" t="Include" />
+          </e>
           <e p="IAPProductCatalog.json" t="Include" />
         </e>
         <e p="RTLTMPro" t="Include">
+          <e p="Fonts" t="Include" />
           <e p="Ranges" t="Include">
             <e p="ArabicAll.txt" t="Include" />
             <e p="ArabicDigits.txt" t="Include" />
@@ -2929,7 +3046,9 @@
               <e p="TMPro_Surface.cginc" t="Include" />
               <e p="TMPro_SurfaceOutline.cginc" t="Include" />
             </e>
+            <e p="Sprites" t="Include" />
           </e>
+          <e p="Scenes" t="Include" />
           <e p="Scripts" t="Include">
             <e p="Editor" t="Include">
               <e p="ContextMenu.cs" t="Include" />
@@ -2971,12 +3090,69 @@
             <e p="RTLTMPro-Tests.asmdef" t="Include" />
           </e>
         </e>
+        <e p="Sprites" t="Include">
+          <e p="_ref" t="Include" />
+          <e p="Cards" t="Include">
+            <e p="club" t="Include" />
+            <e p="Dimond" t="Include" />
+            <e p="heart" t="Include" />
+            <e p="Spades" t="Include" />
+          </e>
+          <e p="flags" t="Include" />
+          <e p="New Sprite" t="Include">
+            <e p="Account" t="Include" />
+            <e p="Main Lander" t="Include" />
+            <e p="References" t="Include" />
+          </e>
+          <e p="UIMaccauGold" t="Include">
+            <e p="ChangeNamePopUp" t="Include" />
+            <e p="ChangePasswordPopUp" t="Include" />
+            <e p="DeleteAccountPopUp" t="Include" />
+            <e p="DepositsAndWithdrawals" t="Include" />
+            <e p="DetailsTournamentPopup" t="Include" />
+            <e p="InfoPopUp" t="Include" />
+            <e p="Loading" t="Include" />
+            <e p="Lobby" t="Include">
+              <e p="ref" t="Include" />
+            </e>
+            <e p="MainPage" t="Include">
+              <e p="ref" t="Include" />
+            </e>
+            <e p="MyBonuses" t="Include" />
+            <e p="Profile" t="Include" />
+            <e p="PurchaseHistory" t="Include" />
+            <e p="Select avtar" t="Include" />
+            <e p="TournamentTableAgterLogin" t="Include" />
+          </e>
+          <e p="Uix4" t="Include">
+            <e p="Avatar" t="Include" />
+            <e p="Background" t="Include">
+              <e p="Game" t="Include">
+                <e p="Background" t="Include">
+                  <e p="Small" t="Include" />
+                </e>
+                <e p="Cards" t="Include" />
+                <e p="Table" t="Include" />
+              </e>
+            </e>
+            <e p="Button" t="Include" />
+            <e p="Cards" t="Include" />
+            <e p="Icon" t="Include" />
+            <e p="ListTableView" t="Include" />
+            <e p="Logo" t="Include" />
+            <e p="Stuff" t="Include" />
+          </e>
+        </e>
         <e p="StreamingAssets" t="Include">
           <e p="build_info.txt" t="Include" />
           <e p="google-services-desktop.json" t="Include" />
-          <e p="UnityServicesProjectConfiguration.json" t="Include" />
         </e>
         <e p="TextMesh Pro" t="Include">
+          <e p="Documentation" t="Include" />
+          <e p="Editor Resources" t="Include">
+            <e p="Gizmos" t="Include" />
+            <e p="Textures" t="Include" />
+          </e>
           <e p="Examples _ Extras" t="Include">
             <e p="Fonts" t="Include">
               <e p="Anton OFL.txt" t="Include" />
@@ -2985,6 +3161,21 @@
               <e p="NotoSans - License.txt" t="Include" />
               <e p="Oswald Bold - OFL.txt" t="Include" />
             </e>
+            <e p="Materials" t="Include" />
+            <e p="Prefabs" t="Include" />
+            <e p="Resources" t="Include">
+              <e p="Color Gradient Presets" t="Include" />
+              <e p="Fonts _ Materials" t="Include">
+                <e p="PokerFont" t="Include">
+                  <e p="roboto" t="Include" />
+                  <e p="SDF" t="Include">
+                    <e p="Sans-8-xboldcaps" t="Include" />
+                  </e>
+                </e>
+              </e>
+              <e p="Sprite Assets" t="Include" />
+            </e>
+            <e p="Scenes" t="Include" />
             <e p="Scripts" t="Include">
               <e p="Benchmark01.cs" t="Include" />
               <e p="Benchmark01_UGUI.cs" t="Include" />
@@ -3020,11 +3211,14 @@
               <e p="VertexZoom.cs" t="Include" />
               <e p="WarpTextExample.cs" t="Include" />
             </e>
+            <e p="Sprites" t="Include" />
+            <e p="Textures" t="Include" />
           </e>
           <e p="Fonts" t="Include">
             <e p="LiberationSans - OFL.txt" t="Include" />
           </e>
           <e p="Resources" t="Include">
+            <e p="Fonts _ Materials" t="Include" />
             <e p="LineBreaking Following Characters.txt" t="Include" />
             <e p="LineBreaking Leading Characters.txt" t="Include" />
             <e p="Shaders" t="Include">
@@ -3043,11 +3237,71 @@
               <e p="TMPro_Properties.cginc" t="Include" />
               <e p="TMPro_Surface.cginc" t="Include" />
             </e>
+            <e p="Sprite Assets" t="Include" />
+            <e p="Style Sheets" t="Include" />
           </e>
           <e p="Sprites" t="Include">
             <e p="EmojiOne Attribution.txt" t="Include" />
             <e p="EmojiOne.json" t="Include" />
           </e>
+        </e>
+        <e p="UIofmacaoPoker" t="Include">
+          <e p="0. loading" t="Include" />
+          <e p="1. Main Page" t="Include">
+            <e p="bg" t="Include" />
+            <e p="Forget Password" t="Include" />
+            <e p="Login" t="Include" />
+            <e p="MAIN SCREEN" t="Include">
+              <e p="NewBanner" t="Include">
+                <e p="banner-Enhancement" t="Include" />
+                <e p="tournament" t="Include" />
+              </e>
+            </e>
+            <e p="Sign up" t="Include" />
+            <e p="top button" t="Include" />
+          </e>
+          <e p="10. My Settings" t="Include" />
+          <e p="11. News" t="Include" />
+          <e p="12. Table Play" t="Include">
+            <e p="Button" t="Include" />
+            <e p="Chat" t="Include" />
+            <e p="extra" t="Include">
+              <e p="strddle" t="Include" />
+            </e>
+            <e p="macau_bg_table" t="Include">
+              <e p="Table" t="Include">
+                <e p="bg" t="Include" />
+                <e p="Table-logo" t="Include" />
+              </e>
+            </e>
+            <e p="New folder" t="Include" />
+            <e p="WaitingList" t="Include" />
+          </e>
+          <e p="13. buy in" t="Include" />
+          <e p="14. information pop" t="Include" />
+          <e p="15. Ranking" t="Include" />
+          <e p="16. Hand history" t="Include" />
+          <e p="17. change pass" t="Include" />
+          <e p="18. change username" t="Include" />
+          <e p="19. Tournament winner" t="Include">
+            <e p="Slicing" t="Include" />
+          </e>
+          <e p="2. lobby" t="Include">
+            <e p="RightBanners" t="Include" />
+          </e>
+          <e p="3 language popup" t="Include" />
+          <e p="4. tournament-Details" t="Include" />
+          <e p="5-profile" t="Include">
+            <e p="Avatar" t="Include">
+              <e p="Select avtar" t="Include" />
+            </e>
+            <e p="NeeButtons" t="Include" />
+          </e>
+          <e p="6. stats" t="Include" />
+          <e p="7. Purches history" t="Include" />
+          <e p="8. Game History" t="Include" />
+          <e p="9. My Tourneys" t="Include" />
+          <e p="bg" t="Include" />
         </e>
         <e p="unity-crypto-master" t="Include">
           <e p="Crypto.asmdef" t="Include" />
@@ -3062,6 +3316,7 @@
             <e p="Editor" t="Include">
               <e p="ReporterEditor.cs" t="Include" />
             </e>
+            <e p="Images" t="Include" />
             <e p="MultiKeyDictionary.cs" t="Include" />
             <e p="Reporter.cs" t="Include" />
             <e p="ReporterGUI.cs" t="Include" />
@@ -3071,6 +3326,7 @@
               <e p="TestReporter.cs" t="Include" />
             </e>
           </e>
+          <e p="ReporterDocumentation" t="Include" />
         </e>
         <e p="WebGLSupport" t="Include">
           <e p="WebGLInput" t="Include">
@@ -3091,6 +3347,17 @@
             <e p="WebGLWindow.cs" t="Include" />
           </e>
         </e>
+        <e p="WebGLTemplates" t="Include">
+          <e p="Better2020" t="Include">
+            <e p="TemplateData" t="Include" />
+          </e>
+          <e p="Responsive" t="Include">
+            <e p="TemplateData" t="Include" />
+          </e>
+          <e p="WPA2" t="Include">
+            <e p="TemplateData" t="Include" />
+          </e>
+        </e>
       </e>
       <e p="BestHTTP.csproj" t="IncludeRecursive" />
       <e p="crypto.asmdef.csproj" t="IncludeRecursive" />
@@ -3101,12 +3368,27 @@
       <e p="obj" t="ExcludeRecursive" />
       <e p="packages" t="ExcludeRecursive">
         <e p="graphy" t="Include">
+          <e p="Changelog.txt" t="Include" />
           <e p="Editor" t="Include">
             <e p="GraphyDebuggerEditor.cs" t="Include" />
             <e p="GraphyEditorStyle.cs" t="Include" />
             <e p="GraphyManagerEditor.cs" t="Include" />
             <e p="GraphyMenuItem.cs" t="Include" />
             <e p="Tayx.Graphy.Editor.asmdef" t="Include" />
+          </e>
+          <e p="Font" t="Include">
+            <e p="Northwest-Bold" t="Include">
+              <e p="ERIC-TIRADO-NORTHWEST-LICENSE.txt" t="Include" />
+            </e>
+            <e p="roboto" t="Include">
+              <e p="License.txt" t="Include" />
+            </e>
+          </e>
+          <e p="GUI" t="Include" />
+          <e p="Materials" t="Include" />
+          <e p="package.json" t="Include" />
+          <e p="Prefab" t="Include">
+            <e p="Internal" t="Include" />
           </e>
           <e p="Runtime" t="Include">
             <e p="Advanced" t="Include">
@@ -3150,6 +3432,11 @@
               <e p="G_Singleton.cs" t="Include" />
             </e>
           </e>
+          <e p="Shaders" t="Include">
+            <e p="GraphMobile.shader" t="Include" />
+            <e p="GraphStandard.shader" t="Include" />
+          </e>
+          <e p="Textures" t="Include" />
         </e>
       </e>
       <e p="RTLTMPro-Editor.csproj" t="IncludeRecursive" />

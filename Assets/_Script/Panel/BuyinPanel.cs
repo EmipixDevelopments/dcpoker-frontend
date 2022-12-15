@@ -12,6 +12,7 @@ public class BuyinPanel : MonoBehaviour
     public TextMeshProUGUI txtTotalChips;
     public Text txtRemainingTime;
     public Text txtSliderSelectedChips;
+
     public Slider buyinSlider;
     //public Button btnSelectBuyin;
 
@@ -31,6 +32,7 @@ public class BuyinPanel : MonoBehaviour
     private bool _isWaitingPlayer = false;
     private double _lastBuyinAmount;
     public double selectedBuyinAmount;
+
     [SerializeField]
     //	private double selectedBuyinAmount;
 
@@ -79,6 +81,7 @@ public class BuyinPanel : MonoBehaviour
             UIManager.Instance.DisplayMessagePanel("Something went wrong", null);
             return;
         }
+
         RemainingTime = 0;
         isRebuyIn = false;
         IsWaitingPlayer = false;
@@ -92,12 +95,13 @@ public class BuyinPanel : MonoBehaviour
         buyinSlider.minValue = minBuyin.doubleToFloat();
         buyinSlider.maxValue = maxBuyin.doubleToFloat();
 
-        buyinSlider.value = minBuyin.doubleToFloat();//((float)(maxBuyin + minBuyin)) / 2f;
+        buyinSlider.value = minBuyin.doubleToFloat(); //((float)(maxBuyin + minBuyin)) / 2f;
         this.Open();
         OnBuyinSliderValueChanged();
         //		Invoke ("OnBuyinSliderValueChanged",0.5f);
         SelectedSeatIndex = seatIndex;
     }
+
     public void OpenWaitingPlayerBuyinPanel(double minBuyin, double maxBuyin, int seatIndex, bool isWaitingPlayer)
     {
         print("minBuyin : " + minBuyin);
@@ -121,7 +125,7 @@ public class BuyinPanel : MonoBehaviour
         buyinSlider.minValue = minBuyin.doubleToFloat();
         buyinSlider.maxValue = maxBuyin.doubleToFloat();
 
-        buyinSlider.value = minBuyin.doubleToFloat();//((float)(maxBuyin + minBuyin)) / 2f;
+        buyinSlider.value = minBuyin.doubleToFloat(); //((float)(maxBuyin + minBuyin)) / 2f;
         /* if (UIManager.Instance.GameScreeen.currentRoomData.isPlayFree)
          {
              toggleBuyin.Open();
@@ -136,6 +140,7 @@ public class BuyinPanel : MonoBehaviour
         //Invoke ("OnBuyinSliderValueChanged",0.5f);
         SelectedSeatIndex = seatIndex;
     }
+
     bool isRebuyIn;
 
     public void OpenReBuyinPanel(double minBuyin, double maxBuyin, double playerChips)
@@ -145,6 +150,7 @@ public class BuyinPanel : MonoBehaviour
             UIManager.Instance.DisplayMessagePanel("Can't add more chips", null);
             return;
         }
+
         RemainingTime = 0;
         isRebuyIn = true;
         IsWaitingPlayer = false;
@@ -188,6 +194,7 @@ public class BuyinPanel : MonoBehaviour
 
         down = false;
     }
+
     public void OnInputFieldSliderValueChanged()
     {
         if (!gameObject.activeSelf)
@@ -261,85 +268,168 @@ public class BuyinPanel : MonoBehaviour
 
         if (isRebuyIn == true)
         {
-            UIManager.Instance.SocketGameManager.PlayerAddChips(selectedBuyinAmount, (socket, packet, args) =>
+            if (UIManager.Instance.assetOfGame.SavedLoginData.isCash)
             {
-                Debug.Log("OnPlayerAddChipsDone  : " + packet.ToString());
-                UIManager.Instance.HideLoader();
-
-                JSONArray arr = new JSONArray(packet.ToString());
-                PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(arr.getString(arr.length() - 1));
-
-                if (resp.message.Length > 0)
+                UIManager.Instance.SocketGameManager.PlayerAddCash(selectedBuyinAmount, (socket, packet, args) =>
                 {
-                    UIManager.Instance.DisplayMessagePanel(resp.message, null);
-                }
-            });
+                    Debug.Log("OnPlayerAddChipsDone  : " + packet.ToString());
+                    UIManager.Instance.HideLoader();
+
+                    JSONArray arr = new JSONArray(packet.ToString());
+                    PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(arr.getString(arr.length() - 1));
+
+                    if (resp.message.Length > 0)
+                    {
+                        UIManager.Instance.DisplayMessagePanel(resp.message, null);
+                    }
+                });
+            }
+            else
+            {
+                UIManager.Instance.SocketGameManager.PlayerAddChips(selectedBuyinAmount, (socket, packet, args) =>
+                {
+                    Debug.Log("OnPlayerAddChipsDone  : " + packet.ToString());
+                    UIManager.Instance.HideLoader();
+
+                    JSONArray arr = new JSONArray(packet.ToString());
+                    PokerEventResponse resp = JsonUtility.FromJson<PokerEventResponse>(arr.getString(arr.length() - 1));
+
+                    if (resp.message.Length > 0)
+                    {
+                        UIManager.Instance.DisplayMessagePanel(resp.message, null);
+                    }
+                });
+            }
         }
         else
         {
-            UIManager.Instance.SocketGameManager.JoinRoom(Constants.Poker.TableId, selectedBuyinAmount, _selectedSeatIndex, IsWaitingPlayer, toggleBuyin.isOn ? LastBuyinAmount : 0, (socket, packet, args) =>
+            if (UIManager.Instance.assetOfGame.SavedLoginData.isCash)
             {
-
-                Debug.Log("OnJoinRoomDone  : " + packet.ToString());
-
-                UIManager.Instance.HideLoader();
-                JSONArray arr = new JSONArray(packet.ToString());
-                string Source;
-                Source = arr.getString(arr.length() - 1);
-                var resp1 = Source;
-
-                PokerEventResponse<joinroomResult> resp = JsonUtility.FromJson<PokerEventResponse<joinroomResult>>(resp1);
-
-                if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+                UIManager.Instance.SocketGameManager.JoinRoomCash(Constants.Poker.TableId, selectedBuyinAmount, _selectedSeatIndex, IsWaitingPlayer, toggleBuyin.isOn ? LastBuyinAmount : 0, (socket, packet, args) =>
                 {
-                    UIManager.Instance.assetOfGame.SavedLoginData.chips -= selectedBuyinAmount;
-                    //					foreach (Button Seats in  UIManager.Instance.GameScreeen.Seats) {
-                    //						Seats.interactable = false;
-                    //					}
+                    Debug.Log("OnJoinRoomDone  : " + packet.ToString());
 
-                    UIManager.Instance.GameScreeen.preBetButtonsPanel.toggleSitOutNextBigBlind.isOn = false;
-                    UIManager.Instance.GameScreeen.preBetButtonsPanel.toggleSitOutNextHand.isOn = false;
-                    UIManager.Instance.GameScreeen.btnStandup.gameObject.SetActive(true);
-                    UIManager.Instance.GameScreeen.btnHistoryOpen.gameObject.SetActive(true);
-                    UIManager.Instance.GameScreeen.btnClockOpen.gameObject.SetActive(true);
-                    if (resp.result.gameStatus.Equals("Running"))
-                    {
-                        Debug.Log("********");
-                        UIManager.Instance.GameScreeen.btnClockOpen.interactable = true;
-                    }
-                    else
-                    {
-                        UIManager.Instance.GameScreeen.btnClockOpen.interactable = false;
-                        Debug.Log("...");
-                    }
+                    UIManager.Instance.HideLoader();
+                    JSONArray arr = new JSONArray(packet.ToString());
+                    string Source;
+                    Source = arr.getString(arr.length() - 1);
+                    var resp1 = Source;
 
-                    if (UIManager.Instance.GameScreeen.currentRoomData.isTournament)
+                    PokerEventResponse<joinroomResult> resp = JsonUtility.FromJson<PokerEventResponse<joinroomResult>>(resp1);
+
+                    if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
                     {
-                        UIManager.Instance.GameScreeen.btnClockOpen.gameObject.SetActive(false);
-                        UIManager.Instance.GameScreeen.btnHistoryOpen.gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        UIManager.Instance.GameScreeen.btnClockOpen.gameObject.SetActive(true);
+                        UIManager.Instance.assetOfGame.SavedLoginData.chips -= selectedBuyinAmount;
+                        //					foreach (Button Seats in  UIManager.Instance.GameScreeen.Seats) {
+                        //						Seats.interactable = false;
+                        //					}
+
+                        UIManager.Instance.GameScreeen.preBetButtonsPanel.toggleSitOutNextBigBlind.isOn = false;
+                        UIManager.Instance.GameScreeen.preBetButtonsPanel.toggleSitOutNextHand.isOn = false;
+                        UIManager.Instance.GameScreeen.btnStandup.gameObject.SetActive(true);
                         UIManager.Instance.GameScreeen.btnHistoryOpen.gameObject.SetActive(true);
+                        UIManager.Instance.GameScreeen.btnClockOpen.gameObject.SetActive(true);
+                        if (resp.result.gameStatus.Equals("Running"))
+                        {
+                            Debug.Log("********");
+                            UIManager.Instance.GameScreeen.btnClockOpen.interactable = true;
+                        }
+                        else
+                        {
+                            UIManager.Instance.GameScreeen.btnClockOpen.interactable = false;
+                            Debug.Log("...");
+                        }
 
+                        if (UIManager.Instance.GameScreeen.currentRoomData.isTournament)
+                        {
+                            UIManager.Instance.GameScreeen.btnClockOpen.gameObject.SetActive(false);
+                            UIManager.Instance.GameScreeen.btnHistoryOpen.gameObject.SetActive(false);
+                        }
+                        else
+                        {
+                            UIManager.Instance.GameScreeen.btnClockOpen.gameObject.SetActive(true);
+                            UIManager.Instance.GameScreeen.btnHistoryOpen.gameObject.SetActive(true);
+                        }
+
+                        UIManager.Instance.messagePanelJoinTable.Close();
+                        //UIManager.Instance.GameScreeen.btnStandup.gameObject.SetActive(false);
+                        //preBetButtonsPanel.toggleSitOutNextBigBlind.gameObject.SetActive (HasJoinedRoom);
+                        //preBetButtonsPanel.toggleSitOutNextHand.gameObject.SetActive (HasJoinedRoom);
                     }
-                    UIManager.Instance.messagePanelJoinTable.Close();
-                    //UIManager.Instance.GameScreeen.btnStandup.gameObject.SetActive(false);
-                    //preBetButtonsPanel.toggleSitOutNextBigBlind.gameObject.SetActive (HasJoinedRoom);
-                    //preBetButtonsPanel.toggleSitOutNextHand.gameObject.SetActive (HasJoinedRoom);
-                }
-                else
-                {
-                    UIManager.Instance.DisplayMessagePanel(resp.message);
-                }
+                    else
+                    {
+                        UIManager.Instance.DisplayMessagePanel(resp.message);
+                    }
 
-                UIManager.Instance.GameScreeen.HasJoin = resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess);
-            });
+                    UIManager.Instance.GameScreeen.HasJoin = resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess);
+                });
+            }
+            else
+            {
+                UIManager.Instance.SocketGameManager.JoinRoom(Constants.Poker.TableId, selectedBuyinAmount, _selectedSeatIndex, IsWaitingPlayer, toggleBuyin.isOn ? LastBuyinAmount : 0, (socket, packet, args) =>
+                {
+                    Debug.Log("OnJoinRoomDone  : " + packet.ToString());
+
+                    UIManager.Instance.HideLoader();
+                    JSONArray arr = new JSONArray(packet.ToString());
+                    string Source;
+                    Source = arr.getString(arr.length() - 1);
+                    var resp1 = Source;
+
+                    PokerEventResponse<joinroomResult> resp = JsonUtility.FromJson<PokerEventResponse<joinroomResult>>(resp1);
+
+                    if (resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess))
+                    {
+                        UIManager.Instance.assetOfGame.SavedLoginData.chips -= selectedBuyinAmount;
+                        //					foreach (Button Seats in  UIManager.Instance.GameScreeen.Seats) {
+                        //						Seats.interactable = false;
+                        //					}
+
+                        UIManager.Instance.GameScreeen.preBetButtonsPanel.toggleSitOutNextBigBlind.isOn = false;
+                        UIManager.Instance.GameScreeen.preBetButtonsPanel.toggleSitOutNextHand.isOn = false;
+                        UIManager.Instance.GameScreeen.btnStandup.gameObject.SetActive(true);
+                        UIManager.Instance.GameScreeen.btnHistoryOpen.gameObject.SetActive(true);
+                        UIManager.Instance.GameScreeen.btnClockOpen.gameObject.SetActive(true);
+                        if (resp.result.gameStatus.Equals("Running"))
+                        {
+                            Debug.Log("********");
+                            UIManager.Instance.GameScreeen.btnClockOpen.interactable = true;
+                        }
+                        else
+                        {
+                            UIManager.Instance.GameScreeen.btnClockOpen.interactable = false;
+                            Debug.Log("...");
+                        }
+
+                        if (UIManager.Instance.GameScreeen.currentRoomData.isTournament)
+                        {
+                            UIManager.Instance.GameScreeen.btnClockOpen.gameObject.SetActive(false);
+                            UIManager.Instance.GameScreeen.btnHistoryOpen.gameObject.SetActive(false);
+                        }
+                        else
+                        {
+                            UIManager.Instance.GameScreeen.btnClockOpen.gameObject.SetActive(true);
+                            UIManager.Instance.GameScreeen.btnHistoryOpen.gameObject.SetActive(true);
+                        }
+
+                        UIManager.Instance.messagePanelJoinTable.Close();
+                        //UIManager.Instance.GameScreeen.btnStandup.gameObject.SetActive(false);
+                        //preBetButtonsPanel.toggleSitOutNextBigBlind.gameObject.SetActive (HasJoinedRoom);
+                        //preBetButtonsPanel.toggleSitOutNextHand.gameObject.SetActive (HasJoinedRoom);
+                    }
+                    else
+                    {
+                        UIManager.Instance.DisplayMessagePanel(resp.message);
+                    }
+
+                    UIManager.Instance.GameScreeen.HasJoin = resp.status.Equals(Constants.PokerAPI.KeyStatusSuccess);
+                });
+            }
         }
     }
 
     bool down;
+
     public void OnPointerUpButtonTap()
     {
         //		down = false;
@@ -385,70 +475,39 @@ public class BuyinPanel : MonoBehaviour
 
     public double MinBuyinAmount
     {
-        get
-        {
-            return _minBuyinAmount;
-        }
-        set
-        {
-            _minBuyinAmount = value;
-        }
+        get { return _minBuyinAmount; }
+        set { _minBuyinAmount = value; }
     }
+
     public double MaxReBuyinAmount
     {
-        get
-        {
-            return _maxReBuyinAmount;
-        }
-        set
-        {
-            _maxReBuyinAmount = value;
-        }
+        get { return _maxReBuyinAmount; }
+        set { _maxReBuyinAmount = value; }
     }
 
     public double MaxBuyinAmount
     {
-        get
-        {
-            return _maxBuyinAmount;
-        }
-        set
-        {
-            _maxBuyinAmount = value;
-        }
+        get { return _maxBuyinAmount; }
+        set { _maxBuyinAmount = value; }
     }
 
     public int SelectedSeatIndex
     {
-        set
-        {
-            _selectedSeatIndex = value;
-        }
+        set { _selectedSeatIndex = value; }
     }
 
     public double LastBuyinAmount
     {
-        get
-        {
-            return _lastBuyinAmount;
-        }
-        set
-        {
-            _lastBuyinAmount = value;
-        }
+        get { return _lastBuyinAmount; }
+        set { _lastBuyinAmount = value; }
     }
 
     public bool IsWaitingPlayer
     {
-        get
-        {
-            return _isWaitingPlayer;
-        }
-        set
-        {
-            _isWaitingPlayer = value;
-        }
+        get { return _isWaitingPlayer; }
+        set { _isWaitingPlayer = value; }
     }
+
     public int RemainingTime
     {
         set

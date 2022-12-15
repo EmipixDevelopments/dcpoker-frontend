@@ -97,7 +97,7 @@ public class WebGLCopyAndPasteAPI
     }
 
     [AOT.MonoPInvokeCallback(typeof(StringCallback))]
-    private static void GetClipboard(string key)
+    public static void GetClipboard(string key)
     {
         SendKey(key);
         passCopyToBrowser(GUIUtility.systemCopyBuffer);

@@ -6,6 +6,7 @@ using UnityEngine;
 using BestHTTP.SocketIO;
 using BestHTTP.SocketIO.Events;
 using BestHTTP.JSON;
+using Newtonsoft.Json;
 using UnityEngine.Purchasing;
 
 //using UnityEngine.Purchasing;
@@ -683,6 +684,8 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("authToken", UIManager.Instance.tokenHack());
         jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
         jsonObj.put("productName", Application.productName);
+        jsonObj.put("publicKey", UIManager.Instance.assetOfGame.SavedLoginData.publicKey);
+        jsonObj.put("privateKey", JsonConvert.SerializeObject(UIManager.Instance.assetOfGame.SavedLoginData.privateKey));
         //		Debug.Log("ListRooms  : " + jsonObj.toString());
 
         print(Constants.PokerEvents.RegisterTournament + " - " + jsonObj.toString());
@@ -706,6 +709,8 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
         jsonObj.put("authToken", UIManager.Instance.tokenHack());
         jsonObj.put("productName", Application.productName);
+        jsonObj.put("publicKey", UIManager.Instance.assetOfGame.SavedLoginData.publicKey);
+        jsonObj.put("privateKey", JsonConvert.SerializeObject(UIManager.Instance.assetOfGame.SavedLoginData.privateKey));
         //		Debug.Log("ListRooms  : " + jsonObj.toString());
 
         print(Constants.PokerEvents.UnRegisterTournament + " - " + jsonObj.toString());
@@ -729,6 +734,8 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
         jsonObj.put("authToken", UIManager.Instance.tokenHack());
         jsonObj.put("productName", Application.productName);
+        jsonObj.put("publicKey", UIManager.Instance.assetOfGame.SavedLoginData.publicKey);
+        jsonObj.put("privateKey", JsonConvert.SerializeObject(UIManager.Instance.assetOfGame.SavedLoginData.privateKey));
         //		Debug.Log("ListRooms  : " + jsonObj.toString());
 
         print(Constants.PokerEvents.RegisterSngTournament + " - " + jsonObj.toString());
@@ -752,6 +759,8 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
         jsonObj.put("authToken", UIManager.Instance.tokenHack());
         jsonObj.put("productName", Application.productName);
+        jsonObj.put("publicKey", UIManager.Instance.assetOfGame.SavedLoginData.publicKey);
+        jsonObj.put("privateKey", JsonConvert.SerializeObject(UIManager.Instance.assetOfGame.SavedLoginData.privateKey));
         //		Debug.Log("ListRooms  : " + jsonObj.toString());
 
         print(Constants.PokerEvents.UnRegisterSngTournament + " - " + jsonObj.toString());
@@ -1166,6 +1175,25 @@ public class SocketGamemanager : MonoBehaviour
         jsonObj.put("roomId", roomId);
         jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
         jsonObj.put("chips", buyinAmount.ToString());
+        jsonObj.put("cash", 0);
+        jsonObj.put("seatIndex", seatIndex);
+        jsonObj.put("isWaitingPlayer", isWaitingPlayer);
+        jsonObj.put("latitude", UIManager.Instance.ipLocationService.locationCordinates.latitude);
+        jsonObj.put("longitude", UIManager.Instance.ipLocationService.locationCordinates.longitude);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+        print("JoinRoom API call: " + jsonObj.toString());
+        Game.Lobby.CashSocket.Emit(Constants.PokerEvents.JoinRoom, action, Json.Decode(jsonObj.toString()));
+    }
+
+    public void JoinRoomCash(string roomId, double buyinAmount, int seatIndex, bool isWaitingPlayer, double autoBuyin, SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("roomId", roomId);
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("chips", 0);
+        jsonObj.put("cash", buyinAmount.ToString());
         jsonObj.put("seatIndex", seatIndex);
         jsonObj.put("isWaitingPlayer", isWaitingPlayer);
         jsonObj.put("latitude", UIManager.Instance.ipLocationService.locationCordinates.latitude);
@@ -1716,6 +1744,20 @@ public class SocketGamemanager : MonoBehaviour
         JSON_Object jsonObj = new JSON_Object();
         jsonObj.put("roomId", Constants.Poker.TableId);
         jsonObj.put("chips", chips);
+        jsonObj.put("cash", 0);
+        jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
+        jsonObj.put("authToken", UIManager.Instance.tokenHack());
+        jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());
+        jsonObj.put("productName", Application.productName);
+        Game.Lobby.CashSocket.Emit(Constants.PokerEvents.PlayerAddChips, action, Json.Decode(jsonObj.toString()));
+    }
+
+    public void PlayerAddCash(double chips, SocketIOAckCallback action)
+    {
+        JSON_Object jsonObj = new JSON_Object();
+        jsonObj.put("roomId", Constants.Poker.TableId);
+        jsonObj.put("chips", 0);
+        jsonObj.put("cash", chips);
         jsonObj.put("playerId", UIManager.Instance.assetOfGame.SavedLoginData.PlayerId);
         jsonObj.put("authToken", UIManager.Instance.tokenHack());
         jsonObj.put("deviceId", Utility.Instance.GetDeviceIdForOsBased());

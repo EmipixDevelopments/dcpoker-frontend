@@ -36,7 +36,7 @@ public class RegisterPanelNew : MonoBehaviour
 
     [SerializeField] private Toggle _showPasswordToggle;
     [SerializeField] private Toggle _showRepeatPasswordToggle;
-    
+
     #endregion
 
     #region PRIVATE_VARIABLE
@@ -50,7 +50,7 @@ public class RegisterPanelNew : MonoBehaviour
 
     #endregion
 
-    
+
     public void OnClickShowPasswordToggle()
     {
         if (_showPasswordToggle.isOn)
@@ -64,7 +64,7 @@ public class RegisterPanelNew : MonoBehaviour
 
         inputFieldPassword.ForceLabelUpdate();
     }
-    
+
     public void OnClickShowRePasswordToggle()
     {
         if (_showRepeatPasswordToggle.isOn)
@@ -78,7 +78,7 @@ public class RegisterPanelNew : MonoBehaviour
 
         inputFieldRePassword.ForceLabelUpdate();
     }
-    
+
     private void OnEnable()
     {
         panelUsername.SetActive(true);
@@ -250,7 +250,14 @@ public class RegisterPanelNew : MonoBehaviour
                         }
                         else
                         {
-                            UIManager.Instance.DisplayMessagePanel(registrationResp.message, null);
+                            UIManager.Instance.DisplayMessagePanel(registrationResp.message, () =>
+                            {
+                                textPhraseVerificationText.text = "This is Recovery phrase which is unique for every user at Time";
+                                _playerEnteredPhrase = null;
+                                panelRecoveryVerifyFail.SetActive(true);
+                                panelRecoveryVerify.SetActive(false);
+                                UIManager.Instance.messagePanel.gameObject.SetActive(false);
+                            });
                         }
                     });
                 });

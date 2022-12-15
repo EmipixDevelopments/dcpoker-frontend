@@ -454,6 +454,7 @@ public class LobbyPanelNew : MonoBehaviour
     {
         UIManager.Instance.SoundManager.OnButtonClick();
         GUIUtility.systemCopyBuffer = serverPublicKey;
+        WebGLCopyAndPasteAPI.GetClipboard(serverPublicKey);
     }
 
     public void UpdateUi()
