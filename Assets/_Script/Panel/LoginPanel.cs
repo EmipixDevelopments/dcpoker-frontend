@@ -341,7 +341,7 @@ public class LoginPanel : MonoBehaviour
         rootHackBase root = new rootHackBase();
         root.mobile = mobile;
         root.password = password;
-        var dateTime = DateTime.UtcNow; //.AddSeconds(-9); // fix: not work
+        var dateTime = DateTime.UtcNow.AddSeconds(-45); //.AddSeconds(-9); // fix: not work
         Debug.LogError("Data: " + dateTime.ToString());
         root.timestamp = DateTimeToUnix(dateTime);
         Debug.LogError("Timestamp: " + root.timestamp);

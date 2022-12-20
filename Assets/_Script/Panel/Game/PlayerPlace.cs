@@ -6,7 +6,7 @@ public class PlayerPlace : MonoBehaviour
 {
     public PokerPlayer pokerPlayer;
     public Button openSeatButton;
-    
+
     [SerializeField] private PokerPlayer smallPokerPlayer;
     [SerializeField] private PokerPlayer bigPokerPlayer;
 
@@ -26,7 +26,7 @@ public class PlayerPlace : MonoBehaviour
             pokerPlayer.gameObject.SetActive(false);
             isNeedActive = true;
         }
-        
+
         pokerPlayer = isBigPlayer ? bigPokerPlayer : smallPokerPlayer;
 
         if (isNeedActive)
@@ -34,7 +34,7 @@ public class PlayerPlace : MonoBehaviour
             pokerPlayer.gameObject.SetActive(true);
         }
     }
-    
+
     public void SetImage(string url)
     {
         UIManager.Instance._avatarUrlSpriteContainer.GetUrlSprite(url, sprite =>
@@ -47,7 +47,7 @@ public class PlayerPlace : MonoBehaviour
     public void SetFlag(string flag)
     {
         var sprite = _flagsOfCountries.GetSpriteByName(flag);
-        
+
         smallPokerPlayer.SetFlag(sprite);
         bigPokerPlayer.SetFlag(sprite);
     }
@@ -55,7 +55,7 @@ public class PlayerPlace : MonoBehaviour
     public void SetAvatar(int avatarId)
     {
         var sprite = UIManager.Instance.assetOfGame.profileAvatarList.profileAvatarSprite[avatarId];
-        
+
         smallPokerPlayer.SetAvatar(sprite);
         bigPokerPlayer.SetAvatar(sprite);
     }
@@ -68,11 +68,13 @@ public class PlayerPlace : MonoBehaviour
 
     public void SetChip(double chip)
     {
-        var chipText =  "$ " + chip.ConvertToCommaSeparatedValue();
-        
+        Debug.LogError("Chip " + chip);
+        var chipText = "$ " + chip.ConvertToCommaSeparatedValue();
+
         smallPokerPlayer.txtChips.text = chipText;
         bigPokerPlayer.txtChips.text = chipText;
     }
+
     public void SetOpenSeat(Action action)
     {
         openSeatButton.onClick.RemoveAllListeners();
@@ -87,6 +89,5 @@ public class PlayerPlace : MonoBehaviour
 
     public void Reset()
     {
-        
     }
 }

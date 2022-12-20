@@ -229,6 +229,7 @@ public class PlayerInfoList
         public string id = "";
         public string username = "";
         public double chips = 0;
+        public double cash = 0;
         public double waitingGameChips = 0;
         public bool runItTwice = false;
         public double betAmount = 0;

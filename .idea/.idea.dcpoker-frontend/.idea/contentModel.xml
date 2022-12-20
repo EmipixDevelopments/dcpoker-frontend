@@ -3103,6 +3103,7 @@
             <e p="Account" t="Include" />
             <e p="Main Lander" t="Include" />
             <e p="References" t="Include" />
+            <e p="Welcome" t="Include" />
           </e>
           <e p="UIMaccauGold" t="Include">
             <e p="ChangeNamePopUp" t="Include" />

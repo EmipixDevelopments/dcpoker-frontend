@@ -7,23 +7,21 @@ using BestHTTP.SocketIO;
 
 public class PokerPlayer : MonoBehaviour
 {
-
     [SerializeField] private GameObject _avatarMaskGameObject;
     [SerializeField] private Image _profileImage;
     [SerializeField] private Image ProfilePic;
+
     [SerializeField] private Image _flag;
     //[SerializeField] private FlagsOfCountries _flagsOfCountries;
+
     #region PUBLIC_VARIABLES
 
-    [Header("Boolean")]
-    public bool isLeftProfilePanel;
+    [Header("Boolean")] public bool isLeftProfilePanel;
 
-    [Header("Other")]
-    public CanvasGroup canvasGroup;
+    [Header("Other")] public CanvasGroup canvasGroup;
     public List<string> cards;
 
-    [Header("Gamobjects")]
-    public PokerCard Card1;
+    [Header("Gamobjects")] public PokerCard Card1;
     public PokerCard Card2;
     public PokerCard Card3;
     public PokerCard Card4;
@@ -38,56 +36,55 @@ public class PokerPlayer : MonoBehaviour
     public PokerCard ShowCard3;
     public PokerCard ShowCard4;
     public PokerCard ShowCard5;
+
     private List<GameObject> instantiatedObjectsList = new List<GameObject>();
     //[Header ("Transforms")]
 
     //public Transform TableParent;
-    [Header("ScripatbleObject")]
-    public ActionPlayer PlayerActionStatus;
+    [Header("ScripatbleObject")] public ActionPlayer PlayerActionStatus;
     public PokerPlayerBetValue Bets;
     public ContentSizeFitter contentSizeFitter;
-    [Header("Images")]
-    public Image TurnPlayer;
+    [Header("Images")] public Image TurnPlayer;
     public Image Dealer;
     public Image twiceIcon;
+
     public Image StraddleIcon;
+
     //public Image DetailObj;
     public Sprite[] DetailObjsSprites;
-    [Header("Text")]
-    public TextMeshProUGUI txtUsername;
+    [Header("Text")] public TextMeshProUGUI txtUsername;
     public TextMeshProUGUI txtChips;
     public TextMeshProUGUI txtSidePot;
     public TextMeshProUGUI txtPotAmount;
     public PlayerInfoList.PlayerInfos playerInfo;
     public WinnerPlayer Winner;
     public PlayerStatus status;
-    [Header("String")]
-    public string PlayerId;
+    [Header("String")] public string PlayerId;
+
     public bool isDealer;
     //[Header ("Prefabs")]
     //public TableData tables;
 
-    [Header("Chat")]
-    public GameObject chatBubble;
+    [Header("Chat")] public GameObject chatBubble;
     [SerializeField] private GameObject AllinObj;
     [SerializeField] private GameObject FoldObj;
     [SerializeField] private GameObject RaiseObj;
     public CanvasGroup chatCanvasGroup;
     public Text txtChatMessage;
+
     #endregion
 
     #region PRIVATE_VARIABLES
 
-    [Header("Private")]
-    public double _betAmount;
+    [Header("Private")] public double _betAmount;
     public double _buyInAmount;
     public int SeatIndex;
     private bool isTurnTimerRunning = false;
     private PlayerSidePot _sidePotAmountListNew;
     private long _sidePotAmount;
-    [Header("Timer Variables")]
-    public float maxTimer;
+    [Header("Timer Variables")] public float maxTimer;
     public float timer;
+
     #endregion
 
     public Image GetProfilePicImage() => ProfilePic;
@@ -103,7 +100,7 @@ public class PokerPlayer : MonoBehaviour
 
     public void SetFlag(Sprite flag)
     {
-        if(_flag == null)
+        if (_flag == null)
             return;
 
         _flag.sprite = flag;
@@ -120,11 +117,11 @@ public class PokerPlayer : MonoBehaviour
     public void SetAvatar(Sprite sprite)
     {
         ProfilePic.sprite = sprite;
-        
+
         _avatarMaskGameObject.SetActive(false);
         ProfilePic.gameObject.SetActive(true);
     }
-    
+
     public void SetImage(Sprite sprite)
     {
         _profileImage.sprite = sprite;
@@ -193,7 +190,6 @@ public class PokerPlayer : MonoBehaviour
         chatCanvasGroup.alpha = 0;
         StopCoroutine("DisplayChatMessageCoroutine");
     }
-
 
     #endregion
 
@@ -300,8 +296,8 @@ public class PokerPlayer : MonoBehaviour
         {
             StartCoroutine(TransferBetAmountToPot(round.PlayerSidePot.mainPot));
         }
-        StopTurnTimerAnimation();
 
+        StopTurnTimerAnimation();
     }
 
     private void OnNextTurnPlayer(Socket socket, BestHTTP.SocketIO.Packet packet, params object[] arg)
@@ -332,7 +328,6 @@ public class PokerPlayer : MonoBehaviour
         {
             if (PlayerId.Equals(UIManager.Instance.assetOfGame.SavedLoginData.PlayerId))
             {
-
                 CloseAllHiddenCards();
 
                 Card1.Open();
@@ -361,7 +356,6 @@ public class PokerPlayer : MonoBehaviour
 
     private void OnGameFinished(Socket socket, BestHTTP.SocketIO.Packet packet, params object[] arg)
     {
-
         if (!gameObject.activeSelf)
             return;
         //		ScaleDown ();
@@ -461,7 +455,6 @@ public class PokerPlayer : MonoBehaviour
         //		print("---------- OnTurnTimerRecieved ---------- " + packet.ToString());
     }
 
-
     #endregion
 
     #region PUBLIC_METHODS
@@ -486,6 +479,7 @@ public class PokerPlayer : MonoBehaviour
             Winner.IsAnimationOn(IsOn);
         }
     }
+
     // public void AllInAnimation()
     public void AllInAnimation()
     {
@@ -500,6 +494,7 @@ public class PokerPlayer : MonoBehaviour
         OpenFoldAnimation();
         Invoke("CloseFoldAnimation", 2f);
     }
+
     public void RaiseAnimation()
     {
         //RaiseObj.SetActive(true);
@@ -513,6 +508,7 @@ public class PokerPlayer : MonoBehaviour
         {
             AllinObj.SetActive(false);
         }
+
         if (FoldObj.activeSelf)
         {
             FoldObj.SetActive(false);
@@ -633,6 +629,7 @@ public class PokerPlayer : MonoBehaviour
                     //				imgBetIcon.sprite = UIManager.Instance.pokerGamePanel.spCall;
                     //				txtBetAmount.color = Color.green;
                 }
+
                 break;
             case PokerPlayerAction.Fold:
                 //SoundManager.Instance.PlayFoldSound();
@@ -663,6 +660,7 @@ public class PokerPlayer : MonoBehaviour
             //			imgCheckFold.gameObject.SetActive (true);
             //			imgCheckFold.sprite = spFold;
         }
+
         TurnPlayer.fillAmount = 0;
         TurnPlayer.Close();
     }
@@ -710,6 +708,7 @@ public class PokerPlayer : MonoBehaviour
             {
                 Card4.card.CrossFadeAlpha(Constants.Poker.NotMatchedCardAlpha, .25f, true);
             }
+
             if (bestCards.Contains(Card5.currentCard))
             {
                 Card5.card.CrossFadeAlpha(Constants.Poker.MatchedCardAlpha, .25f, true);
@@ -732,6 +731,7 @@ public class PokerPlayer : MonoBehaviour
                 pc.card.CrossFadeAlpha(Constants.Poker.NotMatchedCardAlpha, .25f, true);
             }
         }
+
         foreach (PokerCard pc in UIManager.Instance.GameScreeen.TableExtraCards)
         {
             if (bestCards.Contains(pc.currentCard))
@@ -745,10 +745,12 @@ public class PokerPlayer : MonoBehaviour
             }
         }
     }
+
     public void HighlighUpWinningCards(List<string> bestCards)
     {
         StartCoroutine(DisplayUpCards(bestCards, 3f));
     }
+
     public void OpenShowCards(List<string> cards, float time)
     {
         CloseAllHiddenCards();
@@ -769,6 +771,7 @@ public class PokerPlayer : MonoBehaviour
             ShowCard3.DisplayCardWithoutAnimation(cards[2]);
             ShowCard4.DisplayCardWithoutAnimation(cards[3]);
         }
+
         if (cards.Count == 5)
         {
             ShowCard3.SetBackCard();
@@ -836,6 +839,7 @@ public class PokerPlayer : MonoBehaviour
     {
         return Card4.transform.position;
     }
+
     public Vector3 GetCard5Position()
     {
         return Card5.transform.position;
@@ -860,6 +864,7 @@ public class PokerPlayer : MonoBehaviour
     {
         return Card4.transform.eulerAngles;
     }
+
     public Vector4 GetCard5EulerAngles()
     {
         return Card5.transform.eulerAngles;
@@ -889,20 +894,23 @@ public class PokerPlayer : MonoBehaviour
             }
         }
     }
+
     #endregion
 
     #region PRIVATE_METHODS
+
     public void CloseAnimation()
     {
         txtUsername.Open();
         Winner.CloseAnimation();
     }
-    
+
     public void CloseFoldAnimation()
     {
         txtUsername.gameObject.SetActive(true);
         FoldObj.SetActive(false);
     }
+
     public void CloseAllInAnimation()
     {
         txtUsername.gameObject.SetActive(true);
@@ -914,12 +922,13 @@ public class PokerPlayer : MonoBehaviour
         txtUsername.gameObject.SetActive(true);
         RaiseObj.SetActive(false);
     }
-    
+
     public void OpenFoldAnimation()
     {
         txtUsername.gameObject.SetActive(false);
         FoldObj.SetActive(true);
     }
+
     public void OpenAllInAnimation()
     {
         txtUsername.gameObject.SetActive(false);
@@ -931,7 +940,7 @@ public class PokerPlayer : MonoBehaviour
         txtUsername.gameObject.SetActive(false);
         RaiseObj.SetActive(true);
     }
-    
+
     void ResetData()
     {
         cards = new List<string>();
@@ -960,6 +969,7 @@ public class PokerPlayer : MonoBehaviour
             if (go != null)
                 Destroy(go);
         }
+
         instantiatedObjectsList.Clear();
     }
 
@@ -1014,6 +1024,7 @@ public class PokerPlayer : MonoBehaviour
                 Card1.transform.localPosition = new Vector3(-56.685f, 4.61f, 0);
                 Card2.transform.localPosition = new Vector3(0f, 17.78f, 0);
             }
+
             ShowCard1.transform.localPosition = Card1.transform.localPosition;
             ShowCard2.transform.localPosition = Card2.transform.localPosition;
 
@@ -1060,9 +1071,8 @@ public class PokerPlayer : MonoBehaviour
                 Card3.transform.localPosition = new Vector3(-20f, -39f, 0);
                 Card4.transform.localPosition = new Vector3(22.7f, -39f, 0);
                 Card5.transform.localPosition = new Vector3(65.4f, -39f, 0);
-
-
             }
+
             ShowCard1.transform.localPosition = Card1.transform.localPosition;
             ShowCard2.transform.localPosition = Card2.transform.localPosition;
             ShowCard3.transform.localPosition = Card3.transform.localPosition;
@@ -1076,9 +1086,11 @@ public class PokerPlayer : MonoBehaviour
             HiddenCard5.transform.localPosition = new Vector3(46f, -10f);
         }
     }
+
     #endregion
 
     #region COROUTINES
+
     private IEnumerator DisplayUpCards(List<string> bestCards, float timer)
     {
         yield return new WaitForSeconds(timer);
@@ -1125,6 +1137,7 @@ public class PokerPlayer : MonoBehaviour
             }
         }
     }
+
     /*	private IEnumerator DisplayTurnTimer ()
 	{
 		
@@ -1145,7 +1158,7 @@ public class PokerPlayer : MonoBehaviour
         Canvas.ForceUpdateCanvases();
         contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         contentSizeFitter.SetLayoutHorizontal();
-        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)contentSizeFitter.transform);
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) contentSizeFitter.transform);
         Canvas.ForceUpdateCanvases();
     }
 
@@ -1175,6 +1188,7 @@ public class PokerPlayer : MonoBehaviour
 
             yield return 0;
         }
+
         UIManager.Instance.SoundManager.chips_moved_to_potClickOnce();
         UIManager.Instance.GameScreeen.SidePotAmountNew.mainPot = totalPotAmount;
         chipsObj.transform.localScale = Vector3.zero; // this code will hide chips on screen to prevent glitch & followed line will delete object after 0.25 second.
@@ -1268,10 +1282,7 @@ public class PokerPlayer : MonoBehaviour
 
     public double BetAmount
     {
-        get
-        {
-            return _betAmount;
-        }
+        get { return _betAmount; }
         set
         {
             _betAmount = value;
@@ -1284,22 +1295,25 @@ public class PokerPlayer : MonoBehaviour
 
     public double BuyInAmount
     {
-        get
-        {
-            return _buyInAmount;
-        }
+        get { return _buyInAmount; }
         set
         {
             _buyInAmount = value;
             //txtChips.text = _buyInAmount.ConvertToCommaSeparatedValue();
             _buyInAmount = _buyInAmount < 0 ? 0 : _buyInAmount;
             if (UIManager.Instance.assetOfGame.SavedLoginData.isCash)
-            { txtChips.text = "$ " + _buyInAmount.ConvertToCommaSeparatedValue(); }
+            {
+                txtChips.text = "$ " + _buyInAmount.ConvertToCommaSeparatedValue();
+                Debug.LogError("If");
+            }
             else
-            { txtChips.text = _buyInAmount.ConvertToCommaSeparatedValue(); }
-
+            {
+                txtChips.text = _buyInAmount.ConvertToCommaSeparatedValue();
+                Debug.LogError("Else");
+            }
         }
     }
+
     public long SidePotAmount
     {
         set
@@ -1309,11 +1323,8 @@ public class PokerPlayer : MonoBehaviour
             txtSidePot.transform.parent.gameObject.SetActive(value > 0);
             Utility.Instance.UpdateHorizontalLayout(txtSidePot.gameObject);
         }
-        get
-        {
-            return _sidePotAmount;
-        }
+        get { return _sidePotAmount; }
     }
-    #endregion
 
+    #endregion
 }

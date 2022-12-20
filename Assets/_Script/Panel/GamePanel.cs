@@ -4422,7 +4422,10 @@ public class GamePanel : MonoBehaviour
                 playerPlaceSeat.SetFlag(plr.flag);
 
                 playerPlaceSeat.SetName(plr.username);
-                playerPlaceSeat.SetChip(plr.chips);
+                if (UIManager.Instance.assetOfGame.SavedLoginData.isCash)
+                    playerPlaceSeat.SetChip(plr.cash);
+                else
+                    playerPlaceSeat.SetChip(plr.chips);
                 //pokerPlayer.ProfilePic.sprite = UIManager.Instance.assetOfGame.profileAvatarList.profileAvatarSprite[profilePic];
                 //pokerPlayer.GetProfilePicImage().Open();
                 pokerPlayer.isDealer = SpadePlayerData.dealerPlayerId == plr.id;
